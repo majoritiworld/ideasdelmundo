@@ -1,0 +1,823 @@
+{
+  "select": "בחירה",
+  "selected": "נבחרו",
+  "selectAll": "בחר הכול",
+  "deselectAll": "נקה בחירה",
+  "noResults": "לא נמצאו תוצאות",
+  "loading": "טוען…",
+  "save": "שמור",
+  "cancel": "ביטול",
+  "confirm": "אישור",
+  "search": "חיפוש",
+  "clear": "נקה",
+  "close": "סגור",
+  "back": "חזרה",
+  "next": "הבא",
+  "previous": "הקודם",
+  "actions": "פעולות",
+  "optional": "אופציונלי",
+  "required": "חובה",
+  "all": "הכול",
+  "tabGuide": "מדריך",
+  "tabDashboard": "דשבורד",
+  "tabForms": "טפסים",
+  "tabDialogs": "דיאלוגים והתראות",
+  "tabView": "תצוגה",
+  "tabTokenUsage": "טיפים ל-AI",
+  "tabTechnicalGuide": "מדריך טכני",
+  "themeLight": "בהיר",
+  "themeDark": "כהה",
+  "themeCurrentLabel": "ערכת נושא",
+  "localeHint": "אפשר להחליף שפה על ידי שינוי עוגיית NEXT_LOCALE ל-en, es, he או ar.",
+  "languageDialogTriggerAria": "החלפת שפה",
+  "languageDialogTitle": "שפה",
+  "languageSettingsNote": "השפה נשמרת כדי שהאתר ייפתח אוטומטית בשפה שבחרת גם בפעם הבאה.",
+  "languages": {
+    "en": "אנגלית",
+    "he": "עברית",
+    "ar": "ערבית",
+    "es": "ספרדית"
+  },
+  "currentLabel": "נוכחי",
+  "clearSearchAria": "נקה חיפוש",
+  "resultsCount": "{count, plural, one {# תוצאה} other {# תוצאות}}",
+  "paginationAria": "ניווט בין עמודים",
+  "previousPage": "לעמוד הקודם",
+  "nextPage": "לעמוד הבא",
+  "pageAria": "עמוד {page}",
+  "themeSwitchToLightAria": "מעבר למצב בהיר",
+  "themeSwitchToDarkAria": "מעבר למצב כהה",
+  "themeLightMode": "מצב בהיר",
+  "themeDarkMode": "מצב כהה",
+  "demo": {
+    "pageTitle": "אפליקציית Skeleton",
+    "pageSubtitle": "נקודת פתיחה מוכנה שעוזרת לך לבנות אתר טוב יותר עם AI — מהר יותר, מסודר יותר, ובצורה שמתכנת יכול להבין ולהמשיך ממנה.",
+    "productGuide": {
+      "eyebrow": "לבנות עם AI בצורה מסודרת",
+      "title": "לבנות עם AI בלי לייצר בלגן",
+      "subtitle": "התשתית הזו מיועדת למשתמשים לא טכניים שרוצים לבנות אתר או אפליקציה אמיתיים עם AI, אבל בצורה מסודרת שגם מפתח אנושי יוכל להבין ולהמשיך ממנה אחר כך.",
+      "shadcnUi": {
+        "title": "רכיבי ממשק (shadcn/ui)",
+        "description": "הפרויקט משתמש ב־shadcn/ui לכפתורים, דיאלוגים, טפסים ורכיבי יסוד נוספים. הקוד נמצא אצלך במאגר (לא חבילה סגורה), כך שאפשר להתאים אותו בחופשיות.",
+        "install": "להוספת רכיבים מהקטלוג הרשמי: הרץ את ה־CLI בשורש הפרויקט, למשל: pnpm dlx shadcn@latest add accordion — ובחר רכיבים מהתיעוד.",
+        "docsLink": "תיעוד רכיבי shadcn/ui"
+      },
+      "purpose": {
+        "title": "למה האתר הזה קיים",
+        "description": "המטרה היא לעזור לך לבנות מהר יותר עם AI, בלי לוותר על סדר, בהירות ואיכות לאורך זמן.",
+        "points": {
+          "fast": {
+            "title": "להתקדם מהר יותר",
+            "description": "מתחילים מתשתית מוכנה במקום לבנות כל מסך וכל תיקייה מאפס."
+          },
+          "tokenSavings": {
+            "title": "לחסוך טוקנים של AI",
+            "description": "ה-AI לא צריך לבנות הכול מאפס, כי כבר יש לו הקשר, רכיבים מוכנים ודרך עבודה ברורה."
+          },
+          "organized": {
+            "title": "להישאר מסודרים",
+            "description": "ממשק, טפסים, קריאות לשרת, תרגומים וניהול מצב כבר בנויים לפי מבנה ברור."
+          },
+          "conventions": {
+            "title": "לעבוד לפי מוסכמות טובות",
+            "description": "התשתית נותנת ל-AI מסגרת טובה יותר, ולכן הקוד שמתקבל בדרך כלל נקי יותר, עקבי יותר וקל יותר להמשך עבודה."
+          },
+          "handoff": {
+            "title": "לאפשר למפתח להמשיך אחריך",
+            "description": "מפתח אנושי יוכל לקרוא את הקוד, לשפר אותו ולהמשיך לבנות בלי להתחיל הכול מחדש."
+          },
+          "aiReady": {
+            "title": "הקשר מוכן ל-AI",
+            "description": "CLAUDE.md וה-.claude/rules/ נותנים לעוזר ה-AI שלך הקשר מלא על הפרויקט, כך שהוא עוקב אחרי הדפוסים הנכונים בלי שתצטרך להסביר בכל פעם."
+          }
+        }
+      },
+      "goodFit": {
+        "title": "מתי זה מתאים במיוחד",
+        "description": "התשתית הזו מתאימה כשחשובים לך גם המהירות של AI וגם האיכות של התוצאה.",
+        "items": {
+          "founder": {
+            "title": "יזם שבונה MVP עם AI",
+            "description": "מעולה ליזם לא טכני שרוצה להוציא גרסה ראשונה רצינית במהירות."
+          },
+          "designer": {
+            "title": "מעצב שבונה מוצר אמיתי",
+            "description": "מעולה למעצבים שרוצים לעבור מרעיון למוצר שעובד בפועל."
+          },
+          "developer": {
+            "title": "מפתח שרוצה תשתית מסודרת",
+            "description": "מתאים למפתחים שלא רוצים להגדיר הכול מחדש בכל פרויקט."
+          },
+          "team": {
+            "title": "צוות שרוצה אחידות",
+            "description": "טוב לצוותים שרוצים עקביות בין UI, טפסים, קריאות API, תרגומים וניהול מצב."
+          }
+        }
+      },
+      "lessSuitable": {
+        "title": "מתי זה פחות מתאים",
+        "description": "לא כל פרויקט צריך תשתית כזו, במיוחד אם התחזוקה בהמשך לא חשובה.",
+        "items": {
+          "randomPages": {
+            "title": "אם המטרה היא רק לייצר דפים מהר",
+            "description": "אם מבנה מסודר לא חשוב לך, ייתכן שהתשתית הזו תרגיש יותר מחמירה ממה שאתה צריך."
+          },
+          "landingPage": {
+            "title": "אם צריך רק דף נחיתה",
+            "description": "בשביל דף נחיתה פשוט, כנראה שאין צורך בפתרון כל כך מקיף ומורכב."
+          },
+          "throwaway": {
+            "title": "אם זה ניסוי חד-פעמי",
+            "description": "לפרויקט קטן שקיים רק בשביל הדגמה קצרה, אולי אין צורך בכל המוסכמות האלה."
+          },
+          "noConventions": {
+            "title": "אם איכות הקוד לטווח ארוך לא חשובה",
+            "description": "אם לא חשוב לך שהקוד יהיה קריא, עקבי וקל להמשך עבודה, כנראה שזה יותר ממה שצריך."
+          }
+        }
+      },
+      "howToUse": {
+        "title": "איך משתמשים בזה",
+        "description": "לא צריך להבין כל פרט טכני כדי להתחיל. אפשר להתקדם צעד אחר צעד, ולתת ל-AI לבנות בתוך המבנה שכבר קיים.",
+        "stepLabel": "שלב {step}",
+        "steps": {
+          "installTools": {
+            "title": "התקינו Git,‏ Node.js,‏ pnpm ו-IDE",
+            "description": "לפני שמתחילים, ודאו שהכלים הבסיסיים מותקנים על המחשב. אפשר להשתמש בדפי ההתקנה הרשמיים, ואת pnpm אפשר גם להתקין במהירות דרך npm. ל-IDE עצמו, VS-Code ו-Cursor הן שתי אפשרויות מצוינות."
+          },
+          "cloneProject": {
+            "title": "פתחו את הפרויקט ב-GitHub וצרו עותק משלכם",
+            "description": "פתחו את המאגר ב-GitHub, ואז בחרו באפשרות `Use this template` כדי להתחיל מפרויקט חדש ונקי עם כל הקבצים הנחוצים."
+          },
+          "openProject": {
+            "title": "פתחו את הפרויקט ב-IDE והתקינו תלויות",
+            "description": "פתחו את תיקיית הפרויקט ב-IDE, ואז הריצו את פקודת ההתקנה כדי להכין הכול מקומית.",
+            "commandNote": "חשוב: הריצו את הפקודה הזו רק אחרי שהטרמינל פתוח בתוך תיקיית הפרויקט עצמו (`cd` לתיקייה בה שמור הפרוייקט)."
+          },
+          "startProject": {
+            "title": "העתיקו את קובץ הסביבה והפעילו את האפליקציה",
+            "description": "צרו את קובץ הסביבה המקומי, הפעילו את שרת הפיתוח, ובדרך כלל האתר ייפתח ב-localhost:3000.",
+            "commandNote": "חשוב: הריצו את הפקודות האלה רק אחרי שהטרמינל פתוח בתוך תיקיית הפרויקט עצמו (`cd` לתיקייה בה שמור הפרוייקט).",
+            "note": "אחרי <code>pnpm dev</code>, כשהפרויקט כבר רץ, אפשר לפתוח אותו בדפדפן של המחשב דרך <link>http://localhost:3000</link>."
+          }
+        }
+      },
+      "resources": {
+        "title": "קישורים שימושיים",
+        "description": "כאן תוכלו למצוא את קישור הפרויקט עצמו, יחד עם דפי ההתקנה של הכלים והעורכים הראשיים.",
+        "linkLabel": "פתח קישור",
+        "items": {
+          "github": {
+            "title": "מאגר GitHub",
+            "description": "זה הקישור הראשי לתבנית. אפשר לעדכן אותו בהמשך אם המאגר ישתנה."
+          },
+          "git": {
+            "title": "התקנת Git",
+            "description": "צריך את Git כדי לשכפל את הפרויקט למחשב ולשמור גרסה משלכם."
+          },
+          "node": {
+            "title": "התקנת Node.js",
+            "description": "צריך את Node.js כדי להריץ את הפרויקט מקומית אם הוא עדיין לא מותקן."
+          },
+          "pnpm": {
+            "title": "התקנת pnpm",
+            "description": "התשתית הזו משתמשת ב-pnpm, ואפשר להתקין אותו דרך האתר הרשמי או במהירות דרך npm."
+          },
+          "vscode": {
+            "title": "הורדת VS Code",
+            "description": "עורך קוד פופולרי עם אקוסיסטם גדול של הרחבות ודרך עבודה מוכרת."
+          },
+          "cursor": {
+            "title": "הורדת Cursor",
+            "description": "עורך קוד שממוקד ב-AI, מרגיש דומה ל-VS Code ומתאים מאוד לבנייה מודרכת."
+          }
+        }
+      },
+      "actions": {
+        "howToAccordion": "איך עושים את זה",
+        "openLink": "פתח קישור",
+        "copyCommand": "העתק פקודה",
+        "copied": "הועתק!",
+        "commandLabel": "פקודה בטרמינל"
+      },
+      "builtWith": {
+        "title": "קרדיטים / בנוי עם",
+        "description": "התשתית הזו מבוססת על כלים מודרניים שעוזרים לעבוד מהר יותר, בצורה נקייה יותר, ועם מוסכמות טובות כבר מהיום הראשון.",
+        "linkLabel": "מעבר לאתר",
+        "items": {
+          "nextjs": {
+            "name": "Next.js",
+            "description": "ה-framework הראשי שמנהל עמודים, ניווט ומבנה אפליקציה מוכן לפרודקשן."
+          },
+          "react": {
+            "name": "React",
+            "description": "הספרייה שעליה בנוי הממשק האינטראקטיבי של המוצר."
+          },
+          "shadcn": {
+            "name": "shadcn/ui",
+            "description": "אוסף רכיבים איכותי שמאפשר לבנות ממשק נקי, מודרני ואחיד."
+          },
+          "tailwind": {
+            "name": "Tailwind CSS",
+            "description": "מערכת עיצוב שמאפשרת לעבוד מהר ולשמור על מראה עקבי."
+          },
+          "typescript": {
+            "name": "TypeScript",
+            "description": "מוסיף מבנה ובטיחות לקוד כדי שיהיה קל יותר לתחזק אותו לאורך זמן."
+          },
+          "nextIntl": {
+            "name": "next-intl",
+            "description": "אחראי על תרגומים ותמיכה בכמה שפות בתוך האפליקציה."
+          },
+          "zustand": {
+            "name": "Zustand",
+            "description": "כלי פשוט ונוח לניהול מידע משותף באפליקציה."
+          },
+          "zod": {
+            "name": "Zod",
+            "description": "מאמת נתונים בצורה ברורה כדי שטפסים ולוגיקה יהיו אמינים יותר."
+          },
+          "reactHookForm": {
+            "name": "React Hook Form",
+            "description": "המערכת שעליה מבוססים הטפסים בתשתית, עם פחות קוד חוזר."
+          },
+          "recharts": {
+            "name": "Recharts",
+            "description": "ספריית הגרפים שמשמשת לדשבורדים ולהצגת נתונים בדמו."
+          },
+          "swr": {
+            "name": "SWR",
+            "description": "מטפל בשליפת נתונים ובשמירה במטמון בצורה מודרנית ונוחה."
+          },
+          "vercel": {
+            "name": "Vercel",
+            "description": "פלטפורמת פריסה שעובדת מצוין עם פרויקטי Next.js."
+          }
+        }
+      },
+      "vibeCoder": {
+        "title": "לבוני המוצר ועובדי ה-Vibe",
+        "body": "הסטרטר הזה בנוי לבוני מוצרים, מייסדים ומעצבים שרוצים לשלוח דברים אמיתיים עם כלי AI כמו Claude Code או Cursor — בלי להאט בגלל בחירות הגדרה, קוד לא עקבי, או סטייה ארכיטקטורלית.",
+        "claudeNote": "CLAUDE.md אומר לעוזר ה-AI שלך בדיוק איך הפרויקט עובד — אילו דפוסים להשתמש, אילו קבצים ליצור, איפה לשים דברים — כך שלא תצטרך להסביר את זה בכל פרומפט.",
+        "bullet1": "טפסים, קריאות API, ניתוב, תרגומים וניהול מצב כבר עוקבים אחרי דפוסים עקביים",
+        "bullet2": "עוזרי AI יודעים להרחיב את הפרויקט נכון בלי לקבל הוראות בכל פעם",
+        "bullet3": "כל תכונה חדשה שתוסיף תיראה ותתנהג כמו שאר בסיס הקוד"
+      },
+      "ignoreAtFirst": {
+        "title": "מה אפשר להתעלם ממנו בהתחלה",
+        "description": "בריפו הזה יש הרבה קבצים. רובם תשתית שאף פעם לא נוגעים בה, או תכונות אופציונליות שאפשר למחוק.",
+        "doNotRemove": "אל תמחק: src/app/api/proxy/, src/lib/, src/constants/, src/components/form/, או messages/en.json — אלה תשתית חיונית."
+      },
+      "addFeature": {
+        "title": "איך מוסיפים פיצ'ר חדש",
+        "description": "טופס יצירת הקשר ב-src/features/contact/ הוא הדוגמה הקנונית. עקוב אחרי אותם צעדים לכל פיצ'ר חדש.",
+        "stepLabel": "צעד {step}"
+      },
+      "coreVsOptional": {
+        "title": "ליבה לעומת אופציונלי",
+        "coreTitle": "ליבה — אל תמחק",
+        "coreDescription": "תשתית חיונית. אל תסיר קבצים אלה.",
+        "optionalTitle": "אופציונלי — בטוח להסרה",
+        "optionalDescription": "בטוח למחוק או להתאים כשתבנה את האפליקציה האמיתית שלך."
+      },
+      "mistakes": {
+        "title": "טעויות נפוצות שהסטרטר הזה עוזר להימנע מהן",
+        "description": "אלו הטעויות שכלי AI נוטים לעשות בבסיסי קוד לא מובנים. האמנות כאן מונעות את רובן."
+      }
+    },
+    "guide": {
+      "heroDescription": "תשתית מוכנה לבניית אתרים ואפליקציות בצורה מסודרת, ברורה ונכונה. מתאימה במיוחד לעבודה עם כלי AI, כך שגם משתמשים לא טכניים יכולים לבנות מהר יותר — בלי לייצר קוד מבולגן שמתכנתים יתקשו לתחזק אחר כך.",
+      "heroStats": {
+        "hooks": "19 הוקים מוכנים",
+        "forms": "12 רכיבי טופס",
+        "api": "חיבור מסודר לשרת",
+        "claude": "מדריך AI בקובץ CLAUDE.md"
+      },
+      "whatsIncluded": {
+        "title": "מה כלול",
+        "description": "שמונה מערכות מוכנות מראש שיעזרו לך להתחיל לבנות מיד, בלי להמציא הכול מחדש."
+      },
+      "features": {
+        "hooks": {
+          "title": "19 הוקים מוכנים",
+          "description": "חלקי קוד חוזרים שחוסכים זמן בדפוסי פרונטאנד נפוצים."
+        },
+        "forms": {
+          "title": "מערכת טפסים",
+          "description": "טפסים מסודרים עם ולידציה, שדות מוכנים ותרגומים מובנים."
+        },
+        "api": {
+          "title": "חיבור לשרת",
+          "description": "דרך נקייה ובטוחה להתחבר לשרת, עם טיפול בבקשות, שגיאות ומצבי טעינה."
+        },
+        "ui": {
+          "title": "רכיבי ממשק",
+          "description": "רכיבים מוכנים כמו כפתורים, טבלאות, דיאלוגים, גרפים ואנימציות."
+        },
+        "i18n": {
+          "title": "רב-לשוניות",
+          "description": "תמיכה מלאה בכמה שפות, כולל מעבר שפה ותצוגת RTL תקינה."
+        },
+        "state": {
+          "title": "ניהול מצב",
+          "description": "דרך מסודרת לנהל מידע והגדרות משותפות באפליקציה בלי ליצור בלגן בקוד."
+        },
+        "utilities": {
+          "title": "כלי עזר",
+          "description": "פונקציות וכלים שימושיים שחוסכים זמן ועוזרים לשמור על קוד עקבי."
+        },
+        "loading": {
+          "title": "מצבי טעינה",
+          "description": "מצבי טעינה ברורים ואחידים כדי שהחוויה תרגיש מקצועית בכל מסך."
+        }
+      },
+      "goldenRules": {
+        "title": "13 כללי הזהב",
+        "description": "הכללים האלה שומרים על קוד נקי, עקבי וקל לתחזוקה.",
+        "neverLabel": "לעולם לא"
+      },
+      "rules": {
+        "useBoolean": "useState(false) עבור אפשרויות הפעלה",
+        "formatDate": "מחרוזות פורמט גולמיות או toLocaleDateString()",
+        "useTranslations": "מחרוזות קשיחות בתוך JSX",
+        "useFetch": "useEffect + axios.get",
+        "useMutation": "axios.post/put/delete מתוך קומפוננטות",
+        "apiRoutes": "מחרוזות API קשיחות בתוך הקוד",
+        "webRoutes": "מחרוזות נתיב קשיחות בקישורים",
+        "forms": "אלמנטי input גולמיים",
+        "toasts": "שימוש ישיר ב-Sonner",
+        "storage": "שימוש ישיר ב-localStorage",
+        "config": "process.env בתוך קומפוננטות",
+        "styles": "style inline סטטי",
+        "icons": "ספריות אייקונים אחרות"
+      },
+      "quickReference": {
+        "title": "עיון מהיר",
+        "description": "מפה מהירה שמראה איפה כל חלק נמצא בפרויקט.",
+        "keyDirectories": "תיקיות מרכזיות",
+        "techStack": "סטאק טכנולוגי",
+        "directories": {
+          "hooks": "הוקים מותאמים",
+          "form": "רכיבי טפסים",
+          "utils": "עזרי תאריך, מחרוזות ופורמט",
+          "lib": "לקוח API, toast וקונפיגורציה",
+          "store": "חנויות Zustand",
+          "constants": "נתיבים ונתיבי API",
+          "types": "טיפוסי TypeScript משותפים",
+          "messages": "קובצי תרגום"
+        },
+        "layers": {
+          "framework": "Framework",
+          "language": "שפה",
+          "styling": "עיצוב",
+          "ui": "ממשק",
+          "forms": "טפסים",
+          "fetching": "שליפה",
+          "state": "מצב",
+          "i18n": "רב-לשוניות",
+          "charts": "גרפים",
+          "icons": "אייקונים"
+        }
+      },
+      "gettingStarted": {
+        "title": "מתחילים",
+        "description": "שלושה צעדים פשוטים כדי להתחיל לעבוד על הפרויקט שלך.",
+        "steps": {
+          "template": {
+            "title": "השתמש בתבנית",
+            "description": "צור עותק של התבנית כדי להתחיל מפרויקט נקי ומסודר."
+          },
+          "install": {
+            "title": "התקנה והגדרה",
+            "description": "התקן את מה שצריך והגדר את קובץ הסביבה של הפרויקט."
+          },
+          "build": {
+            "title": "מתחילים לבנות",
+            "description": "הפעל את הפרויקט והתחל לבנות על בסיס תשתית שכבר מסודרת נכון."
+          }
+        }
+      }
+    },
+    "roles": {
+      "admin": "מנהל",
+      "editor": "עורך",
+      "viewer": "צופה"
+    },
+    "table": {
+      "role": "תפקיד"
+    },
+    "dashboard": {
+      "statsAndCharts": "סטטיסטיקות וגרפים",
+      "totalRevenue": "סה״כ הכנסות",
+      "activeUsers": "משתמשים פעילים",
+      "conversions": "המרות",
+      "windowWidth": "רוחב חלון",
+      "vsLastQuarter": "לעומת הרבעון הקודם",
+      "vsLastMonth": "לעומת החודש הקודם",
+      "balanceOverTime": "יתרה לאורך זמן",
+      "quarterlyRevenueVsExpenses": "הכנסות מול הוצאות לפי רבעון",
+      "revenue": "הכנסות",
+      "expenses": "הוצאות",
+      "userRoles": "תפקידי משתמשים",
+      "animatedNumbers": "מספרים מונפשים",
+      "animatedNumbersDescription": "אנימציית ספירה עם אפשרות להצגה בפורמטים שונים.",
+      "uptime": "זמינות",
+      "requestsPerDay": "בקשות ליום",
+      "rating": "דירוג",
+      "dataTable": "טבלת נתונים",
+      "searchUsers": "חפש משתמשים…"
+    },
+    "tokenUsage": {
+      "title": "טיפים ל-AI",
+      "description": "כלים ומשאבים מהקהילה לפיתוח מלווה ב-AI. שום דבר כאן אינו מובנה בברירת מחדל באפליקציה הזו או ב־Claude — כל קישור מוביל לפרויקט עצמאי כדי שתוכלו לקרוא איך הוא עובד ולהחליט אם הוא מתאים.",
+      "disclaimer": "פרויקטים של צד שלישי והקהילה בלבד. Anthropic והתבנית הזו אינם מתחזקים אותם. בדקו רישיונות, הרשאות והוראות התקנה לפני שימוש והתקינו רק מה שאתם סומכים עליו.",
+      "featuredLabel": "מומלץ",
+      "moreTipsTitle": "עוד המלצות מהקהילה",
+      "whyItMattersLabel": "למה זה עוזר",
+      "bestForLabel": "מתאים במיוחד ל",
+      "examplesLabel": "דוגמאות לבקשות",
+      "linkGitHub": "GitHub",
+      "linkDocumentation": "תיעוד",
+      "cavemanTitle": "Caveman",
+      "cavemanDescription": "מיומנות וסט תוספים מהקהילה שמקצרות תשובות הסוכן בצורה מובנית (לעתים עם הרבה פחות טוקנים) תוך שמירה על דיוק טכני. זמין ל־Claude Code, Codex, Gemini CLI, Cursor ועוד — ראו טבלת ההתקנה ואת ה־README ב-GitHub.",
+      "cavemanLinkLabel": "Caveman ב-GitHub",
+      "installCommandsTitle": "התקנה לפי סוכן",
+      "columnAgent": "סוכן",
+      "columnInstall": "התקנה",
+      "copyCommand": "העתק",
+      "copied": "הועתק!",
+      "tips": {
+        "claudeMem": {
+          "title": "Claude Mem",
+          "description": "תוסף קהילה ל-Claude Code ששומר הקשר בין סשנים כדי לחזור לעבודה עם פחות חזרות.",
+          "whyItMatters": "פרויקטים ארוכים צוברים החלטות וקונבנציות שקל לאבד בין פגישות. שכבת זיכרון ייעודית שומרת על ההקשר הזה נגיש בלי להקליד מחדש.",
+          "useCases": [
+            "מוצרים או ריפקטורים ארוכי טווח",
+            "דיבוג לאורך כמה סשנים",
+            "שמירה על קונבנציות והערות על מבנה הקוד",
+            "חזרה קצבית אחרי הפסקה"
+          ],
+          "examples": [
+            "המשך מאיפה שהפסקנו ומשוך מה שרלוונטי מהעבודה האחרונה במאגר.",
+            "זכור את הארכיטקטורה העיקרית ואיך אנחנו מעצבים שגיאות API בפרויקט."
+          ]
+        },
+        "uiUxProMax": {
+          "title": "UI UX Pro Max",
+          "description": "מיומנות וכלים מהקהילה שמתמקדים בממשק — מרווחים, טיפוגרפיה, היררכיה ודפוסים — כדי שהתוצר ירגיש מעוצב יותר מתבנית גנרית.",
+          "whyItMatters": "מודלים יכולים לבנות UI מהר, אבל לעתים נראה דומה. מיומנות עם כיוון עיצובי דוחפת לכיוון היררכיה ברורה וליטוש עקבי.",
+          "useCases": [
+            "לוחות עם הרבה נתונים",
+            "טפסים, טבלאות ומסכי הגדרות",
+            "מראה מוצר מודרני בלי מסירת עיצוב מלאה",
+            "להימנע מריווחים וסגנון «ברירת מחדל של AI»"
+          ],
+          "examples": [
+            "לחדד את פריסת העמוד כדי שירגיש מלוטש ועדכני יותר, בלי לשנות התנהגות.",
+            "כוונן מרווחים, טיפוגרפיה והיררכיה בלוח הזה כדי שיסריק קל יותר."
+          ]
+        },
+        "awesomeClaudeCode": {
+          "title": "Awesome Claude Code",
+          "description": "רשימה מתוחזקת על ידי הקהילה של כלים הקשורים ל-Claude Code: מיומנויות, ווים, פקודות, תוספים והערות זרימת עבודה.",
+          "whyItMatters": "לפני שכותבים שכבת דבק משלכם, כדאי לראות מה אחרים כבר משתמשים. רשימות כאלה מגלות דפוסים שעמדו בפרויקטים אמיתיים.",
+          "useCases": [
+            "דפדוף בכלים לפני בניית סביבה משלכם",
+            "חקירת זרימות ופקודות עם לוכסן",
+            "חיפוש מיומנויות לממשק, תיעוד או אוטומציה",
+            "למידה מה אחרים מתקננים"
+          ],
+          "examples": [
+            "מצא מיומנויות קהילה שעוזרות בליטוש חזית.",
+            "עיין ברעיונות לזיכרון, ווים או אוטומציית משימות שאפשר לאמץ בלי להמציא מחדש."
+          ]
+        }
+      },
+      "agents": {
+        "claudeCode": "Claude Code",
+        "codex": "Codex",
+        "geminiCli": "Gemini CLI",
+        "cursor": "Cursor",
+        "windsurf": "Windsurf",
+        "copilot": "Copilot",
+        "cline": "Cline",
+        "anyOther": "אחר"
+      }
+    },
+    "forms": {
+      "allFormattedInputs": "כל קלטי העיצוב",
+      "formattedInputsHint": "לכל שדה מפרמטר עיצוב שונה. כולם חובה — שליחה ריקה מציגה את כל השגיאות. הכפתור משתמש בטעינת נקודות ומדמה השהיה של 1.5 שניות (הכפתור מושבת בזמן ״שמירה״).",
+      "textInputs": "שדות טקסט",
+      "textInputsHint": "שם, אימייל והערות חובה — תראו מספר הודעות ולידציה בבת אחת.",
+      "selectAndMultiSelect": "בחירה ובחירה מרובה",
+      "selectSectionHint": "רק קטגוריה וסטטוס חובה. בחירה מרובה אופציונלית.",
+      "otpSliderAndToggles": "קוד אימות, סליידר ואפשרויות הפעלה",
+      "otpSectionHint": "הזינו את הקוד המלא וסמנו את תיבת התנאים כדי לשלוח.",
+      "dateAndFileUpload": "תאריך והעלאת קבצים",
+      "dateFileSectionHint": "בחרו תאריך וצרפו לפחות קובץ אחד. טווח התאריכים אופציונלי.",
+      "submit": "שלח טופס",
+      "submitFormatted": "שמור ערכים מעוצבים",
+      "submitText": "שמור שדות טקסט",
+      "submitSelect": "שמור בחירות",
+      "submitOtp": "שמור מקטע OTP",
+      "submitDateFiles": "שמור תאריך וקבצים",
+      "submitSuccessTitle": "הטופס נשלח בהצלחה",
+      "submitSuccessDescription": "אפשר לראות בקונסול את הערכים שנשלחו."
+    },
+    "dialogs": {
+      "toastsAndDialogs": "דיאלוגים והתראות",
+      "openDialog": "פתח דיאלוג",
+      "areYouSure": "האם בטוח שתרצה להמשיך?",
+      "actionCannotBeUndone": "לא ניתן לבטל את הפעולה הזו.",
+      "confirmed": "אושר",
+      "actionExecuted": "הפעולה בוצעה בהצלחה.",
+      "deleteItemPermanently": "הפריט הזה יימחק לצמיתות.",
+      "nestedDialog": "דיאלוג פנימי",
+      "welcome": "ברוך הבא",
+      "reusableDialog": "דיאלוג מוכן לשימוש חוזר עם טריגר, כפתורי פעולה וגדלים שונים.",
+      "nestedBody": "אפשר להשתמש בתבנית הזו לאישורים, תהליכים מדורגים או טפסים בתוך מודאל.",
+      "success": "הצלחה",
+      "operationCompleted": "הפעולה הושלמה בהצלחה.",
+      "error": "שגיאה",
+      "somethingWentWrong": "משהו השתבש.",
+      "info": "מידע",
+      "someInformation": "הנה קצת מידע.",
+      "warning": "אזהרה",
+      "pleaseBeCareful": "נא לשים לב.",
+      "loadingButton": "כפתור טעינה",
+      "copied": "הועתק!",
+      "copyText": "העתק טקסט",
+      "resendIn": "שלח שוב בעוד {seconds} שנ׳",
+      "startCountdown": "התחל ספירה לאחור של 30 שניות",
+      "spinnerInline": "ספינר בתוך התוכן",
+      "demoSpinner": "ספינר לדוגמה",
+      "stopSpinner": "עצור ספינר",
+      "startSpinner": "הפעל ספינר",
+      "skeletonRows": "Skeleton (3 שורות)",
+      "hideSkeleton": "הסתר Skeleton",
+      "showSkeleton": "הצג Skeleton",
+      "disabledRegion": "אזור מושבת",
+      "overlayAxios": "שכבת טעינה (Axios)",
+      "overlayDescription": "שכבת טעינה מלאה מוצגת אוטומטית בזמן שהמערכת מבצעת בקשות ברקע.",
+      "disabledPlaceholder": "מושבת בזמן טעינה…",
+      "action": "פעולה",
+      "reEnable": "הפעל מחדש",
+      "disableRegion": "השבת אזור"
+    },
+    "typography": {
+      "eyebrow": "תצוגה לקריאה בלבד",
+      "title": "טיפוגרפיה",
+      "description": "דוגמאות הטקסט בלטינית (לורם איפסום) כדי להשוות כותרות וגוף. החלפת שפה מציגה גופנים מקומיים. ערכת נושא והשפה נשארים בכותרת העמוד.",
+      "fontsNote": {
+        "title": "גופנים בדמו",
+        "latin": "אנגלית וספרדית: Space Grotesk לכותרות, Plus Jakarta Sans לטקסט גוף.",
+        "hebrew": "עברית: Heebo לכותרות ולגוף.",
+        "arabic": "ערבית: Cairo לכותרות ולגוף."
+      },
+      "shadcn": {
+        "title": "רכיבי shadcn/ui",
+        "description": "רכיבי יסוד כמו כפתורים, כרטיסים ושדות טופס מבוססים על shadcn/ui — רכיבים נגישים בסגנון Tailwind שמועתקים ל־src/components/ui ואפשר לערוך בכל עת.",
+        "install": "להוספה: פתחו את התיעוד, בחרו רכיב והריצו את ה־CLI בשורש הפרויקט (למשל: pnpm dlx shadcn@latest add dialog).",
+        "docsLink": "עיון בכל הרכיבים"
+      },
+      "variants": {
+        "h1": "כותרת 1",
+        "h2": "כותרת 2",
+        "h3": "כותרת 3",
+        "h4": "כותרת 4",
+        "h5": "כותרת 5",
+        "h6": "כותרת 6",
+        "subtitle1": "כותרת משנה 1",
+        "subtitle2": "כותרת משנה 2",
+        "body1": "גוף 1",
+        "body2": "גוף 2",
+        "caption1": "כיתוב 1",
+        "caption2": "כיתוב 2",
+        "label1": "תווית 1",
+        "label2": "תווית 2",
+        "overline": "שורת עליונה"
+      },
+      "lorem": {
+        "heading": "Lorem ipsum dolor sit amet",
+        "short": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "label": "Lorem ipsum label",
+        "overline": "Lorem sample overline"
+      },
+      "showcase": {
+        "typeScale": "סקלת טיפוגרפיה",
+        "components": "דוגמאות ממשק (לצפייה בלבד)",
+        "iconsTitle": "אייקונים (Iconify)",
+        "iconifyCatalogIntro": "אפשר לעיין באלפי סטים ושמות אייקונים ב־",
+        "iconifyLinkLabel": "קטלוג Iconify",
+        "lottieTitle": "Lottie",
+        "lottieHint": "אנימציה קלה לטעינה ולרגעי ׳וואו׳. אם הקובץ לא נטען, מוצג ספינר חלופי.",
+        "lottieFilesIntro": "גלו אנימציות חינמיות ב־",
+        "lottieFilesLinkLabel": "LottieFiles",
+        "carouselTitle": "קרוסלה",
+        "slide1": "שקופית 1",
+        "slide2": "שקופית 2",
+        "slide3": "שקופית 3",
+        "contextMenuTitle": "תפריט הקשר",
+        "contextMenuHint": "לחיצה ימנית (או לחיצה ארוכה) על האזור",
+        "contextCopy": "העתק",
+        "contextDuplicate": "שכפל",
+        "contextDelete": "מחק",
+        "kbdTitle": "מקלדת (kbd)",
+        "kbdHint": "לקיצורי דרך והצגת מקשים.",
+        "badgesTitle": "תגיות",
+        "badgeDefault": "ברירת מחדל",
+        "badgeSecondary": "משני",
+        "badgeOutline": "מתאר",
+        "badgeSuccess": "הצלחה",
+        "tabsTitle": "לשוניות",
+        "tabAlpha": "אלפא",
+        "tabBeta": "בטא",
+        "tabGamma": "גמא",
+        "tabAlphaBody": "לוח ראשון: לורם איפסום בלטינית לדוגמה.",
+        "tabBetaBody": "לוח שני: אותם סגנונות, טקסט אחר להשוואה.",
+        "tabGammaBody": "לוח שלישי: שומר על קצב וריווח עקביים.",
+        "accordionTitle": "אקורדיון",
+        "accordion1Trigger1": "פריסה וריווח",
+        "accordion1Content1": "שמרו על ריווח וריפוד עקביים כדי שממשק צפוף עדיין ירגיש נוח. עדיפות לטוקנים מהערכת הנושא על פני ערכי פיקסל חד-פעמיים.",
+        "accordion1Trigger2": "קצב טיפוגרפי",
+        "accordion1Content2": "שלבו קנה מידה של כותרות עם טקסט גוף: כותרת ברורה, טקסט משני בגודל קטן יותר, וכיתובים למטא־דאטה.",
+        "accordion2Trigger1": "צבע וניגודיות",
+        "accordion2Content1": "שמרו צבעים חזקים לפעולות ולמצבים. טקסט משני בגוון מעומעם נשאר קריא בלי להתחרות בתוכן הראשי.",
+        "accordion2Trigger2": "מצב כהה",
+        "accordion2Content2": "בדקו מצבי מיקוד ואינטראקציה בשני ערכות נושא. טבעות מיקוד וגבולות צריכים להישאר נראים גם במעבר בין מצבים.",
+        "accordion3Trigger1": "תנועה",
+        "accordion3Content1": "השתמשו בתנועה במידה: משכים קצרים למשוב, הימנעו מאנימציות של שינויי פריסה גדולים אלא אם חייבים.",
+        "accordion3Trigger2": "נגישות",
+        "accordion3Content2": "העדיפו סדר מיקוד טבעי, תוויות לשליטה, ואזורי לחיצה מספיק גדולים — במיוחד במגירות, גיליונות ודיאלוגים.",
+        "loadingStatesTitle": "מצבי טעינה",
+        "tooltipTitle": "רמז (Tooltip)",
+        "tooltipTrigger": "מעבר עכבר או מיקוד",
+        "tooltipContent": "רמזים נותנים הקשר מהיר בלי לעמיס על המסך. עובדים גם עם מקלדת.",
+        "popoverTitle": "חלון צף (Popover)",
+        "popoverTrigger": "פתח חלון צף",
+        "popoverHeading": "פרטים",
+        "popoverBody": "חלונות צפים מחזיקים קצת יותר טקסט מרמזים ונשארים פתוחים עד לחיצה מחוץ לאזור.",
+        "progressFirst": "מונפש",
+        "progressSecond": "קבוע",
+        "drawerTitle": "מגירה (Drawer)",
+        "drawerTrigger": "פתח מגירה",
+        "drawerHeading": "גיליון תחתון",
+        "drawerBody": "מגירות נפתחות מלמטה במובייל. מתאימות לפעולות ולטפסים קצרים.",
+        "drawerClose": "סגור",
+        "scrollTitle": "אזור גלילה",
+        "scrollLine": "שורה נגללת {n}",
+        "resizableTitle": "פאנלים בגודל משתנה",
+        "resizableScrollSeparatorHint": "אזור גלילה ומפריד באותו פיצול; גררו את הידית לשינוי גודל. במסכים קטנים הפיצול נערם אנכית.",
+        "resizablePanelA": "פאנל א׳",
+        "resizablePanelB": "פאנל ב׳",
+        "separatorTitle": "מפריד",
+        "separatorHint": "קווים אופקיים ואנכיים.",
+        "separatorLeft": "שמאל",
+        "separatorRight": "ימין",
+        "sheetTitle": "גיליון (Sheet)",
+        "sheetTrigger": "פתח גיליון",
+        "sheetHeading": "פאנל צד",
+        "sheetBody": "גיליונות נכנסים מהקצה. מתאימים לניווט ולתוכן משני.",
+        "skeletonLoaderHint": "מחוון הטעינה משקף את מצב הטעינה הגלובלי כשמפתח הדמו פעיל.",
+        "sliderTitle": "מחוון",
+        "sliderHint": "מושבת כאן כדי שהעמוד יישאר לצפייה בלבד.",
+        "animationsTitle": "אנימציות",
+        "breathingTitle": "נשימה",
+        "breathingHint": "לולאת מפתח CSS עדינה — להדגשת מנוחה, משיכת תשומת לב או תחושת “חי”.",
+        "animatedNumberTitle": "מספר מונפש",
+        "animatedNumberLabel": "סכום לדוגמה",
+        "animatedNumberHint": "ספירה מאפס עם האטה — מתאים ללוחות בקרה, מדדי ביצועים ומספרים שמתעדכנים עם הנתונים.",
+        "animatedNumberRerun": "נגן שוב",
+        "emptyStateSection": "מצב ריק",
+        "emptyHeading": "אין עדיין פריטים",
+        "emptyDescription": "מצב ריק מסביר מה קרה ומה אפשר לעשות הלאה כשאין נתונים.",
+        "emptyAction": "פעולה ראשית"
+      }
+    }
+  },
+  "forms": {
+    "errors": {
+      "required": "שדה חובה",
+      "min": "הערך נמוך מדי",
+      "min0": "הערך חייב להיות לפחות 0",
+      "max": "הערך גבוה מדי",
+      "minLength": "קצר מדי",
+      "maxLength": "ארוך מדי",
+      "minLen": "אורך לא תקין",
+      "pattern": "פורמט לא תקין",
+      "invalid": "ערך לא תקין",
+      "invalidDate": "תאריך לא תקין",
+      "invalidFile": "קובץ לא תקין",
+      "fileTooLarge": "הקובץ גדול מדי",
+      "fileTypeNotAllowed": "סוג הקובץ אינו נתמך",
+      "passwordMin8": "הסיסמה חייבת להכיל לפחות 8 תווים",
+      "passwordMax64": "הסיסמה יכולה להכיל עד 64 תווים",
+      "passwordUppercase": "הסיסמה חייבת לכלול לפחות אות גדולה אחת",
+      "passwordLowercase": "הסיסמה חייבת לכלול לפחות אות קטנה אחת",
+      "passwordNumber": "הסיסמה חייבת לכלול לפחות ספרה אחת",
+      "passwordSpecial": "הסיסמה חייבת לכלול לפחות תו מיוחד אחד (!@#$%^&*)",
+      "emailrequired": "יש להזין כתובת אימייל",
+      "emailNotValid": "כתובת האימייל אינה תקינה",
+      "invalidPhoneNumber": "מספר הטלפון אינו תקין",
+      "invalidUrl": "כתובת ה-URL אינה תקינה",
+      "editorRequired": "יש למלא את השדה",
+      "fieldRequired": "יש למלא שדה זה",
+      "switchRequired": "יש לבחור אפשרות",
+      "fileRequired": "יש לצרף קובץ",
+      "filesRequired": "יש לצרף קבצים",
+      "minFilesCount": "נדרשים לפחות {count} פריטים",
+      "passwordsDoNotMatch": "הסיסמאות אינן תואמות"
+    },
+    "labels": {
+      "email": "אימייל",
+      "password": "סיסמה",
+      "name": "שם",
+      "amount": "סכום",
+      "volume": "עוצמה",
+      "date": "תאריך",
+      "startDate": "תאריך התחלה",
+      "endDate": "תאריך סיום",
+      "otp": "קוד אימות",
+      "upload": "העלאת קובץ",
+      "chooseFile": "בחר קובץ",
+      "noFileChosen": "לא נבחר קובץ",
+      "notes": "הערות",
+      "message": "הודעה",
+      "category": "קטגוריה",
+      "status": "סטטוס",
+      "agree": "אני מסכים לתנאי השימוש",
+      "enableNotifications": "הפעל התראות",
+      "darkMode": "מצב כהה",
+      "technologyStack": "סטאק טכנולוגי",
+      "categoryTechnology": "טכנולוגיה",
+      "categoryDesign": "עיצוב",
+      "categoryMarketing": "שיווק",
+      "categoryFinance": "פיננסים",
+      "statusActive": "פעיל",
+      "statusInactive": "לא פעיל",
+      "statusPending": "בהמתנה",
+      "stackReact": "React",
+      "stackNextjs": "Next.js",
+      "stackTypescript": "TypeScript",
+      "stackNodejs": "Node.js",
+      "stackPostgres": "PostgreSQL",
+      "stackRedis": "Redis",
+      "formatUsd": "USD (דולר)",
+      "formatEur": "EUR (יורו)",
+      "formatPercent": "אחוזים",
+      "formatPhone": "טלפון",
+      "formatSsn": "מספר זהות / SSN",
+      "formatCreditCard": "כרטיס אשראי",
+      "formatInteger": "מספר שלם",
+      "formatBytes": "בייטים"
+    },
+    "groups": {
+      "frontend": "פרונטאנד",
+      "backend": "בקאנד"
+    },
+    "placeholders": {
+      "email": "הזן את כתובת האימייל שלך",
+      "password": "הזן את הסיסמה שלך",
+      "name": "הזן את שמך",
+      "amount": "0.00",
+      "date": "בחר תאריך",
+      "otp": "הזן קוד",
+      "upload": "גרור קבצים לכאן או לחץ להעלאה",
+      "notes": "כתוב משהו…",
+      "message": "כתבו את ההודעה שלכם כאן…",
+      "search": "חיפוש…",
+      "formatUsd": "1,234.56",
+      "formatEur": "1234.56",
+      "formatPercent": "12.5",
+      "formatPhone": "(555) 123-4567",
+      "formatSsn": "123-45-6789",
+      "formatCreditCard": "4242 4242 4242 4242",
+      "formatInteger": "1000000",
+      "formatBytes": "1048576"
+    },
+    "helpers": {
+      "optional": "אופציונלי",
+      "required": "חובה",
+      "maxSize": "גודל מרבי: {size}",
+      "acceptedTypes": "סוגים נתמכים: {types}",
+      "clearFiles": "נקה הכול"
+    }
+  },
+  "contact": {
+    "pageTitle": "צרו קשר",
+    "pageSubtitle": "יש לכם שאלה או משוב? נשמח לשמוע מכם.",
+    "submit": "שליחת הודעה",
+    "successTitle": "ההודעה נשלחה!",
+    "successMessage": "תודה שפנית אלינו.",
+    "successHeading": "ההודעה התקבלה",
+    "successDescription": "ניצור איתך קשר בהקדם.",
+    "sendAnother": "שלח הודעה נוספת"
+  },
+  "errorBoundary": {
+    "title": "משהו השתבש",
+    "description": "אירעה שגיאה בלתי צפויה. נסה לרענן את הדף.",
+    "refresh": "רענן דף"
+  }
+}

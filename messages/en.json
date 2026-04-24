@@ -1,0 +1,823 @@
+{
+  "select": "Select",
+  "selected": "Selected",
+  "selectAll": "Select all",
+  "deselectAll": "Clear selection",
+  "noResults": "No results found",
+  "loading": "Loading…",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "search": "Search",
+  "clear": "Clear",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "previous": "Previous",
+  "actions": "Actions",
+  "optional": "Optional",
+  "required": "Required",
+  "all": "All",
+  "tabGuide": "Guide",
+  "tabDashboard": "Dashboard",
+  "tabForms": "Forms",
+  "tabDialogs": "Dialogs and alerts",
+  "tabView": "View",
+  "tabTokenUsage": "AI tips",
+  "tabTechnicalGuide": "Technical Guide",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeCurrentLabel": "Theme",
+  "localeHint": "You can switch languages by setting the NEXT_LOCALE cookie to en, es, he, or ar.",
+  "languageDialogTriggerAria": "Switch language",
+  "languageDialogTitle": "Language",
+  "languageSettingsNote": "Your language is saved so the site opens automatically in your chosen language next time too.",
+  "languages": {
+    "en": "English",
+    "he": "Hebrew",
+    "ar": "Arabic",
+    "es": "Spanish"
+  },
+  "currentLabel": "Current",
+  "clearSearchAria": "Clear search",
+  "resultsCount": "{count, plural, one {# result} other {# results}}",
+  "paginationAria": "Pagination navigation",
+  "previousPage": "Previous page",
+  "nextPage": "Next page",
+  "pageAria": "Page {page}",
+  "themeSwitchToLightAria": "Switch to light mode",
+  "themeSwitchToDarkAria": "Switch to dark mode",
+  "themeLightMode": "Light mode",
+  "themeDarkMode": "Dark mode",
+  "demo": {
+    "pageTitle": "Skeleton App",
+    "pageSubtitle": "A ready-made starting point that helps you build a better website with AI — faster, more organized, and in a way that a developer can understand and continue from.",
+    "productGuide": {
+      "eyebrow": "Build with AI in a structured way",
+      "title": "Build with AI without creating a mess",
+      "subtitle": "This foundation is made for non-technical users who want to build a real website or app with AI, but in a structured way that a human developer can later understand and continue from.",
+      "shadcnUi": {
+        "title": "UI components (shadcn/ui)",
+        "description": "This project uses shadcn/ui for buttons, dialogs, forms, and many other building blocks. Components live in your codebase (not an opaque package), so you can customize them freely.",
+        "install": "Install additional components from the official catalog with the CLI, for example: pnpm dlx shadcn@latest add accordion — run the command in the project root and pick components from the docs.",
+        "docsLink": "shadcn/ui component documentation"
+      },
+      "purpose": {
+        "title": "Why this website exists",
+        "description": "The goal is to help you build faster with AI without giving up structure, clarity, and long-term quality.",
+        "points": {
+          "fast": {
+            "title": "Move faster",
+            "description": "Start from a ready-made foundation instead of building every screen and folder from scratch."
+          },
+          "tokenSavings": {
+            "title": "Save AI tokens",
+            "description": "AI does not need to build everything from scratch because it already has context, ready-to-use components, and a clear way of working."
+          },
+          "organized": {
+            "title": "Stay organized",
+            "description": "UI, forms, server calls, translations, and shared state already follow a clear structure."
+          },
+          "conventions": {
+            "title": "Work with good conventions",
+            "description": "The foundation gives AI a better framework, so the code it produces is usually cleaner, more consistent, and easier to continue working with."
+          },
+          "handoff": {
+            "title": "Let a developer continue after you",
+            "description": "A human developer can read the code, improve it, and keep building without starting over."
+          },
+          "aiReady": {
+            "title": "AI-ready context",
+            "description": "CLAUDE.md and .claude/rules/ give your AI assistant complete project context so it follows the right patterns without being told each time."
+          }
+        }
+      },
+      "goodFit": {
+        "title": "When this is a great fit",
+        "description": "This foundation is a strong fit when both AI speed and output quality matter to you.",
+        "items": {
+          "founder": {
+            "title": "A founder building an MVP with AI",
+            "description": "Great for a non-technical founder who wants to launch a serious first version quickly."
+          },
+          "designer": {
+            "title": "A designer building a real product",
+            "description": "Great for designers who want to move from an idea to a product that actually works."
+          },
+          "developer": {
+            "title": "A developer who wants a structured foundation",
+            "description": "Useful for developers who do not want to redefine everything from scratch in every project."
+          },
+          "team": {
+            "title": "A team that wants consistency",
+            "description": "Helpful for teams that want consistency across UI, forms, API calls, translations, and state management."
+          }
+        }
+      },
+      "lessSuitable": {
+        "title": "When this is less suitable",
+        "description": "Not every project needs this kind of foundation, especially when future maintenance is not important.",
+        "items": {
+          "randomPages": {
+            "title": "If the goal is just to generate pages quickly",
+            "description": "If structure does not matter to you, this foundation may feel more opinionated than you need."
+          },
+          "landingPage": {
+            "title": "If you only need a landing page",
+            "description": "For a simple landing page, you probably do not need a solution this structured and comprehensive."
+          },
+          "throwaway": {
+            "title": "If it is a one-off experiment",
+            "description": "For a small project that only exists for a short demo, you may not need all of these conventions."
+          },
+          "noConventions": {
+            "title": "If long-term code quality does not matter",
+            "description": "If you do not care whether the code is readable, consistent, and easy to continue from, this is probably more than you need."
+          }
+        }
+      },
+      "howToUse": {
+        "title": "How to use it",
+        "description": "You do not need to understand every technical detail to get started. You can move step by step and let AI build inside the structure that already exists.",
+        "stepLabel": "Step {step}",
+        "steps": {
+          "installTools": {
+            "title": "Install Git, Node.js, pnpm, and an IDE",
+            "description": "Before you start, make sure the core tools are installed on your computer. You can use the official install pages, and for pnpm you can also install it quickly with npm. For the editor itself, VS Code and Cursor are both great options."
+          },
+          "cloneProject": {
+            "title": "Open the GitHub project and create your own copy",
+            "description": "Open the GitHub repository, then choose the `Use this template` option so you start with a fresh project with all the necessary files."
+          },
+          "openProject": {
+            "title": "Open the project in your IDE and install dependencies",
+            "description": "Open the project folder in your editor, then run the install command so everything is ready locally.",
+            "commandNote": "Important: run this command only after the terminal is opened inside the project folder (`cd` into the project folder first)."
+          },
+          "startProject": {
+            "title": "Copy the environment file and start the app",
+            "description": "Create your local environment file, run the development server, and the website will normally open on localhost:3000.",
+            "commandNote": "Important: run these commands only after the terminal is opened inside the project folder (`cd` into it first).",
+            "note": "After <code>pnpm dev</code>, once the project is running, you can open it in your computer's browser at <link>http://localhost:3000</link>."
+          }
+        }
+      },
+      "resources": {
+        "title": "Useful links",
+        "description": "Here you can find the project link itself, along with the installation pages for the main tools and editors.",
+        "linkLabel": "Open link",
+        "items": {
+          "github": {
+            "title": "GitHub repository",
+            "description": "This is the main link to the template. You can update it later if the repository changes."
+          },
+          "git": {
+            "title": "Install Git",
+            "description": "You need Git to clone the project to your computer and keep your own version."
+          },
+          "node": {
+            "title": "Install Node.js",
+            "description": "You need Node.js to run the project locally if it is not installed yet."
+          },
+          "pnpm": {
+            "title": "Install pnpm",
+            "description": "This foundation uses pnpm, and you can install it from the official page or quickly with npm."
+          },
+          "vscode": {
+            "title": "Download VS Code",
+            "description": "A popular editor with a large extension ecosystem and a familiar workflow."
+          },
+          "cursor": {
+            "title": "Download Cursor",
+            "description": "An AI-first editor that feels similar to VS Code and works well for guided building."
+          }
+        }
+      },
+      "actions": {
+        "howToAccordion": "How to",
+        "openLink": "Open link",
+        "copyCommand": "Copy command",
+        "copied": "Copied!",
+        "commandLabel": "Command in terminal"
+      },
+      "builtWith": {
+        "title": "Credits / Built with",
+        "description": "This foundation is based on modern tools that help you work faster, more cleanly, and with better conventions from day one.",
+        "linkLabel": "Visit website",
+        "items": {
+          "nextjs": {
+            "name": "Next.js",
+            "description": "The main framework that handles pages, navigation, and a production-ready app structure."
+          },
+          "react": {
+            "name": "React",
+            "description": "The library used to build the product's interactive interface."
+          },
+          "shadcn": {
+            "name": "shadcn/ui",
+            "description": "A high-quality component set for building a clean, modern, and consistent interface."
+          },
+          "tailwind": {
+            "name": "Tailwind CSS",
+            "description": "A styling system that helps you move fast while keeping the design consistent."
+          },
+          "typescript": {
+            "name": "TypeScript",
+            "description": "Adds structure and safety to the code so it is easier to maintain over time."
+          },
+          "nextIntl": {
+            "name": "next-intl",
+            "description": "Handles translations and multilingual support inside the app."
+          },
+          "zustand": {
+            "name": "Zustand",
+            "description": "A simple and practical tool for managing shared app data."
+          },
+          "zod": {
+            "name": "Zod",
+            "description": "Validates data clearly so forms and logic are more reliable."
+          },
+          "reactHookForm": {
+            "name": "React Hook Form",
+            "description": "The form system used in this foundation, with less repetitive code."
+          },
+          "recharts": {
+            "name": "Recharts",
+            "description": "The charting library used for dashboards and data visualizations in the demo."
+          },
+          "swr": {
+            "name": "SWR",
+            "description": "Handles data fetching and caching in a modern and convenient way."
+          },
+          "vercel": {
+            "name": "Vercel",
+            "description": "A deployment platform that works especially well with Next.js projects."
+          }
+        }
+      },
+      "vibeCoder": {
+        "title": "For the vibe coder",
+        "body": "This starter is built for product builders, founders, and designers who want to ship real products with AI tools like Claude Code or Cursor — without getting slowed down by setup choices, inconsistent code, or architectural drift.",
+        "claudeNote": "CLAUDE.md tells your AI assistant exactly how the project works — which patterns to use, which files to create, where to put things — so you don't have to explain it on every prompt.",
+        "bullet1": "Forms, API calls, routing, translations, and state management already follow consistent patterns",
+        "bullet2": "AI assistants know how to extend the project correctly without being told each time",
+        "bullet3": "Every new feature you add will look and behave like the rest of the codebase"
+      },
+      "ignoreAtFirst": {
+        "title": "What you can safely ignore at first",
+        "description": "This repo has many files. Most are infrastructure you never touch, or optional features you can delete.",
+        "doNotRemove": "Do not remove: src/app/api/proxy/, src/lib/, src/constants/, src/components/form/, or messages/en.json — those are load-bearing."
+      },
+      "addFeature": {
+        "title": "How to add a new feature",
+        "note": "The AI will know how to do it for you, this is just a manual explaination.",
+        "description": "The contact form at src/features/contact/ is the canonical example. Follow the same steps for any new feature.",
+        "stepLabel": "Step {step}"
+      },
+      "coreVsOptional": {
+        "title": "Core vs Optional",
+        "coreTitle": "Core — do not delete",
+        "coreDescription": "Load-bearing infrastructure. Do not remove these files.",
+        "optionalTitle": "Optional — safe to remove",
+        "optionalDescription": "Safe to delete or adapt when building your real app."
+      },
+      "mistakes": {
+        "title": "Common mistakes this starter helps you avoid",
+        "description": "These are the mistakes AI tools tend to make in unstructured codebases. The conventions here prevent most of them."
+      }
+    },
+    "guide": {
+      "heroDescription": "A ready-to-use foundation for building websites and apps in a clean, organized, and scalable way. Especially useful for working with AI tools, so even non-technical users can build faster without ending up with messy code that developers struggle to maintain later.",
+      "heroStats": {
+        "hooks": "19 ready-made hooks",
+        "forms": "12 form components",
+        "api": "Structured server connection",
+        "claude": "AI guide in CLAUDE.md"
+      },
+      "whatsIncluded": {
+        "title": "What’s included",
+        "description": "Eight ready-made systems to help you start building right away without reinventing everything."
+      },
+      "features": {
+        "hooks": {
+          "title": "19 ready-made hooks",
+          "description": "Reusable pieces of code that save time on common frontend patterns."
+        },
+        "forms": {
+          "title": "Form system",
+          "description": "Structured forms with validation, ready-made fields, and built-in translations."
+        },
+        "api": {
+          "title": "Server connection",
+          "description": "A clean and secure way to connect to your backend, with handling for requests, errors, and loading states."
+        },
+        "ui": {
+          "title": "Interface components",
+          "description": "Ready-made components like buttons, tables, dialogs, charts, and animations."
+        },
+        "i18n": {
+          "title": "Multilingual",
+          "description": "Full support for multiple languages, including language switching and proper RTL layouts."
+        },
+        "state": {
+          "title": "State management",
+          "description": "A structured way to manage shared data and settings in the app without creating code chaos."
+        },
+        "utilities": {
+          "title": "Utilities",
+          "description": "Helpful functions and tools that save time and keep your code consistent."
+        },
+        "loading": {
+          "title": "Loading states",
+          "description": "Clear and consistent loading states so the experience feels polished on every screen."
+        }
+      },
+      "goldenRules": {
+        "title": "13 golden rules",
+        "description": "These rules help keep your code clean, consistent, and easy to maintain.",
+        "neverLabel": "Never"
+      },
+      "rules": {
+        "useBoolean": "useState(false) for toggle options",
+        "formatDate": "Raw format strings or toLocaleDateString()",
+        "useTranslations": "Hardcoded strings inside JSX",
+        "useFetch": "useEffect + axios.get",
+        "useMutation": "axios.post/put/delete inside components",
+        "apiRoutes": "Hardcoded API strings in code",
+        "webRoutes": "Hardcoded route strings in links",
+        "forms": "Raw input elements",
+        "toasts": "Direct Sonner usage",
+        "storage": "Direct localStorage usage",
+        "config": "process.env inside components",
+        "styles": "Static inline styles",
+        "icons": "Other icon libraries"
+      },
+      "quickReference": {
+        "title": "Quick reference",
+        "description": "A quick map showing where each part lives in the project.",
+        "keyDirectories": "Key directories",
+        "techStack": "Tech stack",
+        "directories": {
+          "hooks": "Custom hooks",
+          "form": "Form components",
+          "utils": "Date, string, and format helpers",
+          "lib": "API client, toast, and configuration",
+          "store": "Zustand stores",
+          "constants": "Routes and API routes",
+          "types": "Shared TypeScript types",
+          "messages": "Translation files"
+        },
+        "layers": {
+          "framework": "Framework",
+          "language": "Language",
+          "styling": "Styling",
+          "ui": "UI",
+          "forms": "Forms",
+          "fetching": "Fetching",
+          "state": "State",
+          "i18n": "i18n",
+          "charts": "Charts",
+          "icons": "Icons"
+        }
+      },
+      "gettingStarted": {
+        "title": "Getting started",
+        "description": "Three simple steps to start working on your project.",
+        "steps": {
+          "template": {
+            "title": "Use the template",
+            "description": "Create a copy of the template so you can start from a clean and organized project."
+          },
+          "install": {
+            "title": "Install and set up",
+            "description": "Install what you need and configure the project environment file."
+          },
+          "build": {
+            "title": "Start building",
+            "description": "Run the project and start building on top of a foundation that is already set up the right way."
+          }
+        }
+      }
+    },
+    "roles": {
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "table": {
+      "role": "Role"
+    },
+    "dashboard": {
+      "statsAndCharts": "Stats and charts",
+      "totalRevenue": "Total revenue",
+      "activeUsers": "Active users",
+      "conversions": "Conversions",
+      "windowWidth": "Window width",
+      "vsLastQuarter": "vs last quarter",
+      "vsLastMonth": "vs last month",
+      "balanceOverTime": "Balance over time",
+      "quarterlyRevenueVsExpenses": "Quarterly revenue vs expenses",
+      "revenue": "Revenue",
+      "expenses": "Expenses",
+      "userRoles": "User roles",
+      "animatedNumbers": "Animated numbers",
+      "animatedNumbersDescription": "Count-up animation with support for different display formats.",
+      "uptime": "Uptime",
+      "requestsPerDay": "Requests per day",
+      "rating": "Rating",
+      "dataTable": "Data table",
+      "searchUsers": "Search users…"
+    },
+    "tokenUsage": {
+      "title": "AI tips",
+      "description": "Curated community tools and resources that work well with AI-assisted coding. None of these ship with this app or with Claude by default—each link goes to an independent project so you can read how it works and decide if it fits your workflow.",
+      "disclaimer": "Third-party and community projects only. Anthropic and this template do not maintain them. Review licenses, permissions, and install steps before use, and only install what you trust.",
+      "featuredLabel": "Featured",
+      "whyItMattersLabel": "Why it helps",
+      "bestForLabel": "Best for",
+      "examplesLabel": "Example asks",
+      "linkGitHub": "GitHub",
+      "linkDocumentation": "Documentation",
+      "cavemanTitle": "Caveman",
+      "cavemanDescription": "A community skill and plugin set that shortens agent replies in a structured way (often much fewer tokens) while keeping technical detail. Available for Claude Code, Codex, Gemini CLI, Cursor, and others—see the install table below and the README on GitHub.",
+      "cavemanLinkLabel": "Caveman on GitHub",
+      "installCommandsTitle": "Install by agent",
+      "columnAgent": "Agent",
+      "columnInstall": "Install",
+      "copyCommand": "Copy",
+      "copied": "Copied!",
+      "tips": {
+        "claudeMem": {
+          "title": "Claude Mem",
+          "description": "Community Claude Code plugin that stores session context over time so you can resume work with less re-explaining.",
+          "whyItMatters": "Long projects accumulate decisions and conventions that are easy to lose between sessions. A dedicated memory layer keeps that context discoverable instead of retyping it.",
+          "useCases": [
+            "Long-running products or refactors",
+            "Debugging across multiple sessions",
+            "Keeping team conventions and file layout notes handy",
+            "Getting back to speed after a break"
+          ],
+          "examples": [
+            "Resume where we left off and pull in anything relevant from recent work on this repo.",
+            "Remember the main architecture and how we format API errors in this project."
+          ]
+        },
+        "uiUxProMax": {
+          "title": "UI UX Pro Max",
+          "description": "Community skill and tooling focused on UI craft—spacing, type scale, hierarchy, and patterns—so generated interfaces feel more deliberate than generic placeholders.",
+          "whyItMatters": "Models can ship UIs fast, but they often look same-y. A design-oriented skill nudges output toward clearer hierarchy and more consistent polish.",
+          "useCases": [
+            "Dashboards and data-heavy layouts",
+            "Forms, tables, and settings screens",
+            "Modern product chrome without a full design handoff",
+            "Avoiding “default AI” spacing and styling"
+          ],
+          "examples": [
+            "Tighten this page layout so it feels more polished and current, without changing the underlying behavior.",
+            "Adjust spacing, typography, and hierarchy on this dashboard so scanning is easier."
+          ]
+        },
+        "awesomeClaudeCode": {
+          "title": "Awesome Claude Code",
+          "description": "Community-maintained list of Claude Code-related tools: skills, hooks, commands, plugins, and workflow notes.",
+          "whyItMatters": "Before writing your own Glue code, it helps to see what others already use. Lists like this are a low-noise way to discover patterns that survived real projects.",
+          "useCases": [
+            "Browsing tools before building custom setup",
+            "Exploring workflows and slash commands",
+            "Finding skills for UI, docs, or automation",
+            "Learning what other teams standardize on"
+          ],
+          "examples": [
+            "Find community skills that help with front-end polish.",
+            "Scan for memory, hooks, or task automation ideas I can adopt without reinventing them."
+          ]
+        }
+      },
+      "agents": {
+        "claudeCode": "Claude Code",
+        "codex": "Codex",
+        "geminiCli": "Gemini CLI",
+        "cursor": "Cursor",
+        "windsurf": "Windsurf",
+        "copilot": "Copilot",
+        "cline": "Cline",
+        "anyOther": "Any other"
+      }
+    },
+    "forms": {
+      "allFormattedInputs": "All formatted inputs",
+      "formattedInputsHint": "Every field uses a different formatter. All are required — submit empty to see each error. This button uses a dots loader and simulates a 1.5s network delay (button disabled while “saving”).",
+      "textInputs": "Text inputs",
+      "textInputsHint": "Name, email, and notes are all required — you will see several validation messages at once.",
+      "selectAndMultiSelect": "Select and multi-select",
+      "selectSectionHint": "Only category and status are required. Multi-select is optional.",
+      "otpSliderAndToggles": "OTP, slider, and toggle options",
+      "otpSectionHint": "Enter the full code and check the terms box to submit.",
+      "dateAndFileUpload": "Date and file upload",
+      "dateFileSectionHint": "Pick a date and attach at least one file. The date range is optional.",
+      "submit": "Submit form",
+      "submitFormatted": "Save formatted values",
+      "submitText": "Save text fields",
+      "submitSelect": "Save selections",
+      "submitOtp": "Save OTP section",
+      "submitDateFiles": "Save date and files",
+      "submitSuccessTitle": "Form submitted successfully",
+      "submitSuccessDescription": "You can see the submitted values in the console."
+    },
+    "dialogs": {
+      "toastsAndDialogs": "Dialogs and alerts",
+      "openDialog": "Open dialog",
+      "areYouSure": "Are you sure you want to continue?",
+      "actionCannotBeUndone": "This action cannot be undone.",
+      "confirmed": "Confirmed",
+      "actionExecuted": "The action was completed successfully.",
+      "deleteItemPermanently": "This item will be permanently deleted.",
+      "nestedDialog": "Nested dialog",
+      "welcome": "Welcome",
+      "reusableDialog": "A reusable dialog with a trigger, action buttons, and different sizes.",
+      "nestedBody": "You can use this pattern for confirmations, step-by-step flows, or forms inside a modal.",
+      "success": "Success",
+      "operationCompleted": "The operation was completed successfully.",
+      "error": "Error",
+      "somethingWentWrong": "Something went wrong.",
+      "info": "Info",
+      "someInformation": "Here is some information.",
+      "warning": "Warning",
+      "pleaseBeCareful": "Please be careful.",
+      "loadingButton": "Loading button",
+      "copied": "Copied!",
+      "copyText": "Copy text",
+      "resendIn": "Resend in {seconds}s",
+      "startCountdown": "Start a 30-second countdown",
+      "spinnerInline": "Inline spinner",
+      "demoSpinner": "Demo spinner",
+      "stopSpinner": "Stop spinner",
+      "startSpinner": "Start spinner",
+      "skeletonRows": "Skeleton (3 rows)",
+      "hideSkeleton": "Hide skeleton",
+      "showSkeleton": "Show skeleton",
+      "disabledRegion": "Disabled area",
+      "overlayAxios": "Loading overlay (Axios)",
+      "overlayDescription": "A full loading overlay appears automatically while the system is making background requests.",
+      "disabledPlaceholder": "Disabled while loading…",
+      "action": "Action",
+      "reEnable": "Re-enable",
+      "disableRegion": "Disable area"
+    },
+    "typography": {
+      "eyebrow": "Read-only preview",
+      "title": "Typography",
+      "description": "Sample copy uses Latin lorem ipsum so you can compare heading and body styles. Switch language to see locale-specific fonts. Theme and language controls stay in the header.",
+      "fontsNote": {
+        "title": "Fonts in this demo",
+        "latin": "English and Spanish: Space Grotesk for headings, Plus Jakarta Sans for body text.",
+        "hebrew": "Hebrew: Heebo for headings and body.",
+        "arabic": "Arabic: Cairo for headings and body."
+      },
+      "shadcn": {
+        "title": "shadcn/ui components",
+        "description": "Primitives such as buttons, cards, and form controls are based on shadcn/ui—accessible, Tailwind-styled components you copy into src/components/ui and can edit anytime.",
+        "install": "To add more: open the docs, choose a component, and run the CLI in the project root (for example: pnpm dlx shadcn@latest add dialog).",
+        "docsLink": "Browse all components"
+      },
+      "variants": {
+        "h1": "Heading 1",
+        "h2": "Heading 2",
+        "h3": "Heading 3",
+        "h4": "Heading 4",
+        "h5": "Heading 5",
+        "h6": "Heading 6",
+        "subtitle1": "Subtitle 1",
+        "subtitle2": "Subtitle 2",
+        "body1": "Body 1",
+        "body2": "Body 2",
+        "caption1": "Caption 1",
+        "caption2": "Caption 2",
+        "label1": "Label 1",
+        "label2": "Label 2",
+        "overline": "Overline"
+      },
+      "lorem": {
+        "heading": "Lorem ipsum dolor sit amet",
+        "short": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "label": "Lorem ipsum label",
+        "overline": "Lorem sample overline"
+      },
+      "showcase": {
+        "typeScale": "Type scale",
+        "components": "UI samples (read-only)",
+        "iconsTitle": "Icons (Iconify)",
+        "iconifyCatalogIntro": "Browse thousands of icon sets and names at",
+        "iconifyLinkLabel": "Iconify icon sets",
+        "lottieTitle": "Lottie",
+        "lottieHint": "Lightweight motion for loading and delight. If the file fails to load, a fallback spinner appears.",
+        "lottieFilesIntro": "Explore free animations on",
+        "lottieFilesLinkLabel": "LottieFiles",
+        "carouselTitle": "Carousel",
+        "slide1": "Slide 1",
+        "slide2": "Slide 2",
+        "slide3": "Slide 3",
+        "contextMenuTitle": "Context menu",
+        "contextMenuHint": "Right-click (or long-press) this area",
+        "contextCopy": "Copy",
+        "contextDuplicate": "Duplicate",
+        "contextDelete": "Delete",
+        "kbdTitle": "Keyboard (kbd)",
+        "kbdHint": "Use for shortcuts and key hints.",
+        "badgesTitle": "Badges",
+        "badgeDefault": "Default",
+        "badgeSecondary": "Secondary",
+        "badgeOutline": "Outline",
+        "badgeSuccess": "Success",
+        "tabsTitle": "Tabs",
+        "tabAlpha": "Alpha",
+        "tabBeta": "Beta",
+        "tabGamma": "Gamma",
+        "tabAlphaBody": "First panel: lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "tabBetaBody": "Second panel: same type styles, different copy for comparison.",
+        "tabGammaBody": "Third panel: keeps spacing and rhythm consistent across states.",
+        "accordionTitle": "Accordion",
+        "accordion1Trigger1": "Layout and spacing",
+        "accordion1Content1": "Use consistent padding and gaps so dense UIs still feel calm. Prefer tokens from the theme over one-off pixel values.",
+        "accordion1Trigger2": "Typography rhythm",
+        "accordion1Content2": "Pair heading scale with body text: one clear title, supporting copy at a smaller step, and captions for metadata.",
+        "accordion2Trigger1": "Color and contrast",
+        "accordion2Content1": "Reserve strong colors for actions and states. Muted foreground keeps secondary text readable without competing with primary content.",
+        "accordion2Trigger2": "Dark mode",
+        "accordion2Content2": "Test interactive states in both themes. Focus rings and borders should remain visible when switching themes.",
+        "accordion3Trigger1": "Motion",
+        "accordion3Content1": "Keep motion purposeful: short durations for feedback, avoid animating large layout shifts unless necessary.",
+        "accordion3Trigger2": "Accessibility",
+        "accordion3Content2": "Prefer native focus order, labels on controls, and sufficient touch targets—especially for drawers, sheets, and dialogs.",
+        "loadingStatesTitle": "Loading states",
+        "tooltipTitle": "Tooltip",
+        "tooltipTrigger": "Hover or focus",
+        "tooltipContent": "Tooltips give quick context without cluttering the layout. They work with keyboard focus too.",
+        "popoverTitle": "Popover",
+        "popoverTrigger": "Open popover",
+        "popoverHeading": "Details",
+        "popoverBody": "Popovers hold a bit more content than tooltips and stay open until you click away.",
+        "progressFirst": "Animated",
+        "progressSecond": "Static",
+        "drawerTitle": "Drawer",
+        "drawerTrigger": "Open drawer",
+        "drawerHeading": "Bottom sheet",
+        "drawerBody": "Drawers slide up from the bottom on mobile. Good for actions and short forms.",
+        "drawerClose": "Close",
+        "scrollTitle": "Scroll area",
+        "scrollLine": "Scrollable line {n}",
+        "resizableTitle": "Resizable panels",
+        "resizableScrollSeparatorHint": "Scroll area and separator in one split; drag the handle to resize. On small screens the split stacks vertically.",
+        "resizablePanelA": "Panel A",
+        "resizablePanelB": "Panel B",
+        "separatorTitle": "Separator",
+        "separatorHint": "Horizontal and vertical dividers.",
+        "separatorLeft": "Left",
+        "separatorRight": "Right",
+        "sheetTitle": "Sheet",
+        "sheetTrigger": "Open sheet",
+        "sheetHeading": "Side panel",
+        "sheetBody": "Sheets slide in from the edge. Useful for navigation and secondary content.",
+        "skeletonLoaderHint": "The loading indicator reflects the global loader when this demo key is active.",
+        "sliderTitle": "Slider",
+        "sliderHint": "Disabled here so this page stays view-only.",
+        "animationsTitle": "Animations",
+        "breathingTitle": "Breathing",
+        "breathingHint": "A light CSS keyframe loop—useful for idle highlights, attention cues, or subtle “live” affordances.",
+        "animatedNumberTitle": "Animated number",
+        "animatedNumberLabel": "Sample total",
+        "animatedNumberHint": "Counts from zero with easing—suitable for dashboards, KPIs, and stats that update when data changes.",
+        "animatedNumberRerun": "Replay",
+        "emptyStateSection": "Empty state",
+        "emptyHeading": "No items yet",
+        "emptyDescription": "Empty states explain what happened and what the user can do next when there is no data.",
+        "emptyAction": "Primary action"
+      }
+    }
+  },
+  "forms": {
+    "errors": {
+      "required": "This field is required",
+      "min": "Value is too low",
+      "min0": "Value must be at least 0",
+      "max": "Value is too high",
+      "minLength": "Too short",
+      "maxLength": "Too long",
+      "minLen": "Invalid length",
+      "pattern": "Invalid format",
+      "invalid": "Invalid value",
+      "invalidDate": "Invalid date",
+      "invalidFile": "Invalid file",
+      "fileTooLarge": "File is too large",
+      "fileTypeNotAllowed": "File type is not supported",
+      "passwordMin8": "Password must contain at least 8 characters",
+      "passwordMax64": "Password can contain up to 64 characters",
+      "passwordUppercase": "Password must include at least one uppercase letter",
+      "passwordLowercase": "Password must include at least one lowercase letter",
+      "passwordNumber": "Password must include at least one number",
+      "passwordSpecial": "Password must include at least one special character (!@#$%^&*)",
+      "emailrequired": "Email address is required",
+      "emailNotValid": "Email address is not valid",
+      "invalidPhoneNumber": "Phone number is not valid",
+      "invalidUrl": "URL is not valid",
+      "editorRequired": "Please fill in this field",
+      "fieldRequired": "This field is required",
+      "switchRequired": "Please choose an option",
+      "fileRequired": "Please attach a file",
+      "filesRequired": "Please attach files",
+      "minFilesCount": "At least {count} items are required",
+      "passwordsDoNotMatch": "Passwords do not match"
+    },
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "name": "Name",
+      "amount": "Amount",
+      "volume": "Volume",
+      "date": "Date",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "otp": "Verification code",
+      "upload": "File upload",
+      "chooseFile": "Choose file",
+      "noFileChosen": "No file chosen",
+      "notes": "Notes",
+      "message": "Message",
+      "category": "Category",
+      "status": "Status",
+      "agree": "I agree to the terms of use",
+      "enableNotifications": "Enable notifications",
+      "darkMode": "Dark mode",
+      "technologyStack": "Technology stack",
+      "categoryTechnology": "Technology",
+      "categoryDesign": "Design",
+      "categoryMarketing": "Marketing",
+      "categoryFinance": "Finance",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "statusPending": "Pending",
+      "stackReact": "React",
+      "stackNextjs": "Next.js",
+      "stackTypescript": "TypeScript",
+      "stackNodejs": "Node.js",
+      "stackPostgres": "PostgreSQL",
+      "stackRedis": "Redis",
+      "formatUsd": "USD (dollar)",
+      "formatEur": "EUR (euro)",
+      "formatPercent": "Percent",
+      "formatPhone": "Phone",
+      "formatSsn": "SSN",
+      "formatCreditCard": "Credit card",
+      "formatInteger": "Integer",
+      "formatBytes": "Bytes"
+    },
+    "groups": {
+      "frontend": "Frontend",
+      "backend": "Backend"
+    },
+    "placeholders": {
+      "email": "Enter your email address",
+      "password": "Enter your password",
+      "name": "Enter your name",
+      "amount": "0.00",
+      "date": "Choose a date",
+      "otp": "Enter code",
+      "upload": "Drag files here or click to upload",
+      "notes": "Write something…",
+      "message": "Write your message here…",
+      "search": "Search…",
+      "formatUsd": "1,234.56",
+      "formatEur": "1234.56",
+      "formatPercent": "12.5",
+      "formatPhone": "(555) 123-4567",
+      "formatSsn": "123-45-6789",
+      "formatCreditCard": "4242 4242 4242 4242",
+      "formatInteger": "1000000",
+      "formatBytes": "1048576"
+    },
+    "helpers": {
+      "optional": "Optional",
+      "required": "Required",
+      "maxSize": "Maximum size: {size}",
+      "acceptedTypes": "Supported types: {types}",
+      "clearFiles": "Clear all"
+    }
+  },
+  "contact": {
+    "pageTitle": "Contact Us",
+    "pageSubtitle": "Have a question or feedback? We'd love to hear from you.",
+    "submit": "Send message",
+    "successTitle": "Message sent!",
+    "successMessage": "Thanks for reaching out.",
+    "successHeading": "Message received",
+    "successDescription": "We'll be in touch soon.",
+    "sendAnother": "Send another message"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Try refreshing the page.",
+    "refresh": "Refresh page"
+  }
+}

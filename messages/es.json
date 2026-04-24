@@ -1,0 +1,820 @@
+{
+  "select": "Seleccionar",
+  "selected": "Seleccionados",
+  "selectAll": "Seleccionar todo",
+  "deselectAll": "Limpiar selección",
+  "noResults": "No se encontraron resultados",
+  "loading": "Cargando…",
+  "save": "Guardar",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar",
+  "search": "Buscar",
+  "clear": "Limpiar",
+  "close": "Cerrar",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "previous": "Anterior",
+  "actions": "Acciones",
+  "optional": "Opcional",
+  "required": "Obligatorio",
+  "all": "Todo",
+  "tabGuide": "Guía",
+  "tabDashboard": "Dashboard",
+  "tabForms": "Formularios",
+  "tabDialogs": "Diálogos y alertas",
+  "tabView": "Vista",
+  "tabTokenUsage": "Consejos de IA",
+  "tabTechnicalGuide": "Guía técnica",
+  "themeLight": "Claro",
+  "themeDark": "Oscuro",
+  "themeCurrentLabel": "Tema",
+  "localeHint": "Puedes cambiar el idioma configurando la cookie NEXT_LOCALE en en, es, he o ar.",
+  "languageDialogTriggerAria": "Cambiar idioma",
+  "languageDialogTitle": "Idioma",
+  "languageSettingsNote": "Tu idioma se guarda para que el sitio se abra automáticamente en el idioma que elegiste la próxima vez también.",
+  "languages": {
+    "en": "Inglés",
+    "he": "Hebreo",
+    "ar": "Árabe",
+    "es": "Español"
+  },
+  "currentLabel": "Actual",
+  "clearSearchAria": "Limpiar búsqueda",
+  "resultsCount": "{count, plural, one {# resultado} other {# resultados}}",
+  "paginationAria": "Navegación de páginas",
+  "previousPage": "Página anterior",
+  "nextPage": "Página siguiente",
+  "pageAria": "Página {page}",
+  "themeSwitchToLightAria": "Cambiar a modo claro",
+  "themeSwitchToDarkAria": "Cambiar a modo oscuro",
+  "themeLightMode": "Modo claro",
+  "themeDarkMode": "Modo oscuro",
+  "demo": {
+    "pageTitle": "Aplicación Skeleton",
+    "pageSubtitle": "Un punto de partida listo que te ayuda a crear un mejor sitio web con AI: más rápido, más ordenado y de una forma que un desarrollador pueda entender y continuar.",
+    "productGuide": {
+      "eyebrow": "Construir con AI de forma ordenada",
+      "title": "Construir con AI sin crear un caos",
+      "subtitle": "Esta base está pensada para usuarios no técnicos que quieren crear un sitio web o una app real con AI, pero de una forma ordenada que luego un desarrollador humano pueda entender y continuar.",
+      "shadcnUi": {
+        "title": "Componentes de UI (shadcn/ui)",
+        "description": "Este proyecto usa shadcn/ui para botones, diálogos, formularios y más. Los componentes viven en tu repositorio (no son una caja negra), así que puedes adaptarlos con libertad.",
+        "install": "Para añadir más desde el catálogo oficial: ejecuta la CLI en la raíz del proyecto, por ejemplo: pnpm dlx shadcn@latest add accordion — y elige componentes en la documentación.",
+        "docsLink": "Documentación de componentes shadcn/ui"
+      },
+      "purpose": {
+        "title": "Por qué existe este sitio",
+        "description": "El objetivo es ayudarte a construir más rápido con AI sin renunciar al orden, la claridad y la calidad a largo plazo.",
+        "points": {
+          "fast": {
+            "title": "Avanzar más rápido",
+            "description": "Empiezas desde una base ya preparada en lugar de crear cada pantalla y cada carpeta desde cero."
+          },
+          "tokenSavings": {
+            "title": "Ahorrar tokens de AI",
+            "description": "La AI no necesita construir todo desde cero porque ya tiene contexto, componentes listos y una forma clara de trabajar."
+          },
+          "organized": {
+            "title": "Mantener el orden",
+            "description": "La interfaz, los formularios, las llamadas al servidor, las traducciones y el estado compartido ya siguen una estructura clara."
+          },
+          "conventions": {
+            "title": "Trabajar con buenas convenciones",
+            "description": "La base le da a la AI un mejor marco de trabajo, por lo que el código que produce suele ser más limpio, más consistente y más fácil de continuar."
+          },
+          "handoff": {
+            "title": "Permitir que un desarrollador continúe después de ti",
+            "description": "Un desarrollador humano podrá leer el código, mejorarlo y seguir construyendo sin empezar de nuevo."
+          },
+          "aiReady": {
+            "title": "Contexto listo para AI",
+            "description": "CLAUDE.md y .claude/rules/ le dan a tu asistente de AI el contexto completo del proyecto para que siga los patrones correctos sin que tengas que explicarlo cada vez."
+          }
+        }
+      },
+      "goodFit": {
+        "title": "Cuándo encaja especialmente bien",
+        "description": "Esta base encaja muy bien cuando te importan tanto la velocidad de la AI como la calidad del resultado.",
+        "items": {
+          "founder": {
+            "title": "Un fundador creando un MVP con AI",
+            "description": "Ideal para un fundador no técnico que quiere lanzar una primera versión seria con rapidez."
+          },
+          "designer": {
+            "title": "Un diseñador creando un producto real",
+            "description": "Muy útil para diseñadores que quieren pasar de una idea a un producto que funcione de verdad."
+          },
+          "developer": {
+            "title": "Un desarrollador que quiere una base ordenada",
+            "description": "Útil para desarrolladores que no quieren redefinir todo desde cero en cada proyecto."
+          },
+          "team": {
+            "title": "Un equipo que quiere consistencia",
+            "description": "Muy útil para equipos que quieren consistencia entre UI, formularios, llamadas API, traducciones y gestión del estado."
+          }
+        }
+      },
+      "lessSuitable": {
+        "title": "Cuándo encaja menos",
+        "description": "No todos los proyectos necesitan una base así, especialmente si el mantenimiento futuro no es importante.",
+        "items": {
+          "randomPages": {
+            "title": "Si la idea es solo generar páginas rápido",
+            "description": "Si la estructura no te importa, esta base puede sentirse más rígida de lo que necesitas."
+          },
+          "landingPage": {
+            "title": "Si solo necesitas una landing page",
+            "description": "Para una landing page simple, probablemente no necesitas una solución tan completa y compleja."
+          },
+          "throwaway": {
+            "title": "Si es un experimento de una sola vez",
+            "description": "Para un proyecto pequeño que solo existe para una demo breve, puede que no necesites todas estas convenciones."
+          },
+          "noConventions": {
+            "title": "Si no te importa la calidad del código a largo plazo",
+            "description": "Si no te importa que el código sea legible, consistente y fácil de continuar, probablemente esto sea más de lo que necesitas."
+          }
+        }
+      },
+      "howToUse": {
+        "title": "Cómo usarlo",
+        "description": "No necesitas entender cada detalle técnico para empezar. Puedes avanzar paso a paso y dejar que la AI construya dentro de la estructura que ya existe.",
+        "stepLabel": "Paso {step}",
+        "steps": {
+          "installTools": {
+            "title": "Instala Git, Node.js, pnpm y un IDE",
+            "description": "Antes de empezar, asegúrate de que las herramientas principales estén instaladas en tu computadora. Puedes usar las páginas oficiales de instalación y, en el caso de pnpm, también instalarlo rápidamente con npm. Para el editor, tanto VS Code como Cursor son muy buenas opciones."
+          },
+          "cloneProject": {
+            "title": "Abre el proyecto en GitHub y crea tu propia copia",
+            "description": "Abre el repositorio en GitHub y luego elige la opción `Use this template` para empezar con un proyecto nuevo con todo lo necesario."
+          },
+          "openProject": {
+            "title": "Abre el proyecto en tu editor e instala las dependencias",
+            "description": "Abre la carpeta del proyecto en tu editor y luego ejecuta el comando de instalación para dejar todo listo localmente.",
+            "commandNote": "Importante: ejecuta este comando solo cuando la terminal ya esté abierta dentro de la carpeta del proyecto (`cd` a la carpeta del proyecto primero)."
+          },
+          "startProject": {
+            "title": "Copia el archivo de entorno e inicia la app",
+            "description": "Crea tu archivo de entorno local, ejecuta el servidor de desarrollo y normalmente el sitio se abrirá en localhost:3000.",
+            "commandNote": "Importante: ejecuta estos comandos solo cuando la terminal ya esté abierta dentro de la carpeta del proyecto (`cd` a la carpeta del proyecto primero).",
+            "note": "Después de <code>pnpm dev</code>, una vez que el proyecto esté corriendo, puedes abrirlo en el navegador de tu computadora en <link>http://localhost:3000</link>."
+          }
+        }
+      },
+      "resources": {
+        "title": "Enlaces útiles",
+        "description": "Aquí puedes encontrar el enlace del proyecto y también las páginas de instalación de las principales herramientas y editores.",
+        "linkLabel": "Abrir enlace",
+        "items": {
+          "github": {
+            "title": "Repositorio de GitHub",
+            "description": "Este es el enlace principal a la plantilla. Puedes actualizarlo más adelante si el repositorio cambia."
+          },
+          "git": {
+            "title": "Instalar Git",
+            "description": "Necesitas Git para clonar el proyecto en tu computadora y mantener tu propia versión."
+          },
+          "node": {
+            "title": "Instalar Node.js",
+            "description": "Necesitas Node.js para ejecutar el proyecto localmente si todavía no lo tienes instalado."
+          },
+          "vscode": {
+            "title": "Descargar VS Code",
+            "description": "Un editor popular con un gran ecosistema de extensiones y un flujo de trabajo familiar."
+          },
+          "cursor": {
+            "title": "Descargar Cursor",
+            "description": "Un editor centrado en AI que se siente parecido a VS Code y funciona muy bien para construir con guía."
+          }
+        }
+      },
+      "actions": {
+        "howToAccordion": "Cómo hacerlo",
+        "openLink": "Abrir enlace",
+        "copyCommand": "Copiar comando",
+        "copied": "¡Copiado!",
+        "commandLabel": "Comando en terminal"
+      },
+      "builtWith": {
+        "title": "Créditos / Construido con",
+        "description": "Esta base se apoya en herramientas modernas que te ayudan a trabajar más rápido, de forma más limpia y con mejores convenciones desde el primer día.",
+        "linkLabel": "Visitar sitio",
+        "items": {
+          "nextjs": {
+            "name": "Next.js",
+            "description": "El framework principal que maneja páginas, navegación y una estructura de aplicación lista para producción."
+          },
+          "react": {
+            "name": "React",
+            "description": "La librería sobre la que está construida la interfaz interactiva del producto."
+          },
+          "shadcn": {
+            "name": "shadcn/ui",
+            "description": "Un conjunto de componentes de alta calidad para crear una interfaz limpia, moderna y consistente."
+          },
+          "tailwind": {
+            "name": "Tailwind CSS",
+            "description": "Un sistema de estilos que te permite avanzar rápido y mantener una apariencia consistente."
+          },
+          "typescript": {
+            "name": "TypeScript",
+            "description": "Aporta estructura y seguridad al código para que sea más fácil de mantener con el tiempo."
+          },
+          "nextIntl": {
+            "name": "next-intl",
+            "description": "Se encarga de las traducciones y del soporte multilenguaje dentro de la app."
+          },
+          "zustand": {
+            "name": "Zustand",
+            "description": "Una herramienta simple y práctica para gestionar información compartida en la app."
+          },
+          "zod": {
+            "name": "Zod",
+            "description": "Valida los datos de forma clara para que los formularios y la lógica sean más confiables."
+          },
+          "reactHookForm": {
+            "name": "React Hook Form",
+            "description": "El sistema de formularios utilizado en esta base, con menos código repetitivo."
+          },
+          "recharts": {
+            "name": "Recharts",
+            "description": "La librería de gráficos usada para dashboards y visualizaciones de datos en la demo."
+          },
+          "swr": {
+            "name": "SWR",
+            "description": "Gestiona la obtención de datos y el caché de una forma moderna y cómoda."
+          },
+          "vercel": {
+            "name": "Vercel",
+            "description": "Una plataforma de despliegue que funciona especialmente bien con proyectos de Next.js."
+          }
+        }
+      },
+      "vibeCoder": {
+        "title": "Para el desarrollador vibe",
+        "body": "Este starter está construido para creadores de productos, fundadores y diseñadores que quieren lanzar cosas reales con herramientas de AI como Claude Code o Cursor — sin ralentizarse por configuraciones, código inconsistente o deriva arquitectónica.",
+        "claudeNote": "CLAUDE.md le dice a tu asistente de AI exactamente cómo funciona el proyecto — qué patrones usar, qué archivos crear, dónde poner las cosas — para que no tengas que explicarlo en cada prompt.",
+        "bullet1": "Formularios, llamadas a API, rutas, traducciones y gestión de estado ya siguen patrones consistentes",
+        "bullet2": "Los asistentes de AI saben cómo extender el proyecto correctamente sin que se les diga cada vez",
+        "bullet3": "Cada nueva función que añadas se verá y se comportará como el resto del código"
+      },
+      "ignoreAtFirst": {
+        "title": "Qué puedes ignorar al principio",
+        "description": "Este repositorio tiene muchos archivos. La mayoría son infraestructura que nunca tocas, o funciones opcionales que puedes eliminar.",
+        "doNotRemove": "No elimines: src/app/api/proxy/, src/lib/, src/constants/, src/components/form/, ni messages/en.json — esos son fundamentales."
+      },
+      "addFeature": {
+        "title": "Cómo añadir una nueva función",
+        "note": "La AI sabrá cómo hacerlo por ti, esto es solo una explicación manual.",
+        "description": "El formulario de contacto en src/features/contact/ es el ejemplo canónico. Sigue los mismos pasos para cualquier nueva función.",
+        "stepLabel": "Paso {step}"
+      },
+      "coreVsOptional": {
+        "title": "Core vs Opcional",
+        "coreTitle": "Core — no eliminar",
+        "coreDescription": "Infraestructura fundamental. No elimines estos archivos.",
+        "optionalTitle": "Opcional — seguro de eliminar",
+        "optionalDescription": "Seguro de eliminar o adaptar cuando construyas tu aplicación real."
+      },
+      "mistakes": {
+        "title": "Errores comunes que este starter te ayuda a evitar",
+        "description": "Estos son los errores que suelen cometer las herramientas de AI en bases de código no estructuradas. Las convenciones aquí previenen la mayoría."
+      }
+    },
+    "guide": {
+      "heroDescription": "Una base lista para usar para crear sitios web y aplicaciones de forma ordenada, clara y escalable. Es especialmente útil para trabajar con herramientas de AI, para que incluso usuarios no técnicos puedan construir más rápido sin terminar con código desordenado que luego sea difícil de mantener.",
+      "heroStats": {
+        "hooks": "19 hooks listos",
+        "forms": "12 componentes de formulario",
+        "api": "Conexión estructurada con el servidor",
+        "claude": "Guía de AI en CLAUDE.md"
+      },
+      "whatsIncluded": {
+        "title": "Qué incluye",
+        "description": "Ocho sistemas listos para ayudarte a empezar a construir de inmediato sin reinventarlo todo."
+      },
+      "features": {
+        "hooks": {
+          "title": "19 hooks listos",
+          "description": "Piezas de código reutilizables que ahorran tiempo en patrones comunes del frontend."
+        },
+        "forms": {
+          "title": "Sistema de formularios",
+          "description": "Formularios estructurados con validación, campos listos y traducciones integradas."
+        },
+        "api": {
+          "title": "Conexión con el servidor",
+          "description": "Una forma limpia y segura de conectar tu frontend con el backend, incluyendo manejo de peticiones, errores y estados de carga."
+        },
+        "ui": {
+          "title": "Componentes de interfaz",
+          "description": "Componentes listos como botones, tablas, diálogos, gráficos y animaciones."
+        },
+        "i18n": {
+          "title": "Multilenguaje",
+          "description": "Soporte completo para varios idiomas, incluyendo cambio de idioma y compatibilidad total con diseños RTL."
+        },
+        "state": {
+          "title": "Gestión de estado",
+          "description": "Una forma ordenada de gestionar datos y configuraciones compartidas en la app sin generar caos en el código."
+        },
+        "utilities": {
+          "title": "Utilidades",
+          "description": "Funciones y herramientas útiles que ahorran tiempo y ayudan a mantener el código consistente."
+        },
+        "loading": {
+          "title": "Estados de carga",
+          "description": "Estados de carga claros y consistentes para que la experiencia se sienta pulida en cada pantalla."
+        }
+      },
+      "goldenRules": {
+        "title": "13 reglas de oro",
+        "description": "Estas reglas ayudan a mantener el código limpio, consistente y fácil de mantener.",
+        "neverLabel": "Nunca"
+      },
+      "rules": {
+        "useBoolean": "useState(false) para opciones de activación",
+        "formatDate": "Cadenas de formato crudas o toLocaleDateString()",
+        "useTranslations": "Strings hardcodeados dentro de JSX",
+        "useFetch": "useEffect + axios.get",
+        "useMutation": "axios.post/put/delete dentro de componentes",
+        "apiRoutes": "Strings de API hardcodeados en el código",
+        "webRoutes": "Rutas hardcodeadas en enlaces",
+        "forms": "Elementos input crudos",
+        "toasts": "Uso directo de Sonner",
+        "storage": "Uso directo de localStorage",
+        "config": "process.env dentro de componentes",
+        "styles": "Estilos inline estáticos",
+        "icons": "Otras librerías de iconos"
+      },
+      "quickReference": {
+        "title": "Referencia rápida",
+        "description": "Un mapa rápido que muestra dónde está cada parte dentro del proyecto.",
+        "keyDirectories": "Directorios principales",
+        "techStack": "Stack tecnológico",
+        "directories": {
+          "hooks": "Hooks personalizados",
+          "form": "Componentes de formulario",
+          "utils": "Ayudas de fecha, texto y formato",
+          "lib": "Cliente API, toast y configuración",
+          "store": "Stores de Zustand",
+          "constants": "Rutas y rutas API",
+          "types": "Tipos compartidos de TypeScript",
+          "messages": "Archivos de traducción"
+        },
+        "layers": {
+          "framework": "Framework",
+          "language": "Lenguaje",
+          "styling": "Estilos",
+          "ui": "UI",
+          "forms": "Formularios",
+          "fetching": "Obtención de datos",
+          "state": "Estado",
+          "i18n": "i18n",
+          "charts": "Gráficos",
+          "icons": "Iconos"
+        }
+      },
+      "gettingStarted": {
+        "title": "Cómo empezar",
+        "description": "Tres pasos simples para empezar a trabajar en tu proyecto.",
+        "steps": {
+          "template": {
+            "title": "Usa la plantilla",
+            "description": "Crea una copia de la plantilla para empezar desde un proyecto limpio y ordenado."
+          },
+          "install": {
+            "title": "Instala y configura",
+            "description": "Instala lo necesario y configura el archivo de entorno del proyecto."
+          },
+          "build": {
+            "title": "Empieza a construir",
+            "description": "Ejecuta el proyecto y empieza a construir sobre una base que ya está preparada de la manera correcta."
+          }
+        }
+      }
+    },
+    "roles": {
+      "admin": "Administrador",
+      "editor": "Editor",
+      "viewer": "Visualizador"
+    },
+    "table": {
+      "role": "Rol"
+    },
+    "dashboard": {
+      "statsAndCharts": "Estadísticas y gráficos",
+      "totalRevenue": "Ingresos totales",
+      "activeUsers": "Usuarios activos",
+      "conversions": "Conversiones",
+      "windowWidth": "Ancho de ventana",
+      "vsLastQuarter": "vs trimestre anterior",
+      "vsLastMonth": "vs mes anterior",
+      "balanceOverTime": "Balance a lo largo del tiempo",
+      "quarterlyRevenueVsExpenses": "Ingresos vs gastos por trimestre",
+      "revenue": "Ingresos",
+      "expenses": "Gastos",
+      "userRoles": "Roles de usuario",
+      "animatedNumbers": "Números animados",
+      "animatedNumbersDescription": "Animación de conteo con soporte para distintos formatos de visualización.",
+      "uptime": "Disponibilidad",
+      "requestsPerDay": "Solicitudes por día",
+      "rating": "Calificación",
+      "dataTable": "Tabla de datos",
+      "searchUsers": "Buscar usuarios…"
+    },
+    "tokenUsage": {
+      "title": "Consejos de IA",
+      "description": "Herramientas y recursos de la comunidad que encajan bien con desarrollo asistido por IA. Ninguno viene incluido en esta plantilla ni en Claude por defecto; cada enlace lleva a un proyecto independiente para que leas cómo funcione y decidas si te sirve.",
+      "disclaimer": "Solo proyectos de terceros y de la comunidad. Ni Anthropic ni esta plantilla los mantienen. Revisa licencias, permisos y pasos de instalación antes de usarlos e instala solo lo que confíes.",
+      "featuredLabel": "Destacado",
+      "moreTipsTitle": "Más recomendaciones de la comunidad",
+      "whyItMattersLabel": "Para qué ayuda",
+      "bestForLabel": "Ideal para",
+      "examplesLabel": "Ejemplos de peticiones",
+      "linkGitHub": "GitHub",
+      "linkDocumentation": "Documentación",
+      "cavemanTitle": "Caveman",
+      "cavemanDescription": "Skill y conjunto de plugins de la comunidad que acorta las respuestas del agente de forma estructurada (a menudo con muchos menos tokens) sin perder detalle técnico. Disponible para Claude Code, Codex, Gemini CLI, Cursor y otros: consulta la tabla de instalación y el README en GitHub.",
+      "cavemanLinkLabel": "Caveman en GitHub",
+      "installCommandsTitle": "Instalación por agente",
+      "columnAgent": "Agente",
+      "columnInstall": "Instalación",
+      "copyCommand": "Copiar",
+      "copied": "¡Copiado!",
+      "tips": {
+        "claudeMem": {
+          "title": "Claude Mem",
+          "description": "Plugin de la comunidad para Claude Code que guarda contexto entre sesiones para retomar el trabajo con menos repetición.",
+          "whyItMatters": "Los proyectos largos acumulan decisiones y convenciones que se pierden fácilmente. Una capa de memoria hace que ese contexto siga disponible sin volver a escribirlo todo.",
+          "useCases": [
+            "Productos o refactors que duran semanas o meses",
+            "Depurar en varias sesiones",
+            "Conservar convenciones del equipo y notas sobre la estructura del código",
+            "Volver al ritmo después de un descanso"
+          ],
+          "examples": [
+            "Retoma donde lo dejamos y trae lo más relevante del trabajo reciente en este repo.",
+            "Recuerda la arquitectura principal y cómo formateamos los errores de API en este proyecto."
+          ]
+        },
+        "uiUxProMax": {
+          "title": "UI UX Pro Max",
+          "description": "Skill y herramientas de la comunidad centrados en interfaz—espaciado, tipografía, jerarquía y patrones—para que lo generado se sienta más cuidado que un prototipo genérico.",
+          "whyItMatters": "Los modelos pueden montar UI rápido, pero suele verse muy parecida. Un skill orientado al diseño empuja el resultado hacia jerarquía más clara y acabado más uniforme.",
+          "useCases": [
+            "Paneles con muchos datos",
+            "Formularios, tablas y pantallas de ajustes",
+            "Aspecto de producto moderno sin diseño completo entregado",
+            "Evitar márgenes y estilos «por defecto de IA»"
+          ],
+          "examples": [
+            "Afina el maquetado de esta página para que se sienta más pulida y actual, sin cambiar el comportamiento.",
+            "Ajusta espaciado, tipografía y jerarquía en este panel para que sea más fácil de escanear."
+          ]
+        },
+        "awesomeClaudeCode": {
+          "title": "Awesome Claude Code",
+          "description": "Lista mantenida por la comunidad de herramientas relacionadas con Claude Code: skills, hooks, comandos, plugins y notas de flujo de trabajo.",
+          "whyItMatters": "Antes de escribir tu propia capa de automatización, conviene ver qué usa otra gente. Listas así sirven para descubrir patrones que ya han funcionado en proyectos reales.",
+          "useCases": [
+            "Explorar herramientas antes de montar un setup propio",
+            "Ver flujos y comandos con barra",
+            "Buscar skills para interfaz, documentación o automatización",
+            "Enterarse de qué estandarizan otros equipos"
+          ],
+          "examples": [
+            "Encuentra skills de la comunidad que ayuden con el acabado del front-end.",
+            "Revisa ideas de memoria, hooks o automatización de tareas que pueda adoptar sin reinventarlas."
+          ]
+        }
+      },
+      "agents": {
+        "claudeCode": "Claude Code",
+        "codex": "Codex",
+        "geminiCli": "Gemini CLI",
+        "cursor": "Cursor",
+        "windsurf": "Windsurf",
+        "copilot": "Copilot",
+        "cline": "Cline",
+        "anyOther": "Cualquier otro"
+      }
+    },
+    "forms": {
+      "allFormattedInputs": "Todos los inputs con formato",
+      "formattedInputsHint": "Cada campo usa un formateador distinto. Todos son obligatorios — envía vacío para ver cada error. El botón usa un cargador de puntos y simula 1,5 s de red (el botón se desactiva mientras «guarda»).",
+      "textInputs": "Campos de texto",
+      "textInputsHint": "Nombre, correo y notas son obligatorios — verás varios mensajes de validación a la vez.",
+      "selectAndMultiSelect": "Selección y selección múltiple",
+      "selectSectionHint": "Solo categoría y estado son obligatorios. La selección múltiple es opcional.",
+      "otpSliderAndToggles": "OTP, deslizador y opciones de activación",
+      "otpSectionHint": "Introduce el código completo y marca la casilla de términos para enviar.",
+      "dateAndFileUpload": "Fecha y carga de archivos",
+      "dateFileSectionHint": "Elige una fecha y adjunta al menos un archivo. El rango de fechas es opcional.",
+      "submit": "Enviar formulario",
+      "submitFormatted": "Guardar valores formateados",
+      "submitText": "Guardar campos de texto",
+      "submitSelect": "Guardar selección",
+      "submitOtp": "Guardar sección OTP",
+      "submitDateFiles": "Guardar fecha y archivos",
+      "submitSuccessTitle": "Formulario enviado correctamente",
+      "submitSuccessDescription": "Puedes ver los valores enviados en la consola."
+    },
+    "dialogs": {
+      "toastsAndDialogs": "Diálogos y alertas",
+      "openDialog": "Abrir diálogo",
+      "areYouSure": "¿Seguro que quieres continuar?",
+      "actionCannotBeUndone": "Esta acción no se puede deshacer.",
+      "confirmed": "Confirmado",
+      "actionExecuted": "La acción se completó correctamente.",
+      "deleteItemPermanently": "Este elemento se eliminará de forma permanente.",
+      "nestedDialog": "Diálogo interno",
+      "welcome": "Bienvenido",
+      "reusableDialog": "Un diálogo reutilizable con trigger, botones de acción y distintos tamaños.",
+      "nestedBody": "Puedes usar este patrón para confirmaciones, flujos por pasos o formularios dentro de un modal.",
+      "success": "Éxito",
+      "operationCompleted": "La operación se completó correctamente.",
+      "error": "Error",
+      "somethingWentWrong": "Algo salió mal.",
+      "info": "Información",
+      "someInformation": "Aquí tienes algo de información.",
+      "warning": "Advertencia",
+      "pleaseBeCareful": "Por favor, ten cuidado.",
+      "loadingButton": "Botón de carga",
+      "copied": "¡Copiado!",
+      "copyText": "Copiar texto",
+      "resendIn": "Reenviar en {seconds}s",
+      "startCountdown": "Iniciar cuenta regresiva de 30 segundos",
+      "spinnerInline": "Spinner dentro del contenido",
+      "demoSpinner": "Spinner de demostración",
+      "stopSpinner": "Detener spinner",
+      "startSpinner": "Iniciar spinner",
+      "skeletonRows": "Skeleton (3 filas)",
+      "hideSkeleton": "Ocultar skeleton",
+      "showSkeleton": "Mostrar skeleton",
+      "disabledRegion": "Área deshabilitada",
+      "overlayAxios": "Capa de carga (Axios)",
+      "overlayDescription": "Se muestra automáticamente una capa de carga completa mientras el sistema realiza solicitudes en segundo plano.",
+      "disabledPlaceholder": "Deshabilitado durante la carga…",
+      "action": "Acción",
+      "reEnable": "Volver a habilitar",
+      "disableRegion": "Deshabilitar área"
+    },
+    "typography": {
+      "eyebrow": "Vista previa solo lectura",
+      "title": "Tipografía",
+      "description": "El texto de muestra usa lorem ipsum en latín para comparar títulos y cuerpo. Cambia el idioma para ver fuentes por idioma. El tema y el idioma siguen en la cabecera.",
+      "fontsNote": {
+        "title": "Fuentes en esta demo",
+        "latin": "Inglés y español: Space Grotesk para títulos, Plus Jakarta Sans para cuerpo.",
+        "hebrew": "Hebreo: Heebo para títulos y cuerpo.",
+        "arabic": "Árabe: Cairo para títulos y cuerpo."
+      },
+      "shadcn": {
+        "title": "Componentes shadcn/ui",
+        "description": "Los primitivos como botones, tarjetas y campos de formulario se basan en shadcn/ui: componentes accesibles con Tailwind que copias a src/components/ui y puedes editar cuando quieras.",
+        "install": "Para añadir más: abre la documentación, elige un componente y ejecuta la CLI en la raíz (por ejemplo: pnpm dlx shadcn@latest add dialog).",
+        "docsLink": "Ver todos los componentes"
+      },
+      "variants": {
+        "h1": "Título 1",
+        "h2": "Título 2",
+        "h3": "Título 3",
+        "h4": "Título 4",
+        "h5": "Título 5",
+        "h6": "Título 6",
+        "subtitle1": "Subtítulo 1",
+        "subtitle2": "Subtítulo 2",
+        "body1": "Cuerpo 1",
+        "body2": "Cuerpo 2",
+        "caption1": "Leyenda 1",
+        "caption2": "Leyenda 2",
+        "label1": "Etiqueta 1",
+        "label2": "Etiqueta 2",
+        "overline": "Línea superior"
+      },
+      "lorem": {
+        "heading": "Lorem ipsum dolor sit amet",
+        "short": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "caption": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "label": "Lorem ipsum label",
+        "overline": "Lorem sample overline"
+      },
+      "showcase": {
+        "typeScale": "Escala tipográfica",
+        "components": "Muestras de UI (solo lectura)",
+        "iconsTitle": "Iconos (Iconify)",
+        "iconifyCatalogIntro": "Explora miles de conjuntos y nombres de iconos en",
+        "iconifyLinkLabel": "Iconify (catálogo de iconos)",
+        "lottieTitle": "Lottie",
+        "lottieHint": "Movimiento ligero para carga y detalles agradables. Si el archivo no carga, verás un respaldo.",
+        "lottieFilesIntro": "Explora animaciones gratuitas en",
+        "lottieFilesLinkLabel": "LottieFiles",
+        "carouselTitle": "Carrusel",
+        "slide1": "Diapositiva 1",
+        "slide2": "Diapositiva 2",
+        "slide3": "Diapositiva 3",
+        "contextMenuTitle": "Menú contextual",
+        "contextMenuHint": "Clic derecho (o pulsación larga) en esta zona",
+        "contextCopy": "Copiar",
+        "contextDuplicate": "Duplicar",
+        "contextDelete": "Eliminar",
+        "kbdTitle": "Teclado (kbd)",
+        "kbdHint": "Para atajos e indicaciones de teclas.",
+        "badgesTitle": "Insignias",
+        "badgeDefault": "Predeterminado",
+        "badgeSecondary": "Secundario",
+        "badgeOutline": "Contorno",
+        "badgeSuccess": "Éxito",
+        "tabsTitle": "Pestañas",
+        "tabAlpha": "Alfa",
+        "tabBeta": "Beta",
+        "tabGamma": "Gamma",
+        "tabAlphaBody": "Primer panel: lorem ipsum para comparar estilos.",
+        "tabBetaBody": "Segundo panel: mismos estilos, otro texto.",
+        "tabGammaBody": "Tercer panel: ritmo y espaciado coherentes.",
+        "accordionTitle": "Acordeón",
+        "accordion1Trigger1": "Disposición y espaciado",
+        "accordion1Content1": "Mantén padding y huecos coherentes para que las UIs densas sigan siendo calmadas. Prefiere tokens del tema a valores sueltos en píxeles.",
+        "accordion1Trigger2": "Ritmo tipográfico",
+        "accordion1Content2": "Combina escala de títulos con texto de apoyo: un título claro, cuerpo un paso más pequeño y leyendas para metadatos.",
+        "accordion2Trigger1": "Color y contraste",
+        "accordion2Content1": "Reserva colores fuertes para acciones y estados. El texto secundario atenuado sigue siendo legible sin competir con el contenido principal.",
+        "accordion2Trigger2": "Modo oscuro",
+        "accordion2Content2": "Prueba estados interactivos en ambos temas. Los anillos de foco y los bordes deben seguir visibles al cambiar de tema.",
+        "accordion3Trigger1": "Movimiento",
+        "accordion3Content1": "Usa movimiento con intención: duraciones cortas para feedback; evita animar grandes cambios de diseño salvo que sea necesario.",
+        "accordion3Trigger2": "Accesibilidad",
+        "accordion3Content2": "Prefiere orden de foco natural, etiquetas en controles y áreas táctiles amplias —sobre todo en cajones, paneles y diálogos.",
+        "loadingStatesTitle": "Estados de carga",
+        "tooltipTitle": "Tooltip",
+        "tooltipTrigger": "Pasa el cursor o enfoca",
+        "tooltipContent": "Los tooltips dan contexto rápido sin saturar el diseño. También funcionan con teclado.",
+        "popoverTitle": "Popover",
+        "popoverTrigger": "Abrir popover",
+        "popoverHeading": "Detalles",
+        "popoverBody": "Los popovers permiten un poco más de texto y se cierran al hacer clic fuera.",
+        "progressFirst": "Animado",
+        "progressSecond": "Estático",
+        "drawerTitle": "Cajón (drawer)",
+        "drawerTrigger": "Abrir cajón",
+        "drawerHeading": "Hoja inferior",
+        "drawerBody": "Los cajones suben desde abajo en móvil. Buenos para acciones y formularios cortos.",
+        "drawerClose": "Cerrar",
+        "scrollTitle": "Área de desplazamiento",
+        "scrollLine": "Línea desplazable {n}",
+        "resizableTitle": "Paneles redimensionables",
+        "resizableScrollSeparatorHint": "Área de desplazamiento y separador en un mismo panel; arrastra el control para redimensionar. En pantallas pequeñas se apilan en columnas.",
+        "resizablePanelA": "Panel A",
+        "resizablePanelB": "Panel B",
+        "separatorTitle": "Separador",
+        "separatorHint": "Divisores horizontales y verticales.",
+        "separatorLeft": "Izquierda",
+        "separatorRight": "Derecha",
+        "sheetTitle": "Panel lateral (sheet)",
+        "sheetTrigger": "Abrir panel",
+        "sheetHeading": "Panel lateral",
+        "sheetBody": "Los paneles entran desde el borde. Útiles para navegación y contenido secundario.",
+        "skeletonLoaderHint": "El indicador de carga refleja el cargador global cuando la clave de demo está activa.",
+        "sliderTitle": "Deslizador",
+        "sliderHint": "Desactivado aquí para mantener esta vista solo lectura.",
+        "animationsTitle": "Animaciones",
+        "breathingTitle": "Respiración",
+        "breathingHint": "Un bucle CSS suave: sirve para resaltar algo en reposo, llamar la atención o dar sensación de “en vivo”.",
+        "animatedNumberTitle": "Número animado",
+        "animatedNumberLabel": "Total de ejemplo",
+        "animatedNumberHint": "Cuenta desde cero con suavizado: útil en paneles, KPIs y cifras que cambian con los datos.",
+        "animatedNumberRerun": "Repetir",
+        "emptyStateSection": "Estado vacío",
+        "emptyHeading": "Aún no hay elementos",
+        "emptyDescription": "Los estados vacíos explican qué ocurre y qué puede hacer el usuario cuando no hay datos.",
+        "emptyAction": "Acción principal"
+      }
+    }
+  },
+  "forms": {
+    "errors": {
+      "required": "Este campo es obligatorio",
+      "min": "El valor es demasiado bajo",
+      "min0": "El valor debe ser al menos 0",
+      "max": "El valor es demasiado alto",
+      "minLength": "Demasiado corto",
+      "maxLength": "Demasiado largo",
+      "minLen": "Longitud no válida",
+      "pattern": "Formato no válido",
+      "invalid": "Valor no válido",
+      "invalidDate": "Fecha no válida",
+      "invalidFile": "Archivo no válido",
+      "fileTooLarge": "El archivo es demasiado grande",
+      "fileTypeNotAllowed": "El tipo de archivo no es compatible",
+      "passwordMin8": "La contraseña debe contener al menos 8 caracteres",
+      "passwordMax64": "La contraseña puede contener hasta 64 caracteres",
+      "passwordUppercase": "La contraseña debe incluir al menos una letra mayúscula",
+      "passwordLowercase": "La contraseña debe incluir al menos una letra minúscula",
+      "passwordNumber": "La contraseña debe incluir al menos un número",
+      "passwordSpecial": "La contraseña debe incluir al menos un carácter especial (!@#$%^&*)",
+      "emailrequired": "Debes ingresar un correo electrónico",
+      "emailNotValid": "El correo electrónico no es válido",
+      "invalidPhoneNumber": "El número de teléfono no es válido",
+      "invalidUrl": "La URL no es válida",
+      "editorRequired": "Por favor completa este campo",
+      "fieldRequired": "Este campo es obligatorio",
+      "switchRequired": "Por favor elige una opción",
+      "fileRequired": "Debes adjuntar un archivo",
+      "filesRequired": "Debes adjuntar archivos",
+      "minFilesCount": "Se requieren al menos {count} elementos",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden"
+    },
+    "labels": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "name": "Nombre",
+      "amount": "Monto",
+      "volume": "Volumen",
+      "date": "Fecha",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin",
+      "otp": "Código de verificación",
+      "upload": "Carga de archivo",
+      "chooseFile": "Elegir archivo",
+      "noFileChosen": "No se eligió ningún archivo",
+      "notes": "Notas",
+      "message": "Mensaje",
+      "category": "Categoría",
+      "status": "Estado",
+      "agree": "Acepto los términos de uso",
+      "enableNotifications": "Activar notificaciones",
+      "darkMode": "Modo oscuro",
+      "technologyStack": "Stack tecnológico",
+      "categoryTechnology": "Tecnología",
+      "categoryDesign": "Diseño",
+      "categoryMarketing": "Marketing",
+      "categoryFinance": "Finanzas",
+      "statusActive": "Activo",
+      "statusInactive": "Inactivo",
+      "statusPending": "Pendiente",
+      "stackReact": "React",
+      "stackNextjs": "Next.js",
+      "stackTypescript": "TypeScript",
+      "stackNodejs": "Node.js",
+      "stackPostgres": "PostgreSQL",
+      "stackRedis": "Redis",
+      "formatUsd": "USD (dólar)",
+      "formatEur": "EUR (euro)",
+      "formatPercent": "Porcentaje",
+      "formatPhone": "Teléfono",
+      "formatSsn": "SSN",
+      "formatCreditCard": "Tarjeta de crédito",
+      "formatInteger": "Entero",
+      "formatBytes": "Bytes"
+    },
+    "groups": {
+      "frontend": "Frontend",
+      "backend": "Backend"
+    },
+    "placeholders": {
+      "email": "Ingresa tu correo electrónico",
+      "password": "Ingresa tu contraseña",
+      "name": "Ingresa tu nombre",
+      "amount": "0.00",
+      "date": "Elige una fecha",
+      "otp": "Ingresa el código",
+      "upload": "Arrastra archivos aquí o haz clic para subirlos",
+      "notes": "Escribe algo…",
+      "message": "Escribe tu mensaje aquí…",
+      "search": "Buscar…",
+      "formatUsd": "1,234.56",
+      "formatEur": "1234.56",
+      "formatPercent": "12.5",
+      "formatPhone": "(555) 123-4567",
+      "formatSsn": "123-45-6789",
+      "formatCreditCard": "4242 4242 4242 4242",
+      "formatInteger": "1000000",
+      "formatBytes": "1048576"
+    },
+    "helpers": {
+      "optional": "Opcional",
+      "required": "Obligatorio",
+      "maxSize": "Tamaño máximo: {size}",
+      "acceptedTypes": "Tipos admitidos: {types}",
+      "clearFiles": "Limpiar todo"
+    }
+  },
+  "contact": {
+    "pageTitle": "Contáctenos",
+    "pageSubtitle": "¿Tienes una pregunta o comentario? Nos encantaría escucharte.",
+    "submit": "Enviar mensaje",
+    "successTitle": "¡Mensaje enviado!",
+    "successMessage": "Gracias por contactarnos.",
+    "successHeading": "Mensaje recibido",
+    "successDescription": "Nos pondremos en contacto contigo pronto.",
+    "sendAnother": "Enviar otro mensaje"
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "description": "Ocurrió un error inesperado. Intenta recargar la página.",
+    "refresh": "Recargar página"
+  }
+}
