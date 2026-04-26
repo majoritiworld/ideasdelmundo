@@ -8,8 +8,13 @@ const API_ROUTES = {
     LIST: "/users",
     BY_ID: (id: string) => `/users/${id}`,
   },
-  CONTACT: {
-    SUBMIT: "/contact",
+  TRACKING: {
+    ABANDON: "/api/abandon",
+    WRITE: "/api/tracking",
+  },
+  ELEVENLABS: {
+    SIGNED_URL: "/api/elevenlabs/signed-url",
+    TOKEN: "/api/elevenlabs/token",
   },
 } as const;
 

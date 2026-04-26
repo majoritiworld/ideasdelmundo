@@ -49,11 +49,11 @@
 }
 
 :root {
-  --font-app-heading: ui-sans-serif, system-ui, sans-serif;
-  --font-app-body: ui-sans-serif, system-ui, sans-serif;
+  --font-app-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-app-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #fafbfe;
+  --foreground: #0f1b2d;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -117,21 +117,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-}
-
-body.locale-font-latin {
-  --font-app-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
-  --font-app-body: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
-}
-
-body.locale-font-he {
-  --font-app-heading: var(--font-heebo), ui-sans-serif, system-ui, sans-serif;
-  --font-app-body: var(--font-heebo), ui-sans-serif, system-ui, sans-serif;
-}
-
-body.locale-font-ar {
-  --font-app-heading: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
-  --font-app-body: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

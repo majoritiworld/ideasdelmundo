@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import Actions from "../demo/layout/actions";
 
 // ----------------------------------------------------------------------
 
@@ -12,6 +11,7 @@ export type PageContainerProps = {
   subtitle?: React.ReactNode;
   /** Page body content */
   children: React.ReactNode;
+  actions?: React.ReactNode;
   className?: string;
   /** Max-width class (default: "max-w-7xl") */
   maxWidth?: string;
@@ -33,6 +33,7 @@ export function PageContainer({
   title,
   subtitle,
   children,
+  actions,
   className,
   maxWidth = "max-w-7xl",
 }: PageContainerProps) {
@@ -56,9 +57,7 @@ export function PageContainer({
               </Typography>
             )}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <Actions />
-          </div>
+          {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
         </div>
       )}
       {children}

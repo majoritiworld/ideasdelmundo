@@ -40,7 +40,10 @@ const AnimatedNumber = ({
   const startTimeRef = useRef<number | null>(null);
   /** Inline formatters from parents change identity every render; deps on them restart the animation forever. */
   const formatterRef = useRef(formatter);
-  formatterRef.current = formatter;
+
+  useEffect(() => {
+    formatterRef.current = formatter;
+  }, [formatter]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
