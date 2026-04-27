@@ -2,7 +2,12 @@
 
 import API_ROUTES from "@/constants/api-routes.constants";
 import type { EventType } from "@/lib/events";
-import type { Json, SessionInsert, SessionUpdate, TranscriptMessageInsert } from "@/lib/supabase/types";
+import type {
+  Json,
+  SessionInsert,
+  SessionUpdate,
+  TranscriptMessageInsert,
+} from "@/lib/supabase/types";
 
 function getErrorDetails(err: unknown) {
   if (err instanceof Error) return err.message;
@@ -58,7 +63,7 @@ export async function updateSession(id: string | null, fields: SessionUpdate): P
 export async function logEvent(
   sessionId: string | null,
   eventType: EventType,
-  metadata: Record<string, Json | undefined> = {},
+  metadata: Record<string, Json | undefined> = {}
 ): Promise<void> {
   if (!sessionId) return;
 
@@ -76,7 +81,7 @@ export async function logEvent(
 
 export async function logTranscriptMessage(
   sessionId: string | null,
-  message: Omit<TranscriptMessageInsert, "session_id">,
+  message: Omit<TranscriptMessageInsert, "session_id">
 ): Promise<void> {
   if (!sessionId) return;
 

@@ -14,13 +14,18 @@ export default function QuestionsIntro() {
   useAudio("/audio/questions-intro.mp3");
 
   useEffect(() => {
-    void updateSession(state.sessionId, { current_screen: "questions_intro", status: "in_progress" });
+    void updateSession(state.sessionId, {
+      current_screen: "questions_intro",
+      status: "in_progress",
+    });
   }, [state.sessionId]);
 
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
       <Sphere state="speaking" size={160} />
-      <p className="mt-10 max-w-xl text-[18px] font-medium leading-[1.7] text-[#0F1B2D] sm:text-[21px]">{t("subtitle")}</p>
+      <p className="mt-10 max-w-xl text-[18px] leading-[1.7] font-medium text-[#0F1B2D] sm:text-[21px]">
+        {t("subtitle")}
+      </p>
       <Button
         type="button"
         onClick={() => dispatch({ type: "GO_TO", screen: "board" })}

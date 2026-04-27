@@ -27,22 +27,26 @@ export const sections: Section[] = [
       {
         id: 1,
         text: "What activities make you lose track of time?",
-        openingMessage: "What activities make you lose track of time? Think freely — it doesn't matter if it seems practical or not.",
+        openingMessage:
+          "What activities make you lose track of time? Think freely — it doesn't matter if it seems practical or not.",
       },
       {
         id: 2,
         text: "What would you do even if no one paid you for it?",
-        openingMessage: "What would you do even if no one paid you for it? What genuinely moves you?",
+        openingMessage:
+          "What would you do even if no one paid you for it? What genuinely moves you?",
       },
       {
         id: 3,
         text: "What topics are you so passionate about you could talk for hours?",
-        openingMessage: "What topics could you talk about for hours without getting bored? What gives you that special energy?",
+        openingMessage:
+          "What topics could you talk about for hours without getting bored? What gives you that special energy?",
       },
       {
         id: 4,
         text: "When was the last time you felt completely alive?",
-        openingMessage: "Think of a recent moment when you felt completely alive. What were you doing? Who were you with?",
+        openingMessage:
+          "Think of a recent moment when you felt completely alive. What were you doing? Who were you with?",
       },
     ],
   },
@@ -54,12 +58,14 @@ export const sections: Section[] = [
       {
         id: 5,
         text: "What do you do with ease that others find difficult?",
-        openingMessage: "What do you do naturally that seems complicated to others? Sometimes our greatest talents are invisible to ourselves.",
+        openingMessage:
+          "What do you do naturally that seems complicated to others? Sometimes our greatest talents are invisible to ourselves.",
       },
       {
         id: 6,
         text: "What do your friends or colleagues ask for your help with?",
-        openingMessage: "What do the people around you come to you for? What kind of help do they ask of you most often?",
+        openingMessage:
+          "What do the people around you come to you for? What kind of help do they ask of you most often?",
       },
       {
         id: 7,
@@ -89,17 +95,20 @@ export const sections: Section[] = [
       {
         id: 10,
         text: "What change would you like to see in your community or industry?",
-        openingMessage: "If you could change one thing in your community or industry, what would it be? Why that in particular?",
+        openingMessage:
+          "If you could change one thing in your community or industry, what would it be? Why that in particular?",
       },
       {
         id: 11,
         text: "Who would you like to help, and in what way?",
-        openingMessage: "Who do you imagine helping with your work? What kind of people or communities matter most to you?",
+        openingMessage:
+          "Who do you imagine helping with your work? What kind of people or communities matter most to you?",
       },
       {
         id: 12,
         text: "What mark would you like to leave on the world?",
-        openingMessage: "Imagine 20 years from now. What mark would you like to have left? How would you want to be remembered?",
+        openingMessage:
+          "Imagine 20 years from now. What mark would you like to have left? How would you want to be remembered?",
       },
     ],
   },
@@ -123,7 +132,8 @@ export const sections: Section[] = [
       {
         id: 15,
         text: "What kind of work do you picture yourself doing in 5 years?",
-        openingMessage: "Without any limitations, how do you picture yourself working in 5 years? What would your day-to-day look like?",
+        openingMessage:
+          "Without any limitations, how do you picture yourself working in 5 years? What would your day-to-day look like?",
       },
       {
         id: 16,

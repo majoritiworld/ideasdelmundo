@@ -34,7 +34,9 @@ export default function MeetGuide() {
         <Sphere state="speaking" size={200} />
         <p className="mt-6 text-xs font-medium text-[#7B8FA8]">{t("stateLabel")}</p>
         <div className="mt-8 w-full max-w-2xl rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
-          <p className="text-[18px] font-medium leading-[1.7] text-[#0F1B2D] sm:text-[21px]">{t("subtitle")}</p>
+          <p className="text-[18px] leading-[1.7] font-medium text-[#0F1B2D] sm:text-[21px]">
+            {t("subtitle")}
+          </p>
         </div>
         {showCta ? (
           <Button

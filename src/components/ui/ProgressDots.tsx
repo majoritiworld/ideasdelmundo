@@ -7,7 +7,10 @@ interface ProgressDotsProps {
 
 export default function ProgressDots({ activeIndex, count = 4 }: ProgressDotsProps) {
   return (
-    <div className="flex items-center justify-center gap-2" aria-label={`step ${activeIndex + 1} of ${count}`}>
+    <div
+      className="flex items-center justify-center gap-2"
+      aria-label={`step ${activeIndex + 1} of ${count}`}
+    >
       {Array.from({ length: count }).map((_, index) => (
         <span
           key={index}

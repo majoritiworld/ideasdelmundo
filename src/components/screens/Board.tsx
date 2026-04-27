@@ -17,7 +17,9 @@ export default function Board() {
   const t = useTranslations("journey.board");
   const logBoardViewed = useLogEventOnce(EVENTS.BOARD_VIEWED);
   const section = sections.find((item) => item.id === state.currentSection) ?? sections[0];
-  const answeredInSection = section.questions.filter((question) => state.answeredQuestions.includes(question.id)).length;
+  const answeredInSection = section.questions.filter((question) =>
+    state.answeredQuestions.includes(question.id)
+  ).length;
   const canAdvance = answeredInSection >= 2;
 
   useEffect(() => {
@@ -63,7 +65,9 @@ export default function Board() {
           <div className="mt-8 flex justify-center">
             <Sphere state="idle" size={100} />
           </div>
-          <h2 className="mt-6 text-2xl font-medium leading-tight text-[#0F1B2D]">{section.title}</h2>
+          <h2 className="mt-6 text-2xl leading-tight font-medium text-[#0F1B2D]">
+            {section.title}
+          </h2>
         </div>
 
         <div className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
@@ -74,13 +78,19 @@ export default function Board() {
               onClick={() => openQuestion(question)}
               className={cn(
                 "min-h-[150px] rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left transition-all hover:-translate-y-px hover:border-[#1B3DD4] active:scale-[0.98]",
-                state.answeredQuestions.includes(question.id) && "border-[#B5C6F4] bg-[#EEF2FE] text-[#5A6B82]",
+                state.answeredQuestions.includes(question.id) &&
+                  "border-[#B5C6F4] bg-[#EEF2FE] text-[#5A6B82]"
               )}
             >
               <div className="flex items-start justify-between gap-4">
-                <span className="text-xs font-medium text-[#7B8FA8]">{t("questionNumber", { number: question.id })}</span>
+                <span className="text-xs font-medium text-[#7B8FA8]">
+                  {t("questionNumber", { number: question.id })}
+                </span>
                 {state.answeredQuestions.includes(question.id) ? (
-                  <span className="text-lg font-medium text-[#1D9E75]" aria-label={t("answeredAria")}>
+                  <span
+                    className="text-lg font-medium text-[#1D9E75]"
+                    aria-label={t("answeredAria")}
+                  >
                     ✓
                   </span>
                 ) : (
@@ -89,8 +99,13 @@ export default function Board() {
                   </span>
                 )}
               </div>
-              <p className="mt-6 text-[15px] font-medium leading-[1.55] text-[#0F1B2D]">{question.text}</p>
-              <div className="mt-5 h-1 w-12 rounded-full" style={{ backgroundColor: categoryColors[section.theme] }} />
+              <p className="mt-6 text-[15px] leading-[1.55] font-medium text-[#0F1B2D]">
+                {question.text}
+              </p>
+              <div
+                className="mt-5 h-1 w-12 rounded-full"
+                style={{ backgroundColor: categoryColors[section.theme] }}
+              />
             </button>
           ))}
         </div>

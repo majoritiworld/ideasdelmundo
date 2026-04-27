@@ -15,7 +15,14 @@ function clampIntensity(value: number) {
   return Math.max(0, Math.min(1, value));
 }
 
-export default function Sphere({ state, size = 160, intensity = 0, variant = "blue", className = "", style }: SphereProps) {
+export default function Sphere({
+  state,
+  size = 160,
+  intensity = 0,
+  variant = "blue",
+  className = "",
+  style,
+}: SphereProps) {
   const sphereIntensity = clampIntensity(intensity);
   const sphereStyle = {
     "--sphere-intensity": sphereIntensity.toFixed(3),
@@ -43,7 +50,13 @@ export default function Sphere({ state, size = 160, intensity = 0, variant = "bl
         }
 
         .majoriti-sphere.blue {
-          background: radial-gradient(circle at 35% 30%, #6fa3ff 0%, #3056e8 35%, #1b3dd4 65%, #0e2ba8 100%);
+          background: radial-gradient(
+            circle at 35% 30%,
+            #6fa3ff 0%,
+            #3056e8 35%,
+            #1b3dd4 65%,
+            #0e2ba8 100%
+          );
         }
 
         .majoriti-sphere.green {
@@ -63,13 +76,23 @@ export default function Sphere({ state, size = 160, intensity = 0, variant = "bl
         }
 
         .majoriti-sphere::before {
-          background: radial-gradient(circle at 38% 36%, rgba(255, 255, 255, 0.9), rgba(111, 163, 255, 0.18) 44%, transparent 68%);
+          background: radial-gradient(
+            circle at 38% 36%,
+            rgba(255, 255, 255, 0.9),
+            rgba(111, 163, 255, 0.18) 44%,
+            transparent 68%
+          );
           animation: liquid-one 8s ease-in-out infinite;
         }
 
         .majoriti-sphere::after {
           inset: 16%;
-          background: radial-gradient(circle at 64% 66%, rgba(14, 43, 168, 0.42), rgba(255, 255, 255, 0.2) 48%, transparent 70%);
+          background: radial-gradient(
+            circle at 64% 66%,
+            rgba(14, 43, 168, 0.42),
+            rgba(255, 255, 255, 0.2) 48%,
+            transparent 70%
+          );
           animation: liquid-two 10s ease-in-out infinite reverse;
         }
 

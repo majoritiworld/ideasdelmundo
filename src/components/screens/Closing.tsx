@@ -24,9 +24,15 @@ export default function Closing() {
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
       <Sphere state="idle" size={160} />
-      <h2 className="mt-10 text-2xl font-medium leading-tight text-[#0F1B2D] sm:text-[32px]">{t("title")}</h2>
-      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-base">{t("body")}</p>
-      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-base">{t("subtext")}</p>
+      <h2 className="mt-10 text-2xl leading-tight font-medium text-[#0F1B2D] sm:text-[32px]">
+        {t("title")}
+      </h2>
+      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-base">
+        {t("body")}
+      </p>
+      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-base">
+        {t("subtext")}
+      </p>
       <Button
         type="button"
         onClick={() => window.open("#", "_blank", "noopener,noreferrer")}

@@ -1,7 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase/server";
-import type { Json, SessionInsert, SessionUpdate, TranscriptMessageInsert } from "@/lib/supabase/types";
+import type {
+  Json,
+  SessionInsert,
+  SessionUpdate,
+  TranscriptMessageInsert,
+} from "@/lib/supabase/types";
 
 type TrackingPayload =
   | {
@@ -56,7 +61,10 @@ export async function POST(request: NextRequest) {
     if (payload.action === "updateSession") {
       if (!payload.sessionId) return jsonError(400, "Missing sessionId");
 
-      const { error } = await supabaseAdmin.from("sessions").update(payload.fields).eq("id", payload.sessionId);
+      const { error } = await supabaseAdmin
+        .from("sessions")
+        .update(payload.fields)
+        .eq("id", payload.sessionId);
 
       if (error) return jsonError(500, error.message);
 

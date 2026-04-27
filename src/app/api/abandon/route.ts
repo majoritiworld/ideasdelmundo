@@ -10,7 +10,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
 
-    await supabaseAdmin.from("sessions").update({ status: "abandoned" }).eq("id", sessionId).in("status", ["started", "in_progress"]);
+    await supabaseAdmin
+      .from("sessions")
+      .update({ status: "abandoned" })
+      .eq("id", sessionId)
+      .in("status", ["started", "in_progress"]);
 
     return NextResponse.json({ ok: true });
   } catch (err) {

@@ -45,7 +45,9 @@ export default function InternalLoginPage() {
       <Card className="w-full max-w-md border-[#D5DCE6] bg-white">
         <CardHeader>
           <CardTitle>Admin login</CardTitle>
-          <CardDescription>Sign in with an approved admin email to view internal sessions.</CardDescription>
+          <CardDescription>
+            Sign in with an approved admin email to view internal sessions.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={submitLogin} className="grid gap-4">
@@ -60,7 +62,11 @@ export default function InternalLoginPage() {
                 className="h-11 rounded-xl border-[#D5DCE6] bg-white"
               />
             </label>
-            <Button type="submit" loading={status === "loading"} className="h-11 rounded-full bg-[#1B3DD4] text-white hover:bg-[#1632B0]">
+            <Button
+              type="submit"
+              loading={status === "loading"}
+              className="h-11 rounded-full bg-[#1B3DD4] text-white hover:bg-[#1632B0]"
+            >
               Send magic link
             </Button>
           </form>

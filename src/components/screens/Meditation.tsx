@@ -103,7 +103,7 @@ export default function Meditation() {
         type="button"
         variant="ghost"
         onClick={skipMeditation}
-        className="absolute bottom-5 right-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-5 text-[#5A6B82] hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] sm:bottom-8 sm:right-8"
+        className="absolute right-5 bottom-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-5 text-[#5A6B82] hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] sm:right-8 sm:bottom-8"
       >
         {t("skip")}
       </Button>
@@ -112,9 +112,16 @@ export default function Meditation() {
         <div style={{ transform: `scale(${started && !completed ? breathingState.scale : 1})` }}>
           <Sphere state="idle" variant="green" size={200} className="breathing-override" />
         </div>
-        <p className="mt-10 text-xl font-medium text-[#0F1B2D]">{started ? t(`cues.${breathingState.cueKey}`) : t("ready")}</p>
+        <p className="mt-10 text-xl font-medium text-[#0F1B2D]">
+          {started ? t(`cues.${breathingState.cueKey}`) : t("ready")}
+        </p>
         <p className="mt-4 text-[15px] leading-[1.65] text-[#5A6B82]">
-          {started ? t("cycle", { current: Math.min(breathingState.cycle, TOTAL_CYCLES), total: TOTAL_CYCLES }) : t("instruction")}
+          {started
+            ? t("cycle", {
+                current: Math.min(breathingState.cycle, TOTAL_CYCLES),
+                total: TOTAL_CYCLES,
+              })
+            : t("instruction")}
         </p>
         {!started ? (
           <Button

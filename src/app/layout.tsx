@@ -29,7 +29,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.variable} min-h-screen bg-[#FAFBFE] font-sans text-[#0F1B2D] antialiased`}>
+      <body
+        className={`${inter.variable} min-h-screen bg-[#FAFBFE] font-sans text-[#0F1B2D] antialiased`}
+      >
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
       </body>
     </html>

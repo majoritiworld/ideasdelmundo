@@ -29,11 +29,18 @@ export default function Conversation() {
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const initializedQuestionId = useRef<number | null>(null);
-  const active = useMemo(() => getQuestionById(state.activeQuestionId ?? 1), [state.activeQuestionId]);
+  const active = useMemo(
+    () => getQuestionById(state.activeQuestionId ?? 1),
+    [state.activeQuestionId]
+  );
   const question = active?.question;
   const section = active?.section;
   const messages = question ? (state.conversations[question.id] ?? []) : [];
-  const sphereState: SphereProps["state"] = isThinking ? "thinking" : isGuideSpeaking ? "speaking" : "listening";
+  const sphereState: SphereProps["state"] = isThinking
+    ? "thinking"
+    : isGuideSpeaking
+      ? "speaking"
+      : "listening";
 
   useEffect(() => {
     void updateSession(state.sessionId, { current_screen: "conversation" });
@@ -46,7 +53,11 @@ export default function Conversation() {
   useEffect(() => {
     if (!question || initializedQuestionId.current === question.id || messages.length > 0) return;
     initializedQuestionId.current = question.id;
-    dispatch({ type: "ADD_MESSAGE", questionId: question.id, message: createMessage("guide", question.openingMessage) });
+    dispatch({
+      type: "ADD_MESSAGE",
+      questionId: question.id,
+      message: createMessage("guide", question.openingMessage),
+    });
   }, [dispatch, messages.length, question]);
 
   useEffect(() => {
@@ -106,7 +117,9 @@ export default function Conversation() {
   }
 
   function returnToBoard() {
-    const answeredQuestionIds = Array.from(new Set([...state.answeredQuestions, activeQuestion.id]));
+    const answeredQuestionIds = Array.from(
+      new Set([...state.answeredQuestions, activeQuestion.id])
+    );
     const currentConversation = state.conversations[activeQuestion.id] ?? messages;
     void logEvent(state.sessionId, EVENTS.QUESTION_ANSWERED, {
       questionId: activeQuestion.id,
@@ -129,27 +142,34 @@ export default function Conversation() {
         type="button"
         variant="ghost"
         onClick={returnToBoard}
-        className="absolute left-5 top-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] sm:left-8 sm:top-8"
+        className="absolute top-5 left-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] sm:top-8 sm:left-8"
       >
         {t("back")}
       </Button>
 
       <div className="m-auto flex min-h-[calc(100vh-64px)] w-full max-w-3xl flex-col pt-16">
         <div className="flex flex-col items-center text-center">
-          <p className="max-w-xl text-[15px] font-medium leading-[1.65] text-[#0F1B2D]">{activeQuestion.text}</p>
+          <p className="max-w-xl text-[15px] leading-[1.65] font-medium text-[#0F1B2D]">
+            {activeQuestion.text}
+          </p>
           <div className="mt-6">
             <Sphere state={sphereState} size={80} />
           </div>
         </div>
 
-        <div ref={scrollRef} className="mt-8 flex-1 space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 p-5 text-left">
+        <div
+          ref={scrollRef}
+          className="mt-8 flex-1 space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 p-5 text-left"
+        >
           {messages.map((message, index) => (
-              <div key={`${message.role}-${index}`}>
-                <p className={`mb-1 text-[12px] font-medium ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}>
-                  {message.role === "user" ? t("you") : t("guide")}
-                </p>
-                <p className="text-[15px] leading-[1.65] text-[#0F1B2D]">{message.text}</p>
-              </div>
+            <div key={`${message.role}-${index}`}>
+              <p
+                className={`mb-1 text-[12px] font-medium ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}
+              >
+                {message.role === "user" ? t("you") : t("guide")}
+              </p>
+              <p className="text-[15px] leading-[1.65] text-[#0F1B2D]">{message.text}</p>
+            </div>
           ))}
           {isThinking ? (
             <div>

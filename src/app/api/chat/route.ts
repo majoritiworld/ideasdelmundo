@@ -49,7 +49,13 @@ export async function POST(request: NextRequest) {
   try {
     const payload = (await request.json()) as ChatRequest;
 
-    if (!payload.questionId || !payload.questionText || !payload.sectionTheme || !payload.userMessage || !payload.sessionId) {
+    if (
+      !payload.questionId ||
+      !payload.questionText ||
+      !payload.sectionTheme ||
+      !payload.userMessage ||
+      !payload.sessionId
+    ) {
       return jsonError(400, "Missing required chat fields");
     }
 
