@@ -5,11 +5,21 @@ import { createContext, useCallback, useContext, useMemo, useReducer, type Dispa
 import type { EventType } from "@/lib/events";
 import { logEvent } from "@/lib/tracking";
 
-export type Screen = "welcome" | "intake" | "meet" | "board" | "conv" | "meditation" | "end" | "thanks";
+export type Screen =
+  | "welcome"
+  | "meet_guide"
+  | "breathing_offer"
+  | "meditation"
+  | "post_meditation"
+  | "questions_intro"
+  | "board"
+  | "conversation"
+  | "closing";
 
-export interface TranscriptMessage {
+export interface ConversationMessage {
   role: "guide" | "user";
   text: string;
+  timestamp: string;
 }
 
 export interface JourneyState {
@@ -19,11 +29,11 @@ export interface JourneyState {
   name: string;
   email: string;
   source: string;
-  visitedCardIds: number[];
-  activeCardId: number | null;
-  activeCardOpenedAt: number | null;
-  firstCardOpenedAt: string | null;
-  transcript: TranscriptMessage[];
+  currentSection: number;
+  answeredQuestions: number[];
+  activeQuestionId: number | null;
+  conversations: Record<number, ConversationMessage[]>;
+  meditationCompleted: boolean;
 }
 
 type JourneyAction =
@@ -33,11 +43,11 @@ type JourneyAction =
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SOURCE"; source: string }
-  | { type: "SET_ACTIVE_CARD"; id: number; openedAt?: number }
-  | { type: "SET_FIRST_CARD_OPENED_AT"; timestamp: string }
-  | { type: "MARK_VISITED"; id: number }
-  | { type: "ADD_TRANSCRIPT_MESSAGE"; message: TranscriptMessage }
-  | { type: "CLEAR_TRANSCRIPT" }
+  | { type: "SET_CURRENT_SECTION"; section: number }
+  | { type: "SET_ACTIVE_QUESTION"; id: number | null }
+  | { type: "MARK_QUESTION_ANSWERED"; id: number }
+  | { type: "ADD_MESSAGE"; questionId: number; message: ConversationMessage }
+  | { type: "SET_MEDITATION_COMPLETED"; completed: boolean }
   | { type: "RESET" };
 
 const initialState: JourneyState = {
@@ -47,11 +57,11 @@ const initialState: JourneyState = {
   name: "",
   email: "",
   source: "",
-  visitedCardIds: [],
-  activeCardId: null,
-  activeCardOpenedAt: null,
-  firstCardOpenedAt: null,
-  transcript: [],
+  currentSection: 1,
+  answeredQuestions: [],
+  activeQuestionId: null,
+  conversations: {},
+  meditationCompleted: false,
 };
 
 function journeyReducer(state: JourneyState, action: JourneyAction): JourneyState {
@@ -68,17 +78,23 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       return { ...state, email: action.email };
     case "SET_SOURCE":
       return { ...state, source: action.source };
-    case "SET_ACTIVE_CARD":
-      return { ...state, activeCardId: action.id, activeCardOpenedAt: action.openedAt ?? Date.now() };
-    case "SET_FIRST_CARD_OPENED_AT":
-      return { ...state, firstCardOpenedAt: action.timestamp };
-    case "MARK_VISITED":
-      if (state.visitedCardIds.includes(action.id)) return state;
-      return { ...state, visitedCardIds: [...state.visitedCardIds, action.id] };
-    case "ADD_TRANSCRIPT_MESSAGE":
-      return { ...state, transcript: [...state.transcript, action.message] };
-    case "CLEAR_TRANSCRIPT":
-      return { ...state, transcript: [] };
+    case "SET_CURRENT_SECTION":
+      return { ...state, currentSection: Math.max(1, Math.min(4, action.section)) };
+    case "SET_ACTIVE_QUESTION":
+      return { ...state, activeQuestionId: action.id };
+    case "MARK_QUESTION_ANSWERED":
+      if (state.answeredQuestions.includes(action.id)) return state;
+      return { ...state, answeredQuestions: [...state.answeredQuestions, action.id] };
+    case "ADD_MESSAGE":
+      return {
+        ...state,
+        conversations: {
+          ...state.conversations,
+          [action.questionId]: [...(state.conversations[action.questionId] ?? []), action.message],
+        },
+      };
+    case "SET_MEDITATION_COMPLETED":
+      return { ...state, meditationCompleted: action.completed };
     case "RESET":
       return initialState;
     default:

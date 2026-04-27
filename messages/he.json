@@ -815,6 +815,68 @@
     "successDescription": "ניצור איתך קשר בהקדם.",
     "sendAnother": "שלח הודעה נוספת"
   },
+  "journey": {
+    "welcome": {
+      "title": "Welcome to your purpose experience",
+      "subtitle": "Discover who you are and what moves your world.",
+      "cta": "Meet your guide"
+    },
+    "meetGuide": {
+      "stateLabel": "Speaking",
+      "subtitle": "Welcome. I'm your guide in this experience. I'm here to help you explore your purpose and connect it with your work. Together we'll discover what moves you, what gives you energy, and how you can contribute to the world in your own unique way.",
+      "cta": "Start the experience"
+    },
+    "breathingOffer": {
+      "title": "Before we begin...",
+      "subtitle": "Would you like to do a short breathing exercise to arrive at the experience feeling calm and present?",
+      "yes": "Yes, let's do it",
+      "skip": "Skip"
+    },
+    "meditation": {
+      "ready": "Ready when you are.",
+      "instruction": "Press start to begin three breathing cycles.",
+      "start": "Start",
+      "continue": "Continue",
+      "skip": "Skip",
+      "cycle": "Cycle {current} of {total}",
+      "cues": {
+        "inhale": "Breathe in...",
+        "hold": "Hold...",
+        "exhale": "Breathe out...",
+        "rest": "Rest..."
+      }
+    },
+    "postMeditation": {
+      "subtitle": "Well done. You're ready to begin the experience and reflect on a few questions.",
+      "cta": "Let's begin"
+    },
+    "questionsIntro": {
+      "subtitle": "We're going to start with a few simple questions that will help me better understand who you are. There are no right or wrong answers — just be honest with yourself.",
+      "cta": "Let's go"
+    },
+    "board": {
+      "sectionIndicator": "Section {current} of {total}",
+      "questionNumber": "Question {number}",
+      "answeredAria": "Answered",
+      "nextSection": "Next section",
+      "finish": "Finish"
+    },
+    "conversation": {
+      "back": "← Back to board",
+      "guide": "Guide",
+      "you": "You",
+      "placeholder": "Write your answer...",
+      "send": "Send",
+      "fallbackError": "Unable to get a guide response"
+    },
+    "closing": {
+      "title": "Congratulations, you're done!",
+      "body": "In the next 24 to 48 hours, you'll receive a Purpose Profile that reflects your answers and will help guide your next professional steps.",
+      "subtext": "In the meantime, you can watch a video that explains our vision on purpose and work.",
+      "cta": "Watch the video",
+      "footer": "@sebastian_majoriti"
+    }
+  },
   "errorBoundary": {
     "title": "משהו השתבש",
     "description": "אירעה שגיאה בלתי צפויה. נסה לרענן את הדף.",

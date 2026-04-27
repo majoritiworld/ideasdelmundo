@@ -19,6 +19,10 @@ export interface Database {
           referrer: string | null;
           visited_card_ids: number[] | null;
           cards_explored_count: number | null;
+          conversations: Json | null;
+          current_section: number | null;
+          answered_question_ids: number[] | null;
+          meditation_completed: boolean | null;
           intake_completed_at: string | null;
           first_card_opened_at: string | null;
           completed_at: string | null;
@@ -40,6 +44,10 @@ export interface Database {
           referrer?: string | null;
           visited_card_ids?: number[] | null;
           cards_explored_count?: number | null;
+          conversations?: Json | null;
+          current_section?: number | null;
+          answered_question_ids?: number[] | null;
+          meditation_completed?: boolean | null;
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
           completed_at?: string | null;
@@ -61,6 +69,10 @@ export interface Database {
           referrer?: string | null;
           visited_card_ids?: number[] | null;
           cards_explored_count?: number | null;
+          conversations?: Json | null;
+          current_section?: number | null;
+          answered_question_ids?: number[] | null;
+          meditation_completed?: boolean | null;
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
           completed_at?: string | null;

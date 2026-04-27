@@ -41,6 +41,10 @@ export async function POST(request: NextRequest) {
         current_screen: "welcome",
         visited_card_ids: [],
         cards_explored_count: 0,
+        conversations: {},
+        current_section: 1,
+        answered_question_ids: [],
+        meditation_completed: false,
         ...payload.fields,
       });
 

@@ -1,227 +1,125 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ConversationProvider, useConversation } from "@elevenlabs/react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Sphere, { type SphereProps } from "@/components/Sphere";
-import { cards } from "@/lib/cards";
-import { getElevenLabsSignedUrl, logElevenLabsEvent } from "@/lib/elevenlabs";
+import { sendChatMessage } from "@/lib/chat";
 import { EVENTS } from "@/lib/events";
-import { useJourney } from "@/lib/journey-context";
-import { logEvent, logTranscriptMessage, updateSession } from "@/lib/tracking";
-import { useSuppressLiveKitDataChannelError } from "@/hooks";
+import { type ConversationMessage, useJourney } from "@/lib/journey-context";
+import { getQuestionById } from "@/lib/sections";
+import type { Json } from "@/lib/supabase/types";
+import { logEvent, updateSession } from "@/lib/tracking";
 
-const VOICE_START_TIMEOUT_MS = 15_000;
-
-function getErrorMessage(err: unknown) {
-  if (err instanceof Error) return err.message;
-  return "Unable to start voice conversation";
+function createMessage(role: ConversationMessage["role"], text: string): ConversationMessage {
+  return {
+    role,
+    text,
+    timestamp: new Date().toISOString(),
+  };
 }
 
-function getVoiceIntensity(volume: number) {
-  return Math.max(0, Math.min(1, volume * 3));
-}
-
-async function verifyVoiceSupport() {
-  if (!window.isSecureContext) {
-    throw new Error("Voice needs a secure browser context. Open the app on localhost or HTTPS, not a plain network IP address.");
-  }
-
-  if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error("This browser does not allow microphone access for this page.");
-  }
-
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  stream.getTracks().forEach((track) => track.stop());
-}
-
-function ConversationContent() {
+export default function Conversation() {
   const { state, dispatch } = useJourney();
+  const t = useTranslations("journey.conversation");
+  const [input, setInput] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
+  const [isGuideSpeaking, setIsGuideSpeaking] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isStarting, setIsStarting] = useState(false);
-  const [startupMessage, setStartupMessage] = useState<string | null>(null);
-  const [voiceIntensity, setVoiceIntensity] = useState(0);
-  const messageSequence = useRef(0);
-  const seenMessageKeys = useRef(new Set<string>());
-  const activeCard = useMemo(() => cards.find((card) => card.id === state.activeCardId) ?? cards[0], [state.activeCardId]);
-  const conversation = useConversation({
-    onConnect: () => {
-      logElevenLabsEvent("card", "connected", { cardId: activeCard.id });
-      setIsStarting(false);
-      setError(null);
-      setStartupMessage(null);
-    },
-    onDisconnect: (details) => {
-      logElevenLabsEvent("card", "disconnected", { cardId: activeCard.id, details });
-      setIsStarting(false);
-      setStartupMessage(null);
-      setVoiceIntensity(0);
-    },
-    onError: (message, context) => {
-      logElevenLabsEvent("card", "error", { cardId: activeCard.id, message, context });
-      setIsStarting(false);
-      setStartupMessage(null);
-      setVoiceIntensity(0);
-      setError(message);
-    },
-    onStatusChange: (status) => {
-      logElevenLabsEvent("card", "status", { cardId: activeCard.id, status });
-    },
-    onDebug: (info) => {
-      logElevenLabsEvent("card", "debug", { cardId: activeCard.id, info });
-    },
-    onConversationMetadata: (metadata) => {
-      logElevenLabsEvent("card", "metadata", { cardId: activeCard.id, metadata });
-    },
-    onMessage: (message) => {
-      const text = message.message.trim();
-      if (!text) return;
-
-      const key = message.event_id ? `${message.role}-${message.event_id}` : `${message.role}-${text}`;
-      if (seenMessageKeys.current.has(key)) return;
-      seenMessageKeys.current.add(key);
-
-      const role = message.role === "agent" ? "guide" : "user";
-      const sequence = messageSequence.current;
-      messageSequence.current += 1;
-
-      dispatch({ type: "ADD_TRANSCRIPT_MESSAGE", message: { role, text } });
-      void logTranscriptMessage(state.sessionId, {
-        card_id: activeCard.id,
-        role,
-        content: text,
-        sequence,
-        metadata: {
-          category: activeCard.category,
-          elevenlabsRole: message.role,
-          elevenlabsEventId: message.event_id,
-        },
-      });
-    },
-  });
-  const { endSession, getOutputVolume, startSession } = conversation;
-  const isConnected = conversation.status === "connected";
-  const isConnecting = conversation.status === "connecting" || isStarting;
-  const sphereState: SphereProps["state"] = isConnected ? (conversation.isSpeaking ? "speaking" : "listening") : isConnecting ? "thinking" : "idle";
-
-  useSuppressLiveKitDataChannelError();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const initializedQuestionId = useRef<number | null>(null);
+  const active = useMemo(() => getQuestionById(state.activeQuestionId ?? 1), [state.activeQuestionId]);
+  const question = active?.question;
+  const section = active?.section;
+  const messages = question ? (state.conversations[question.id] ?? []) : [];
+  const sphereState: SphereProps["state"] = isThinking ? "thinking" : isGuideSpeaking ? "speaking" : "listening";
 
   useEffect(() => {
-    void updateSession(state.sessionId, { current_screen: "conv" });
-    dispatch({ type: "CLEAR_TRANSCRIPT" });
-    messageSequence.current = 0;
-    seenMessageKeys.current.clear();
-
-    return () => endSession();
-  }, [activeCard.id, dispatch, endSession, state.sessionId]);
+    void updateSession(state.sessionId, { current_screen: "conversation" });
+  }, [state.sessionId]);
 
   useEffect(() => {
-    if (!isConnected) {
-      return;
-    }
-
-    let frameId: number;
-
-    function updateVoiceIntensity() {
-      const nextIntensity = conversation.isSpeaking ? getVoiceIntensity(getOutputVolume()) : 0;
-
-      setVoiceIntensity((currentIntensity) =>
-        Math.abs(currentIntensity - nextIntensity) < 0.02 ? currentIntensity : nextIntensity,
-      );
-      frameId = window.requestAnimationFrame(updateVoiceIntensity);
-    }
-
-    frameId = window.requestAnimationFrame(updateVoiceIntensity);
-
-    return () => window.cancelAnimationFrame(frameId);
-  }, [conversation.isSpeaking, getOutputVolume, isConnected]);
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [isThinking, messages.length]);
 
   useEffect(() => {
-    if (!isStarting || isConnected) return;
+    if (!question || initializedQuestionId.current === question.id || messages.length > 0) return;
+    initializedQuestionId.current = question.id;
+    dispatch({ type: "ADD_MESSAGE", questionId: question.id, message: createMessage("guide", question.openingMessage) });
+  }, [dispatch, messages.length, question]);
 
-    const timeoutId = window.setTimeout(() => {
-      logElevenLabsEvent("card", "startup timeout", { cardId: activeCard.id });
-      endSession();
-      setIsStarting(false);
-      setStartupMessage(null);
-      setError("Voice is taking too long to connect. Check microphone permission and try again.");
-    }, VOICE_START_TIMEOUT_MS);
-
+  useEffect(() => {
+    if (!isGuideSpeaking) return;
+    const timeoutId = window.setTimeout(() => setIsGuideSpeaking(false), 1_200);
     return () => window.clearTimeout(timeoutId);
-  }, [activeCard.id, endSession, isConnected, isStarting]);
+  }, [isGuideSpeaking, messages.length]);
 
-  async function startConversation() {
-    if (isConnected || isConnecting) return;
+  if (!question || !section) {
+    return null;
+  }
+
+  const activeQuestion = question;
+  const activeSection = section;
+
+  async function submitMessage(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
+    const text = input.trim();
+    if (!text || isThinking || !state.sessionId) return;
 
     setError(null);
-    setIsStarting(true);
-    setStartupMessage("Checking microphone access...");
+    setInput("");
+    setIsThinking(true);
+
+    const currentMessages = state.conversations[activeQuestion.id] ?? messages;
+    const userMessage = createMessage("user", text);
+    dispatch({ type: "ADD_MESSAGE", questionId: activeQuestion.id, message: userMessage });
 
     try {
-      logElevenLabsEvent("card", "checking voice support", {
-        cardId: activeCard.id,
-        isSecureContext: window.isSecureContext,
-        hasMediaDevices: Boolean(navigator.mediaDevices?.getUserMedia),
-      });
-      await verifyVoiceSupport();
-
-      setStartupMessage("Creating voice session...");
-      logElevenLabsEvent("card", "requesting signed url", { cardId: activeCard.id });
-      const signedUrl = await getElevenLabsSignedUrl();
-      const userName = state.name.trim() || "there";
-
-      setStartupMessage("Connecting to voice guide...");
-      logElevenLabsEvent("card", "starting websocket session", { cardId: activeCard.id });
-      startSession({
-        signedUrl,
-        connectionType: "websocket",
-        dynamicVariables: {
-          user_name: userName,
-          card_question: activeCard.question,
-          card_category: activeCard.categoryLabel,
-        },
+      const response = await sendChatMessage({
+        questionId: activeQuestion.id,
+        questionText: activeQuestion.text,
+        sectionTheme: activeSection.theme,
+        conversationHistory: currentMessages.map((message) => ({
+          role: message.role === "guide" ? "assistant" : "user",
+          content: message.text,
+        })),
+        userMessage: text,
+        sessionId: state.sessionId,
       });
 
-      void logEvent(state.sessionId, EVENTS.VOICE_CONVERSATION_STARTED, {
-        cardId: activeCard.id,
-        category: activeCard.category,
+      const guideMessage = createMessage("guide", response);
+      const nextConversation = [...currentMessages, userMessage, guideMessage];
+      const nextConversations = { ...state.conversations, [activeQuestion.id]: nextConversation };
+      dispatch({ type: "ADD_MESSAGE", questionId: activeQuestion.id, message: guideMessage });
+      setIsGuideSpeaking(true);
+      void logEvent(state.sessionId, EVENTS.AI_RESPONSE_RECEIVED, {
+        questionId: activeQuestion.id,
+        responseLength: response.length,
       });
+      void updateSession(state.sessionId, { conversations: nextConversations as unknown as Json });
     } catch (err) {
-      setIsStarting(false);
-      setStartupMessage(null);
-      setError(getErrorMessage(err));
+      setError(err instanceof Error ? err.message : t("fallbackError"));
+    } finally {
+      setIsThinking(false);
     }
-  }
-
-  function stopConversation() {
-    endSession();
-    void logEvent(state.sessionId, EVENTS.VOICE_CONVERSATION_ENDED, {
-      cardId: activeCard.id,
-      category: activeCard.category,
-    });
   }
 
   function returnToBoard() {
-    const visitedCardIds =
-      state.activeCardId === null ? state.visitedCardIds : Array.from(new Set([...state.visitedCardIds, state.activeCardId]));
-    const durationMs = state.activeCardOpenedAt ? Date.now() - state.activeCardOpenedAt : 0;
-
-    if (isConnected) {
-      stopConversation();
-    }
-    void logEvent(state.sessionId, EVENTS.CARD_COMPLETED, {
-      cardId: activeCard.id,
-      category: activeCard.category,
-      durationMs,
+    const answeredQuestionIds = Array.from(new Set([...state.answeredQuestions, activeQuestion.id]));
+    const currentConversation = state.conversations[activeQuestion.id] ?? messages;
+    void logEvent(state.sessionId, EVENTS.QUESTION_ANSWERED, {
+      questionId: activeQuestion.id,
+      sectionId: activeSection.id,
+      messageCount: currentConversation.length,
     });
     void updateSession(state.sessionId, {
-      visited_card_ids: visitedCardIds,
-      cards_explored_count: visitedCardIds.length,
+      answered_question_ids: answeredQuestionIds,
+      conversations: state.conversations as unknown as Json,
     });
 
-    if (state.activeCardId !== null) {
-      dispatch({ type: "MARK_VISITED", id: state.activeCardId });
-    }
+    dispatch({ type: "MARK_QUESTION_ANSWERED", id: activeQuestion.id });
+    dispatch({ type: "SET_ACTIVE_QUESTION", id: null });
     dispatch({ type: "GO_TO", screen: "board" });
   }
 
@@ -233,60 +131,52 @@ function ConversationContent() {
         onClick={returnToBoard}
         className="absolute left-5 top-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] sm:left-8 sm:top-8"
       >
-        ← Back to board
+        {t("back")}
       </Button>
 
-      <div className="m-auto flex w-full max-w-2xl flex-col items-center pt-16">
-        <Sphere state={sphereState} size={160} intensity={voiceIntensity} />
-        <p className="mt-5 text-xs font-medium text-[#7B8FA8]">
-          {isConnected ? (conversation.isSpeaking ? "Speaking" : "Listening") : isConnecting ? "Connecting" : "Ready to talk"}
-        </p>
-        {startupMessage ? <p className="mt-2 text-xs font-medium text-[#7B8FA8]">{startupMessage}</p> : null}
-        <p className="mt-4 max-w-md text-[15px] leading-[1.65] text-[#5A6B82]">{activeCard.question}</p>
+      <div className="m-auto flex min-h-[calc(100vh-64px)] w-full max-w-3xl flex-col pt-16">
+        <div className="flex flex-col items-center text-center">
+          <p className="max-w-xl text-[15px] font-medium leading-[1.65] text-[#0F1B2D]">{activeQuestion.text}</p>
+          <div className="mt-6">
+            <Sphere state={sphereState} size={80} />
+          </div>
+        </div>
 
-        <div className="mt-10 max-h-[200px] w-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 p-5 text-left">
-          {state.transcript.length > 0 ? (
-            state.transcript.map((message, index) => (
+        <div ref={scrollRef} className="mt-8 flex-1 space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 p-5 text-left">
+          {messages.map((message, index) => (
               <div key={`${message.role}-${index}`}>
-                <p className={`mb-1 text-[11px] font-medium uppercase tracking-[0.12em] ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}>
-                  {message.role === "user" ? "You" : "Guide"}
+                <p className={`mb-1 text-[12px] font-medium ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}>
+                  {message.role === "user" ? t("you") : t("guide")}
                 </p>
                 <p className="text-[15px] leading-[1.65] text-[#0F1B2D]">{message.text}</p>
               </div>
-            ))
-          ) : (
-            <p className="text-center text-[15px] leading-[1.65] text-[#7B8FA8]">Start the voice conversation when you are ready.</p>
-          )}
+          ))}
+          {isThinking ? (
+            <div>
+              <p className="mb-1 text-[12px] font-medium text-[#7B8FA8]">{t("guide")}</p>
+              <p className="text-[15px] leading-[1.65] text-[#0F1B2D]">...</p>
+            </div>
+          ) : null}
         </div>
 
         {error ? <p className="mt-4 max-w-md text-sm leading-6 text-[#D85A30]">{error}</p> : null}
 
-        <Button
-          type="button"
-          onClick={isConnected ? stopConversation : startConversation}
-          disabled={isConnecting}
-          className="mt-9 h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98]"
-        >
-          {isConnected ? "Stop voice conversation" : isConnecting ? "Connecting..." : "Start voice conversation"}
-        </Button>
-
-        <Button
-          type="button"
-          onClick={returnToBoard}
-          variant="ghost"
-          className="mt-3 h-12 rounded-full border border-[#D5DCE6] bg-white/60 px-7 text-[#5A6B82] transition-all hover:-translate-y-px hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] active:scale-[0.98]"
-        >
-          Done with this one
-        </Button>
+        <form onSubmit={submitMessage} className="mt-5 flex gap-3">
+          <Input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder={t("placeholder")}
+            className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-[#0F1B2D] shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15"
+          />
+          <Button
+            type="submit"
+            disabled={!input.trim() || isThinking}
+            className="h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98]"
+          >
+            {t("send")}
+          </Button>
+        </form>
       </div>
     </section>
-  );
-}
-
-export default function Conversation() {
-  return (
-    <ConversationProvider>
-      <ConversationContent />
-    </ConversationProvider>
   );
 }

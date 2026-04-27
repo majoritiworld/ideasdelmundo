@@ -4,26 +4,28 @@ import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { JourneyProvider, useJourney } from "@/lib/journey-context";
 import Welcome from "@/components/screens/Welcome";
-import Intake from "@/components/screens/Intake";
 import MeetGuide from "@/components/screens/MeetGuide";
+import BreathingOffer from "@/components/screens/BreathingOffer";
+import PostMeditation from "@/components/screens/PostMeditation";
+import QuestionsIntro from "@/components/screens/QuestionsIntro";
 import Board from "@/components/screens/Board";
 import Conversation from "@/components/screens/Conversation";
 import Meditation from "@/components/screens/Meditation";
-import EndCapture from "@/components/screens/EndCapture";
-import ThankYou from "@/components/screens/ThankYou";
+import Closing from "@/components/screens/Closing";
 import API_ROUTES from "@/constants/api-routes.constants";
 import { EVENTS } from "@/lib/events";
 import { createSession, logEvent } from "@/lib/tracking";
 
 const screenComponents = {
   welcome: Welcome,
-  intake: Intake,
-  meet: MeetGuide,
-  board: Board,
-  conv: Conversation,
+  meet_guide: MeetGuide,
+  breathing_offer: BreathingOffer,
   meditation: Meditation,
-  end: EndCapture,
-  thanks: ThankYou,
+  post_meditation: PostMeditation,
+  questions_intro: QuestionsIntro,
+  board: Board,
+  conversation: Conversation,
+  closing: Closing,
 };
 
 function JourneyShell() {
@@ -50,7 +52,7 @@ function JourneyShell() {
 
   useEffect(() => {
     const handler = () => {
-      if (!state.sessionId || state.screen === "thanks") return;
+      if (!state.sessionId || state.screen === "closing") return;
 
       const blob = new Blob([JSON.stringify({ sessionId: state.sessionId })], {
         type: "application/json",

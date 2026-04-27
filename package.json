@@ -16,7 +16,7 @@
     "ci": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "dependencies": {
-    "@elevenlabs/react": "^1.2.1",
+    "@anthropic-ai/sdk": "^0.91.1",
     "@hookform/resolvers": "^5.2.2",
     "@iconify/react": "^6.0.2",
     "@supabase/ssr": "^0.10.2",

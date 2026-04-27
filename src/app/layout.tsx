@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,14 +20,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const messages = await getMessages();
+
   return (
     <html lang="en">
-      <body className={`${inter.variable} min-h-screen bg-[#FAFBFE] font-sans text-[#0F1B2D] antialiased`}>{children}</body>
+      <body className={`${inter.variable} min-h-screen bg-[#FAFBFE] font-sans text-[#0F1B2D] antialiased`}>
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+      </body>
     </html>
   );
 }

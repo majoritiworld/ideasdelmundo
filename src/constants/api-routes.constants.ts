@@ -12,10 +12,7 @@ const API_ROUTES = {
     ABANDON: "/api/abandon",
     WRITE: "/api/tracking",
   },
-  ELEVENLABS: {
-    SIGNED_URL: "/api/elevenlabs/signed-url",
-    TOKEN: "/api/elevenlabs/token",
-  },
+  CHAT: "/api/chat",
 } as const;
 
 export default API_ROUTES;
