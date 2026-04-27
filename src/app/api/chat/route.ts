@@ -63,6 +63,10 @@ export async function POST(request: NextRequest) {
       return jsonError(500, "Anthropic API key is not configured");
     }
 
+    if (payload.userMessage.trim() === "I'm done with this question") {
+      return NextResponse.json({ message: "Got it, thank you for sharing." });
+    }
+
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-5-20250929",
       max_tokens: 220,

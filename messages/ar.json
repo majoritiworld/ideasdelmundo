@@ -819,6 +819,8 @@
     "welcome": {
       "title": "Welcome to your purpose experience",
       "subtitle": "Discover who you are and what moves your world.",
+      "nameLabel": "قبل أن نبدأ، ما اسمك؟",
+      "namePlaceholder": "اسمك",
       "cta": "Meet your guide"
     },
     "meetGuide": {
@@ -867,7 +869,11 @@
       "you": "You",
       "placeholder": "Write your answer...",
       "send": "Send",
-      "fallbackError": "Unable to get a guide response"
+      "fallbackError": "Unable to get a guide response",
+      "micStart": "بدء الإدخال الصوتي",
+      "micRecording": "جارٍ التسجيل — اضغط Escape للإلغاء",
+      "listeningHint": "جارٍ الاستماع… اضغط إرسال عند الانتهاء",
+      "doneWithQuestion": "انتهيت من هذا السؤال"
     },
     "closing": {
       "title": "Congratulations, you're done!",
