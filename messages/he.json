@@ -817,7 +817,8 @@
   },
   "journey": {
     "welcome": {
-      "title": "Welcome to your purpose experience",
+      "titleLine1": "Welcome to your",
+      "titleLine2": "purpose experience",
       "subtitle": "Discover who you are and what moves your world.",
       "nameLabel": "לפני שנתחיל, איך קוראים לך?",
       "namePlaceholder": "השם שלך",
@@ -835,17 +836,23 @@
       "skip": "Skip"
     },
     "meditation": {
-      "ready": "Ready when you are.",
-      "instruction": "Press start to begin three breathing cycles.",
+      "ready": "לפני שנתחיל, ודאו שאתם בתנוחה נוחה.",
+      "instruction": "ננשום יחד במשך דקה אחת.",
+      "countdown": "להתכונן",
+      "prepareToInhale": "התכוננו לשאיפה בעוד 3 שניות.",
+      "countdownInstruction": "התחילו לשאוף כשהספירה לאחור מסתיימת.",
+      "followCircle": "עקבו אחרי המעגל עם הנשימה.",
+      "complete": "הושלם",
       "start": "Start",
       "continue": "Continue",
       "skip": "Skip",
+      "finishSession": "סיום הסשן",
       "cycle": "Cycle {current} of {total}",
       "cues": {
-        "inhale": "Breathe in...",
-        "hold": "Hold...",
-        "exhale": "Breathe out...",
-        "rest": "Rest..."
+        "inhale": "שאיפה",
+        "hold": "להחזיק",
+        "exhale": "נשיפה",
+        "rest": "להחזיק"
       }
     },
     "postMeditation": {
@@ -853,6 +860,7 @@
       "cta": "Let's begin"
     },
     "questionsIntro": {
+      "stateLabel": "מדבר",
       "subtitle": "We're going to start with a few simple questions that will help me better understand who you are. There are no right or wrong answers — just be honest with yourself.",
       "cta": "Let's go"
     },

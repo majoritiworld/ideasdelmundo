@@ -552,7 +552,7 @@ export default function Conversation() {
         type="button"
         variant="ghost"
         onClick={returnToBoard}
-        className="absolute top-5 left-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-[#1B3DD4] hover:bg-white hover:text-[#1B3DD4] sm:top-8 sm:left-8"
+        className="absolute top-5 left-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-primary hover:bg-white hover:text-primary sm:top-8 sm:left-8"
       >
         {t("back")}
       </Button>
@@ -635,7 +635,7 @@ export default function Conversation() {
                     "h-12 w-12 shrink-0 rounded-full p-0 shadow-none",
                     isRecording
                       ? "animate-pulse border-transparent bg-[#EF4444] text-white hover:bg-[#EF4444] hover:text-white"
-                      : "border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white hover:text-[#1B3DD4]"
+                      : "border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white hover:text-primary"
                   )}
                 >
                   <Iconify icon="lucide:mic" className="mx-auto size-5" />
@@ -644,7 +644,7 @@ export default function Conversation() {
               <Button
                 type="submit"
                 disabled={!input.trim() || composerLocked}
-                className="h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98]"
+                className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
               >
                 {t("send")}
               </Button>

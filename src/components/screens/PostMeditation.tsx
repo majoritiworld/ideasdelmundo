@@ -19,14 +19,14 @@ export default function PostMeditation() {
 
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
-      <Sphere state="idle" size={160} />
-      <p className="mt-10 max-w-xl text-[18px] leading-[1.7] font-medium text-[#0F1B2D] sm:text-[21px]">
+      <Sphere state="idle" variant="green" size={160} />
+      <p className="mt-10 max-w-md text-[18px] leading-[1.7] font-medium text-[#0F1B2D] sm:text-[21px]">
         {t("subtitle")}
       </p>
       <Button
         type="button"
         onClick={() => dispatch({ type: "GO_TO", screen: "questions_intro" })}
-        className="mt-10 h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98]"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
       >
         {t("cta")}
       </Button>

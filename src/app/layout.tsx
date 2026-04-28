@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  weight: ["400", "500"],
-});
 
 export const metadata: Metadata = {
   title: "Majoriti — Find your why",
@@ -30,9 +23,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} min-h-screen bg-[#FAFBFE] font-sans text-[#0F1B2D] antialiased`}
+        className="min-h-screen bg-[#FAFBFE] font-sans text-[#0F1B2D] antialiased"
       >
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );

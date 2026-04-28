@@ -52,14 +52,14 @@ export default function Welcome() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("namePlaceholder")}
-            className="h-auto border-[#D5DCE6] py-3 pr-5 pl-5 text-start text-base text-[#0F1B2D] shadow-none sm:basis-[70%]"
+            className="h-auto border-[#D5DCE6] py-3 pr-5 pl-5 text-start text-[18px] text-[#0F1B2D] shadow-none sm:basis-[49%]"
             aria-required
           />
           <Button
             type="button"
             onClick={startJourney}
             disabled={!nameReady}
-            className="h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98] disabled:cursor-not-allowed"
+            className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98] disabled:cursor-not-allowed"
           >
             {t("cta")}
           </Button>

@@ -77,9 +77,9 @@ export default function Board() {
               type="button"
               onClick={() => openQuestion(question)}
               className={cn(
-                "min-h-[150px] rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left transition-all hover:-translate-y-px hover:border-[#1B3DD4] active:scale-[0.98]",
+                "min-h-[150px] rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left transition-all hover:-translate-y-px hover:border-primary active:scale-[0.98]",
                 state.answeredQuestions.includes(question.id) &&
-                  "border-[#B5C6F4] bg-[#EEF2FE] text-[#5A6B82]"
+                  "border-[#CBD5E1] bg-[#F4F6F8] text-[#5A6B82]"
               )}
             >
               <div className="flex items-start justify-between gap-4">
@@ -115,7 +115,7 @@ export default function Board() {
             <Button
               type="button"
               onClick={advanceSection}
-              className="h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98]"
+              className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
             >
               {section.id === TOTAL_SECTIONS ? t("finish") : t("nextSection")}
             </Button>

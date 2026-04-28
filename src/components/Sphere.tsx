@@ -1,192 +1,521 @@
 "use client";
 
-import { CSSProperties } from "react";
+import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 
 export interface SphereProps {
-  state: "idle" | "listening" | "speaking" | "thinking";
+  state: "idle" | "listening" | "speaking" | "thinking" | "breathing";
   size?: number;
-  intensity?: number;
-  variant?: "blue" | "green";
-  className?: string;
-  style?: CSSProperties;
+  variant?: "blue" | "lime" | "green";
+  breathPhase?: "inhale" | "hold" | "exhale" | "rest";
 }
 
-function clampIntensity(value: number) {
-  return Math.max(0, Math.min(1, value));
+const SPHERE_SCALE = 1.25;
+const SPEAKING_TO_IDLE_MS = 650;
+const SPEAKING_TO_IDLE_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+function isCircleElement(circle: HTMLDivElement | null): circle is HTMLDivElement {
+  return Boolean(circle);
 }
 
 export default function Sphere({
   state,
-  size = 160,
-  intensity = 0,
-  variant = "blue",
-  className = "",
-  style,
+  size = 200,
+  variant = "lime",
+  breathPhase = "rest",
 }: SphereProps) {
-  const sphereIntensity = clampIntensity(intensity);
+  const [visualState, setVisualState] = useState(state);
+  const [isAssembling, setIsAssembling] = useState(false);
+  const sphereRef = useRef<HTMLDivElement | null>(null);
+  const circleRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const animationFrameRef = useRef<number | null>(null);
+  const settlingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sphereStyle = {
-    "--sphere-intensity": sphereIntensity.toFixed(3),
-    "--sphere-glow": `${18 + sphereIntensity * 46}px`,
-    width: size,
-    height: size,
-    ...style,
+    width: size * SPHERE_SCALE,
+    height: size * SPHERE_SCALE,
   } as CSSProperties;
+
+  const clearSettlingTimeout = useCallback(() => {
+    if (settlingTimeoutRef.current) {
+      clearTimeout(settlingTimeoutRef.current);
+      settlingTimeoutRef.current = null;
+    }
+  }, []);
+
+  const clearSnapshotStyles = useCallback(() => {
+    if (animationFrameRef.current) {
+      window.cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
+    if (sphereRef.current) {
+      sphereRef.current.style.animation = "";
+      sphereRef.current.style.transform = "";
+      sphereRef.current.style.transition = "";
+    }
+
+    circleRefs.current.forEach((circle) => {
+      if (!circle) return;
+
+      circle.style.animation = "";
+      circle.style.transform = "";
+      circle.style.transition = "";
+    });
+  }, []);
+
+  useEffect(() => {
+    if (state === visualState) return;
+
+    clearSettlingTimeout();
+
+    const sphere = sphereRef.current;
+    const circles = circleRefs.current.filter(isCircleElement);
+
+    if (visualState === "speaking" && state === "idle" && sphere && circles.length > 0) {
+      const sphereTransform = window.getComputedStyle(sphere).transform;
+
+      sphere.style.animation = "none";
+      sphere.style.transition = "none";
+      sphere.style.transform = sphereTransform === "none" ? "" : sphereTransform;
+
+      circles.forEach((circle) => {
+        const circleTransform = window.getComputedStyle(circle).transform;
+
+        circle.style.animation = "none";
+        circle.style.transition = "none";
+        circle.style.transform = circleTransform === "none" ? "" : circleTransform;
+      });
+
+      void sphere.offsetWidth;
+      setVisualState("idle");
+
+      animationFrameRef.current = window.requestAnimationFrame(() => {
+        sphere.style.transition = `transform ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}`;
+        sphere.style.transform = "";
+
+        circles.forEach((circle) => {
+          circle.style.transition = `transform ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}, opacity ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}`;
+          circle.style.transform = "";
+        });
+
+        animationFrameRef.current = null;
+      });
+
+      settlingTimeoutRef.current = setTimeout(() => {
+        clearSnapshotStyles();
+        settlingTimeoutRef.current = null;
+      }, SPEAKING_TO_IDLE_MS);
+
+      return;
+    }
+
+    clearSnapshotStyles();
+    setVisualState(state);
+  }, [clearSettlingTimeout, clearSnapshotStyles, state, visualState]);
+
+  useEffect(() => {
+    return () => {
+      clearSettlingTimeout();
+      clearSnapshotStyles();
+    };
+  }, [clearSettlingTimeout, clearSnapshotStyles]);
+
+  function handleMouseEnter() {
+    if (isAssembling) return;
+
+    const sphere = sphereRef.current;
+    const circles = circleRefs.current.filter(isCircleElement);
+
+    if (!sphere || circles.length === 0) {
+      setIsAssembling(true);
+      return;
+    }
+
+    const sphereTransform = window.getComputedStyle(sphere).transform;
+
+    sphere.style.animation = "none";
+    sphere.style.transition = "none";
+    sphere.style.transform = sphereTransform === "none" ? "" : sphereTransform;
+
+    circles.forEach((circle) => {
+      const circleTransform = window.getComputedStyle(circle).transform;
+
+      circle.style.animation = "none";
+      circle.style.transition = "none";
+      circle.style.transform = circleTransform === "none" ? "" : circleTransform;
+    });
+
+    void sphere.offsetWidth;
+    setIsAssembling(true);
+
+    animationFrameRef.current = window.requestAnimationFrame(() => {
+      sphere.style.animation = "";
+      sphere.style.transform = "";
+      sphere.style.transition = "";
+
+      circles.forEach((circle) => {
+        circle.style.animation = "";
+        circle.style.transform = "";
+        circle.style.transition = "";
+      });
+
+      animationFrameRef.current = null;
+    });
+  }
+
+  function handleMouseLeave() {
+    clearSnapshotStyles();
+    setIsAssembling(false);
+  }
 
   return (
     <div
-      aria-label={`${state} guide sphere`}
-      className={`majoriti-sphere ${state} ${variant} ${className}`}
+      ref={sphereRef}
+      aria-label={`${visualState} guide sphere`}
+      className={`sphere sphere--${visualState} sphere--${variant} sphere--${breathPhase}${
+        isAssembling ? " sphere--assembling" : ""
+      }`}
+      data-state={visualState}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={sphereStyle}
     >
+      <div ref={(node) => void (circleRefs.current[0] = node)} className="sphere__circle sphere__circle--1" />
+      <div ref={(node) => void (circleRefs.current[1] = node)} className="sphere__circle sphere__circle--2" />
+      <div ref={(node) => void (circleRefs.current[2] = node)} className="sphere__circle sphere__circle--3" />
+      <div ref={(node) => void (circleRefs.current[3] = node)} className="sphere__circle sphere__circle--4" />
+
       <style jsx>{`
-        .majoriti-sphere {
+        .sphere {
           position: relative;
-          isolation: isolate;
-          border-radius: 50%;
-          overflow: hidden;
-          filter: blur(0.5px);
+          color: #c5d94a;
           transform-origin: center;
-          will-change: transform, box-shadow;
+          will-change: transform;
         }
 
-        .majoriti-sphere.blue {
-          background: radial-gradient(
-            circle at 35% 30%,
-            #6fa3ff 0%,
-            #3056e8 35%,
-            #1b3dd4 65%,
-            #0e2ba8 100%
-          );
+        .sphere--blue {
+          color: #1b3dd4;
         }
 
-        .majoriti-sphere.green {
-          background: radial-gradient(circle at 40% 35%, #9fe1cb 0%, #1d9e75 72%, #117755 100%);
+        .sphere--lime {
+          color: #c5d94a;
         }
 
-        .majoriti-sphere::before,
-        .majoriti-sphere::after {
-          content: "";
+        .sphere--green {
+          color: #9f77dd;
+        }
+
+        .sphere__circle {
           position: absolute;
-          inset: 8%;
-          z-index: -1;
-          border-radius: 48% 52% 55% 45% / 50% 48% 52% 50%;
-          opacity: 0.72;
-          mix-blend-mode: screen;
-          will-change: transform, border-radius;
+          top: 50%;
+          left: 50%;
+          width: 70%;
+          height: 70%;
+          border-radius: 50%;
+          background: currentColor;
+          opacity: 0.3;
+          transform-origin: center;
+          transition: all 0.6s ease;
+          will-change: transform, opacity;
         }
 
-        .majoriti-sphere::before {
-          background: radial-gradient(
-            circle at 38% 36%,
-            rgba(255, 255, 255, 0.9),
-            rgba(111, 163, 255, 0.18) 44%,
-            transparent 68%
-          );
-          animation: liquid-one 8s ease-in-out infinite;
+        .sphere__circle--1 {
+          transform: translateX(-50%) translateY(-71.5%);
         }
 
-        .majoriti-sphere::after {
-          inset: 16%;
-          background: radial-gradient(
-            circle at 64% 66%,
-            rgba(14, 43, 168, 0.42),
-            rgba(255, 255, 255, 0.2) 48%,
-            transparent 70%
-          );
-          animation: liquid-two 10s ease-in-out infinite reverse;
+        .sphere__circle--2 {
+          transform: translateX(-50%) translateY(-28.5%);
         }
 
-        .majoriti-sphere.idle {
-          animation: breathe 4.5s ease-in-out infinite;
+        .sphere__circle--3 {
+          transform: translateX(-71.5%) translateY(-50%);
         }
 
-        .majoriti-sphere.listening {
-          animation: listen 1.8s ease-out infinite;
+        .sphere__circle--4 {
+          transform: translateX(-28.5%) translateY(-50%);
         }
 
-        .majoriti-sphere.speaking {
-          animation: speak 0.9s ease-in-out infinite;
-          box-shadow:
-            0 0 var(--sphere-glow) rgba(27, 61, 212, calc(0.22 + var(--sphere-intensity) * 0.32)),
-            inset 0 0 36px rgba(255, 255, 255, calc(0.18 + var(--sphere-intensity) * 0.22));
+        .sphere[data-state="idle"] .sphere__circle--1 {
+          animation: sphere-idle-1 8s ease-in-out infinite;
         }
 
-        .majoriti-sphere.thinking {
-          animation: think 3s ease-in-out infinite;
-          box-shadow: inset 0 0 44px rgba(15, 27, 45, 0.22);
+        .sphere[data-state="idle"] .sphere__circle--2 {
+          animation: sphere-idle-2 9s ease-in-out infinite;
         }
 
-        @keyframes breathe {
+        .sphere[data-state="idle"] .sphere__circle--3 {
+          animation: sphere-idle-3 10s ease-in-out infinite;
+        }
+
+        .sphere[data-state="idle"] .sphere__circle--4 {
+          animation: sphere-idle-4 11s ease-in-out infinite;
+        }
+
+        .sphere--listening {
+          animation: sphere-group-spin 6s linear infinite;
+        }
+
+        .sphere[data-state="listening"] .sphere__circle {
+          animation: sphere-listening-presence 6s linear infinite;
+        }
+
+        .sphere--speaking {
+          animation: sphere-group-spin 3.6s linear infinite;
+        }
+
+        .sphere[data-state="speaking"] .sphere__circle--1 {
+          animation: sphere-speak-1 1.44s ease-in-out infinite;
+        }
+
+        .sphere[data-state="speaking"] .sphere__circle--2 {
+          animation: sphere-speak-2 1.44s ease-in-out infinite;
+          animation-delay: -0.36s;
+        }
+
+        .sphere[data-state="speaking"] .sphere__circle--3 {
+          animation: sphere-speak-3 1.44s ease-in-out infinite;
+          animation-delay: -0.72s;
+        }
+
+        .sphere[data-state="speaking"] .sphere__circle--4 {
+          animation: sphere-speak-4 1.44s ease-in-out infinite;
+          animation-delay: -1.08s;
+        }
+
+        .sphere[data-state="thinking"] .sphere__circle--1 {
+          animation: sphere-think-1 4s ease-in-out infinite;
+        }
+
+        .sphere[data-state="thinking"] .sphere__circle--2 {
+          animation: sphere-think-2 4s ease-in-out infinite;
+        }
+
+        .sphere[data-state="thinking"] .sphere__circle--3 {
+          animation: sphere-think-3 4s ease-in-out infinite;
+        }
+
+        .sphere[data-state="thinking"] .sphere__circle--4 {
+          animation: sphere-think-4 4s ease-in-out infinite;
+        }
+
+        .sphere--breathing .sphere__circle {
+          animation: none;
+        }
+
+        .sphere--assembling {
+          animation: none;
+        }
+
+        .sphere--assembling .sphere__circle {
+          animation: none !important;
+          transition: all 2.4s ease;
+        }
+
+        .sphere--assembling .sphere__circle--1 {
+          transform: translateX(-50%) translateY(-71.5%);
+        }
+
+        .sphere--assembling .sphere__circle--2 {
+          transform: translateX(-50%) translateY(-28.5%);
+        }
+
+        .sphere--assembling .sphere__circle--3 {
+          transform: translateX(-71.5%) translateY(-50%);
+        }
+
+        .sphere--assembling .sphere__circle--4 {
+          transform: translateX(-28.5%) translateY(-50%);
+        }
+
+        .sphere--breathing.sphere--inhale .sphere__circle,
+        .sphere--breathing.sphere--exhale .sphere__circle {
+          transition-duration: 6s;
+        }
+
+        .sphere--breathing.sphere--inhale .sphere__circle--1,
+        .sphere--breathing.sphere--hold .sphere__circle--1 {
+          transform: translateX(-50%) translateY(-80%);
+        }
+
+        .sphere--breathing.sphere--inhale .sphere__circle--2,
+        .sphere--breathing.sphere--hold .sphere__circle--2 {
+          transform: translateX(-50%) translateY(-20%);
+        }
+
+        .sphere--breathing.sphere--inhale .sphere__circle--3,
+        .sphere--breathing.sphere--hold .sphere__circle--3 {
+          transform: translateX(-80%) translateY(-50%);
+        }
+
+        .sphere--breathing.sphere--inhale .sphere__circle--4,
+        .sphere--breathing.sphere--hold .sphere__circle--4 {
+          transform: translateX(-20%) translateY(-50%);
+        }
+
+        .sphere--breathing.sphere--exhale .sphere__circle--1,
+        .sphere--breathing.sphere--rest .sphere__circle--1 {
+          transform: translateX(-50%) translateY(-71.5%);
+        }
+
+        .sphere--breathing.sphere--exhale .sphere__circle--2,
+        .sphere--breathing.sphere--rest .sphere__circle--2 {
+          transform: translateX(-50%) translateY(-28.5%);
+        }
+
+        .sphere--breathing.sphere--exhale .sphere__circle--3,
+        .sphere--breathing.sphere--rest .sphere__circle--3 {
+          transform: translateX(-71.5%) translateY(-50%);
+        }
+
+        .sphere--breathing.sphere--exhale .sphere__circle--4,
+        .sphere--breathing.sphere--rest .sphere__circle--4 {
+          transform: translateX(-28.5%) translateY(-50%);
+        }
+
+        @keyframes sphere-group-spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes sphere-listening-presence {
           0%,
           100% {
-            transform: scale(1);
+            opacity: 0.28;
           }
           50% {
-            transform: scale(1.04);
+            opacity: 0.34;
           }
         }
 
-        @keyframes listen {
-          0% {
-            transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(27, 61, 212, 0.25);
-          }
-          70% {
-            transform: scale(1.035);
-            box-shadow: 0 0 0 28px rgba(27, 61, 212, 0);
-          }
-          100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 0 rgba(27, 61, 212, 0);
-          }
-        }
-
-        @keyframes speak {
+        @keyframes sphere-idle-1 {
           0%,
           100% {
-            transform: scale(calc(1 + var(--sphere-intensity) * 0.04)) rotate(0deg);
+            transform: translateX(-50%) translateY(-71.5%) translate(0, 0);
+          }
+          33% {
+            transform: translateX(-50%) translateY(-71.5%) translate(5px, -3px);
+          }
+          66% {
+            transform: translateX(-50%) translateY(-71.5%) translate(-4px, 6px);
+          }
+        }
+
+        @keyframes sphere-idle-2 {
+          0%,
+          100% {
+            transform: translateX(-50%) translateY(-28.5%) translate(0, 0);
           }
           35% {
-            transform: scale(calc(1.045 + var(--sphere-intensity) * 0.12)) rotate(2deg);
+            transform: translateX(-50%) translateY(-28.5%) translate(-6px, 3px);
+          }
+          70% {
+            transform: translateX(-50%) translateY(-28.5%) translate(4px, -5px);
+          }
+        }
+
+        @keyframes sphere-idle-3 {
+          0%,
+          100% {
+            transform: translateX(-71.5%) translateY(-50%) translate(0, 0);
+          }
+          40% {
+            transform: translateX(-71.5%) translateY(-50%) translate(-3px, -6px);
+          }
+          72% {
+            transform: translateX(-71.5%) translateY(-50%) translate(6px, 4px);
+          }
+        }
+
+        @keyframes sphere-idle-4 {
+          0%,
+          100% {
+            transform: translateX(-28.5%) translateY(-50%) translate(0, 0);
+          }
+          30% {
+            transform: translateX(-28.5%) translateY(-50%) translate(4px, 6px);
           }
           68% {
-            transform: scale(calc(0.985 + var(--sphere-intensity) * 0.06)) rotate(-1.5deg);
+            transform: translateX(-28.5%) translateY(-50%) translate(-6px, -4px);
           }
         }
 
-        @keyframes think {
+        @keyframes sphere-speak-1 {
           0%,
           100% {
-            transform: scale(1) rotate(0deg);
-            filter: blur(0.5px) saturate(0.92);
+            transform: translateX(-50%) translateY(-71.5%) scale(1);
           }
           50% {
-            transform: scale(1.025) rotate(3deg);
-            filter: blur(0.5px) saturate(0.78);
+            transform: translateX(-50%) translateY(-71.5%) scale(1.08);
           }
         }
 
-        @keyframes liquid-one {
+        @keyframes sphere-speak-2 {
           0%,
           100% {
-            transform: rotate(0deg) scale(1);
-            border-radius: 48% 52% 55% 45% / 50% 48% 52% 50%;
+            transform: translateX(-50%) translateY(-28.5%) scale(1);
           }
           50% {
-            transform: rotate(165deg) scale(1.12);
-            border-radius: 58% 42% 47% 53% / 44% 58% 42% 56%;
+            transform: translateX(-50%) translateY(-28.5%) scale(1.08);
           }
         }
 
-        @keyframes liquid-two {
+        @keyframes sphere-speak-3 {
           0%,
           100% {
-            transform: rotate(0deg) scale(1);
-            border-radius: 52% 48% 44% 56% / 58% 46% 54% 42%;
+            transform: translateX(-71.5%) translateY(-50%) scale(1);
           }
           50% {
-            transform: rotate(-140deg) scale(1.2);
-            border-radius: 42% 58% 54% 46% / 45% 52% 48% 55%;
+            transform: translateX(-71.5%) translateY(-50%) scale(1.08);
+          }
+        }
+
+        @keyframes sphere-speak-4 {
+          0%,
+          100% {
+            transform: translateX(-28.5%) translateY(-50%) scale(1);
+          }
+          50% {
+            transform: translateX(-28.5%) translateY(-50%) scale(1.08);
+          }
+        }
+
+        @keyframes sphere-think-1 {
+          0%,
+          100% {
+            transform: translateX(-50%) translateY(-71.5%);
+          }
+          50% {
+            transform: translateX(-50%) translateY(-65%);
+          }
+        }
+
+        @keyframes sphere-think-2 {
+          0%,
+          100% {
+            transform: translateX(-50%) translateY(-28.5%);
+          }
+          50% {
+            transform: translateX(-50%) translateY(-35%);
+          }
+        }
+
+        @keyframes sphere-think-3 {
+          0%,
+          100% {
+            transform: translateX(-71.5%) translateY(-50%);
+          }
+          50% {
+            transform: translateX(-65%) translateY(-50%);
+          }
+        }
+
+        @keyframes sphere-think-4 {
+          0%,
+          100% {
+            transform: translateX(-28.5%) translateY(-50%);
+          }
+          50% {
+            transform: translateX(-35%) translateY(-50%);
           }
         }
       `}</style>

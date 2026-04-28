@@ -14,6 +14,10 @@ function getErrorDetails(err: unknown) {
   return err;
 }
 
+function warnTrackingFailure(action: string, err: unknown) {
+  console.warn(`[tracking] ${action} failed`, getErrorDetails(err));
+}
+
 async function postTracking<T>(body: Record<string, unknown>): Promise<T | null> {
   const response = await fetch(API_ROUTES.TRACKING.WRITE, {
     method: "POST",
@@ -41,7 +45,7 @@ export async function createSession(fields: SessionInsert = {}): Promise<string 
 
     return data?.id ?? null;
   } catch (err) {
-    console.error("[tracking] createSession failed", getErrorDetails(err));
+    warnTrackingFailure("createSession", err);
     return null;
   }
 }
@@ -56,7 +60,7 @@ export async function updateSession(id: string | null, fields: SessionUpdate): P
       fields,
     });
   } catch (err) {
-    console.error("[tracking] updateSession failed", getErrorDetails(err));
+    warnTrackingFailure("updateSession", err);
   }
 }
 
@@ -75,7 +79,7 @@ export async function logEvent(
       metadata,
     });
   } catch (err) {
-    console.error("[tracking] logEvent failed", getErrorDetails(err));
+    warnTrackingFailure("logEvent", err);
   }
 }
 
@@ -92,7 +96,7 @@ export async function logTranscriptMessage(
       message,
     });
   } catch (err) {
-    console.error("[tracking] logTranscriptMessage failed", getErrorDetails(err));
+    warnTrackingFailure("logTranscriptMessage", err);
   }
 }
 

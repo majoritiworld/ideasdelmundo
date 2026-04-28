@@ -1,6 +1,427 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+/* Every file under public/fonts: ArizonaFlare (woff2), ArizonaSans (otf), JetBrainsMono + JetBrainsMonoNL (ttf) */
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-Thin-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-ThinItalic-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-Light-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-LightItalic-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-Regular-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-RegularItalic-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-Medium-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-MediumItalic-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-Bold-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaFlare";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ArizonaFlare/ABCArizonaFlare-BoldItalic-Trial.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-Thin-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-ThinItalic-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-Light.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-LightItalic-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-Regular-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-RegularItalic-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-Medium-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-MediumItalic-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-Bold-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "ArizonaSans";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-BoldItalic-Trial.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-Thin.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-ThinItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-ExtraLight.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-ExtraLightItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-LightItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-Italic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-MediumItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-SemiBoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMono";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMono-ExtraBoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-Thin.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-ThinItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-ExtraLight.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-ExtraLightItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-LightItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-Italic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-MediumItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-SemiBoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrainsMonoNL";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-ExtraBoldItalic.ttf") format("truetype");
+}
+
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -9,7 +430,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-app-body);
   --font-heading: var(--font-app-heading);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-app-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,8 +470,12 @@
 }
 
 :root {
-  --font-app-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-app-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-app-heading: "ArizonaFlare", ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-app-body:
+    "ArizonaSans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --font-app-mono: "JetBrainsMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   --radius: 0.625rem;
   --background: #fafbfe;
   --foreground: #0f1b2d;
@@ -124,6 +549,20 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
+    font-family: "ArizonaSans", sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "ArizonaFlare", serif;
+  }
+  .font-mono {
+    text-transform: uppercase;
+  }
+  button {
+    font-family: "JetBrainsMono", monospace;
+    text-transform: uppercase;
   }
 }

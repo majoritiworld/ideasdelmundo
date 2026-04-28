@@ -33,14 +33,14 @@ export default function BreathingOffer() {
       <h2 className="mt-10 text-2xl leading-tight font-medium text-[#0F1B2D] sm:text-[32px]">
         {t("title")}
       </h2>
-      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-base">
+      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
         {t("subtitle")}
       </p>
       <div className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
         <Button
           type="button"
           onClick={startMeditation}
-          className="h-12 rounded-full bg-[#1B3DD4] px-7 text-white transition-all hover:-translate-y-px hover:bg-[#1632B0] active:scale-[0.98]"
+          className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
         >
           {t("yes")}
         </Button>
@@ -48,7 +48,7 @@ export default function BreathingOffer() {
           type="button"
           variant="ghost"
           onClick={skipMeditation}
-          className="h-12 rounded-full border border-[#D5DCE6] bg-transparent px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:border-[#1B3DD4] hover:bg-white active:scale-[0.98]"
+          className="h-12 rounded-full border border-[#D5DCE6] bg-transparent px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:border-primary hover:bg-white active:scale-[0.98]"
         >
           {t("skip")}
         </Button>

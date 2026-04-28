@@ -817,10 +817,11 @@
   },
   "journey": {
     "welcome": {
-      "title": "Welcome to your purpose experience",
+      "titleLine1": "Welcome to your",
+      "titleLine2": "purpose experience",
       "subtitle": "Discover who you are and what moves your world.",
       "nameLabel": "Before we begin, what's your name?",
-      "namePlaceholder": "Your name",
+      "namePlaceholder": "Your Name",
       "cta": "Meet your guide"
     },
     "meetGuide": {
@@ -835,17 +836,23 @@
       "skip": "Skip"
     },
     "meditation": {
-      "ready": "Ready when you are.",
-      "instruction": "Press start to begin three breathing cycles.",
+      "ready": "Before we begin, make sure you're in a comfortable position.",
+      "instruction": "We'll be breathing together for 1 minute.",
+      "countdown": "Get ready",
+      "prepareToInhale": "Prepare to inhale in 3 seconds.",
+      "countdownInstruction": "Start inhaling when the countdown ends.",
+      "followCircle": "Follow the circle with your breath.",
+      "complete": "Complete",
       "start": "Start",
       "continue": "Continue",
       "skip": "Skip",
+      "finishSession": "Finish session",
       "cycle": "Cycle {current} of {total}",
       "cues": {
-        "inhale": "Breathe in...",
-        "hold": "Hold...",
-        "exhale": "Breathe out...",
-        "rest": "Rest..."
+        "inhale": "Inhale",
+        "hold": "Hold",
+        "exhale": "Exhale",
+        "rest": "Hold"
       }
     },
     "postMeditation": {
@@ -853,6 +860,7 @@
       "cta": "Let's begin"
     },
     "questionsIntro": {
+      "stateLabel": "Speaking",
       "subtitle": "We're going to start with a few simple questions that will help me better understand who you are. There are no right or wrong answers — just be honest with yourself.",
       "cta": "Let's go"
     },
