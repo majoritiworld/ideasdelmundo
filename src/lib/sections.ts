@@ -12,10 +12,10 @@ export interface Section {
 }
 
 export const categoryColors = {
-  passion: "#1B3DD4",
-  vocation: "#1D9E75",
-  mission: "#D85A30",
-  profession: "#9F77DD",
+  passion: "#CEA41A",
+  vocation: "#1A35CE",
+  mission: "#CE1ABC",
+  profession: "#008925",
 } as const;
 
 export const sections: Section[] = [

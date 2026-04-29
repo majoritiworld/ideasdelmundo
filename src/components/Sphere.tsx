@@ -7,6 +7,9 @@ export interface SphereProps {
   size?: number;
   variant?: "blue" | "lime" | "green";
   breathPhase?: "inhale" | "hold" | "exhale" | "rest";
+  circleColors?: readonly [string, string, string, string];
+  circleOpacities?: readonly [number, number, number, number];
+  disableHoverEffect?: boolean;
 }
 
 const SPHERE_SCALE = 1.25;
@@ -22,6 +25,9 @@ export default function Sphere({
   size = 200,
   variant = "lime",
   breathPhase = "rest",
+  circleColors,
+  circleOpacities,
+  disableHoverEffect = false,
 }: SphereProps) {
   const [visualState, setVisualState] = useState(state);
   const [isAssembling, setIsAssembling] = useState(false);
@@ -33,6 +39,16 @@ export default function Sphere({
     width: size * SPHERE_SCALE,
     height: size * SPHERE_SCALE,
   } as CSSProperties;
+
+  function getCircleStyle(index: number): CSSProperties | undefined {
+    if (!circleColors && !circleOpacities) return undefined;
+    const opacity = circleOpacities?.[index];
+
+    return {
+      ...(circleColors ? { backgroundColor: circleColors[index] } : {}),
+      ...(opacity !== undefined ? { opacity, zIndex: opacity > 0.3 ? 2 : 1 } : {}),
+    };
+  }
 
   const clearSettlingTimeout = useCallback(() => {
     if (settlingTimeoutRef.current) {
@@ -120,6 +136,7 @@ export default function Sphere({
   }, [clearSettlingTimeout, clearSnapshotStyles]);
 
   function handleMouseEnter() {
+    if (disableHoverEffect) return;
     if (isAssembling) return;
 
     const sphere = sphereRef.current;
@@ -163,6 +180,7 @@ export default function Sphere({
   }
 
   function handleMouseLeave() {
+    if (disableHoverEffect) return;
     clearSnapshotStyles();
     setIsAssembling(false);
   }
@@ -179,10 +197,26 @@ export default function Sphere({
       onMouseLeave={handleMouseLeave}
       style={sphereStyle}
     >
-      <div ref={(node) => void (circleRefs.current[0] = node)} className="sphere__circle sphere__circle--1" />
-      <div ref={(node) => void (circleRefs.current[1] = node)} className="sphere__circle sphere__circle--2" />
-      <div ref={(node) => void (circleRefs.current[2] = node)} className="sphere__circle sphere__circle--3" />
-      <div ref={(node) => void (circleRefs.current[3] = node)} className="sphere__circle sphere__circle--4" />
+      <div
+        ref={(node) => void (circleRefs.current[0] = node)}
+        className="sphere__circle sphere__circle--1"
+        style={getCircleStyle(0)}
+      />
+      <div
+        ref={(node) => void (circleRefs.current[1] = node)}
+        className="sphere__circle sphere__circle--2"
+        style={getCircleStyle(1)}
+      />
+      <div
+        ref={(node) => void (circleRefs.current[2] = node)}
+        className="sphere__circle sphere__circle--3"
+        style={getCircleStyle(2)}
+      />
+      <div
+        ref={(node) => void (circleRefs.current[3] = node)}
+        className="sphere__circle sphere__circle--4"
+        style={getCircleStyle(3)}
+      />
 
       <style jsx>{`
         .sphere {

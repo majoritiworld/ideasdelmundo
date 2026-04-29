@@ -1,10 +1,19 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type FormEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Iconify from "@/components/ui/iconify";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Sphere, { type SphereProps } from "@/components/Sphere";
 import { sendChatMessage } from "@/lib/chat";
 import { EVENTS } from "@/lib/events";
@@ -33,7 +42,7 @@ type SpeechRecognitionInstance = {
   continuous: boolean;
   interimResults: boolean;
   onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: any) => void) | null;
   onend: (() => void) | null;
   start: () => void;
   stop: () => void;
@@ -85,13 +94,16 @@ export default function Conversation() {
   const [doneWithQuestionFlowActive, setDoneWithQuestionFlowActive] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initializedQuestionId = useRef<number | null>(null);
   const completedGuideRevealRef = useRef<Set<string>>(new Set());
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const finalTranscriptRef = useRef("");
+  const liveTranscriptRef = useRef("");
   const snapshotBeforeMicRef = useRef<string | null>(null);
-  const speechExitModeRef = useRef<"none" | "escape" | "error">("none");
+  const speechExitModeRef = useRef<"none" | "stop" | "escape" | "error">("none");
+  const shouldKeepRecordingRef = useRef(false);
   const inputForMicRef = useRef(input);
   inputForMicRef.current = input;
   const stateRef = useRef(state);
@@ -142,9 +154,21 @@ export default function Conversation() {
     void updateSession(state.sessionId, { current_screen: "conversation" });
   }, [state.sessionId]);
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [isThinking, messages.length, guideReveal?.count]);
+  useLayoutEffect(() => {
+    const inputEl = inputRef.current;
+    if (!inputEl) return;
+    inputEl.style.height = "auto";
+    inputEl.style.height = `${Math.min(inputEl.scrollHeight, 180)}px`;
+  }, [input]);
+
+  useLayoutEffect(() => {
+    requestAnimationFrame(() => {
+      const scrollEl = scrollRef.current;
+      if (!scrollEl) return;
+      scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+    });
+  }, [input, isThinking, messages.length, guideReveal?.count]);
 
   useEffect(() => {
     if (!question || initializedQuestionId.current === question.id || messages.length > 0) return;
@@ -266,9 +290,18 @@ export default function Conversation() {
     };
   }, [messages, question]);
 
-  const stopSpeechRecognition = useCallback(() => {
+  const stopSpeechRecognition = useCallback((mode: "stop" | "escape" = "stop") => {
     const rec = recognitionRef.current;
-    if (!rec) return;
+    shouldKeepRecordingRef.current = false;
+    speechExitModeRef.current = mode;
+    if (mode === "escape") {
+      finalTranscriptRef.current = "";
+      liveTranscriptRef.current = "";
+    }
+    if (!rec) {
+      setIsRecording(false);
+      return;
+    }
     try {
       rec.stop();
     } catch {
@@ -289,59 +322,83 @@ export default function Conversation() {
     if (!Ctor) return;
 
     speechExitModeRef.current = "none";
+    shouldKeepRecordingRef.current = true;
     snapshotBeforeMicRef.current = inputForMicRef.current;
     finalTranscriptRef.current = "";
+    liveTranscriptRef.current = "";
     setIsRecording(true);
 
     const rec = new Ctor();
     recognitionRef.current = rec;
     rec.lang = "en-US";
-    rec.continuous = false;
+    rec.continuous = true;
     rec.interimResults = true;
 
     rec.onresult = (event: SpeechRecognitionResultEvent) => {
       let interim = "";
       let finals = "";
-      for (let i = 0; i < event.results.length; i++) {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         if (result.isFinal) {
-          finals += result[0]?.transcript ?? "";
+          finals += `${result[0]?.transcript ?? ""} `;
         } else {
           interim += result[0]?.transcript ?? "";
         }
       }
-      finalTranscriptRef.current = finals;
-      const live = `${finals}${interim}`.trim();
+      if (finals) {
+        finalTranscriptRef.current = `${finalTranscriptRef.current} ${finals}`.trim();
+      }
+      const live = `${finalTranscriptRef.current} ${interim}`.trim();
+      liveTranscriptRef.current = live;
       setInput(live);
     };
 
-    rec.onerror = () => {
+    rec.onerror = (event: any) => {
+      console.error("[Conversation] SpeechRecognition error:", event?.error);
       speechExitModeRef.current = "error";
+      shouldKeepRecordingRef.current = false;
+      setIsRecording(false);
+      recognitionRef.current = null;
+      finalTranscriptRef.current = "";
+      liveTranscriptRef.current = "";
+      setInput(snapshotBeforeMicRef.current ?? "");
+      snapshotBeforeMicRef.current = null;
       try {
         rec.stop();
       } catch {
-        setIsRecording(false);
-        recognitionRef.current = null;
-        speechExitModeRef.current = "none";
-        finalTranscriptRef.current = "";
-        setInput(snapshotBeforeMicRef.current ?? "");
-        snapshotBeforeMicRef.current = null;
+        /* already stopped */
       }
     };
 
     rec.onend = () => {
-      setIsRecording(false);
       recognitionRef.current = null;
       const mode = speechExitModeRef.current;
+      if (mode === "none" && shouldKeepRecordingRef.current) {
+        try {
+          rec.start();
+          recognitionRef.current = rec;
+          setIsRecording(true);
+          return;
+        } catch (err) {
+          console.error("[Conversation] SpeechRecognition restart failed:", err);
+          speechExitModeRef.current = "error";
+          shouldKeepRecordingRef.current = false;
+        }
+      }
+      setIsRecording(false);
+      shouldKeepRecordingRef.current = false;
       speechExitModeRef.current = "none";
       if (mode === "escape" || mode === "error") {
         finalTranscriptRef.current = "";
+        liveTranscriptRef.current = "";
         setInput(snapshotBeforeMicRef.current ?? "");
         snapshotBeforeMicRef.current = null;
         return;
       }
-      const finalText = finalTranscriptRef.current.trim();
+      const finalText = (finalTranscriptRef.current || liveTranscriptRef.current).trim();
       setInput(finalText);
+      finalTranscriptRef.current = "";
+      liveTranscriptRef.current = "";
       snapshotBeforeMicRef.current = null;
     };
 
@@ -351,8 +408,10 @@ export default function Conversation() {
       console.error("[Conversation] SpeechRecognition.start() failed:", err);
       setIsRecording(false);
       recognitionRef.current = null;
+      shouldKeepRecordingRef.current = false;
       speechExitModeRef.current = "none";
       finalTranscriptRef.current = "";
+      liveTranscriptRef.current = "";
       setInput(snapshotBeforeMicRef.current ?? "");
       snapshotBeforeMicRef.current = null;
     }
@@ -380,9 +439,7 @@ export default function Conversation() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       event.preventDefault();
-      speechExitModeRef.current = "escape";
-      finalTranscriptRef.current = "";
-      stopSpeechRecognition();
+      stopSpeechRecognition("escape");
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -546,6 +603,12 @@ export default function Conversation() {
     startSpeechRecognition();
   }
 
+  function onComposerKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing) return;
+    event.preventDefault();
+    void submitMessage();
+  }
+
   return (
     <section className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-5 py-8 text-center sm:px-8">
       <Button
@@ -559,12 +622,12 @@ export default function Conversation() {
 
       <div className="m-auto flex min-h-[calc(100vh-64px)] w-full max-w-3xl flex-col pt-16">
         <div className="flex flex-col items-center text-center">
-          <p className="max-w-xl text-[15px] leading-[1.65] font-medium text-[#0F1B2D]">
-            {activeQuestion.text}
-          </p>
-          <div className="mt-6">
+          <div>
             <Sphere state={sphereState} size={80} />
           </div>
+          <p className="font-heading mt-6 max-w-xl text-[21px] leading-[1.35] font-medium text-[#0F1B2D]">
+            {activeQuestion.text}
+          </p>
         </div>
 
         <div
@@ -578,7 +641,7 @@ export default function Conversation() {
               >
                 {message.role === "user" ? t("you") : t("guide")}
               </p>
-              <p className="text-[15px] leading-[1.65] text-[#0F1B2D]">
+              <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">
                 {guideDisplayText(message, index)}
               </p>
             </div>
@@ -586,9 +649,10 @@ export default function Conversation() {
           {isThinking ? (
             <div>
               <p className="mb-1 text-[12px] font-medium text-[#7B8FA8]">{t("guide")}</p>
-              <p className="text-[15px] leading-[1.65] text-[#0F1B2D]">...</p>
+              <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">...</p>
             </div>
           ) : null}
+          <div ref={messagesEndRef} aria-hidden="true" />
         </div>
 
         {error ? <p className="mt-4 max-w-md text-sm leading-6 text-[#D85A30]">{error}</p> : null}
@@ -599,26 +663,18 @@ export default function Conversation() {
             composerLocked && "pointer-events-none opacity-50"
           )}
         >
-          {showDoneWithQuestionButton ? (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => void submitDoneWithQuestion()}
-              className="mb-3 h-9 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[13px] font-medium text-[#5A6B82] hover:bg-white hover:text-[#5A6B82]"
-            >
-              {t("doneWithQuestion")}
-            </Button>
-          ) : null}
           <form onSubmit={submitMessage} className="flex flex-col gap-1">
-            <div className="flex gap-3">
-              <Input
+            <div className="flex items-end gap-3">
+              <Textarea
                 ref={inputRef}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
+                onKeyDown={onComposerKeyDown}
                 placeholder={t("placeholder")}
                 disabled={composerLocked}
+                rows={1}
                 className={cn(
-                  "h-12 rounded-full border-[#D5DCE6] bg-white px-5 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
+                  "max-h-[180px] min-h-12 resize-none overflow-y-auto rounded-[24px] border-[#D5DCE6] bg-white px-5 py-3 leading-6 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
                   isRecording
                     ? "italic text-[#7B8FA8]"
                     : "text-[#0F1B2D] not-italic"
@@ -653,6 +709,15 @@ export default function Conversation() {
               <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">{t("listeningHint")}</p>
             ) : null}
           </form>
+          {showDoneWithQuestionButton ? (
+            <button
+              type="button"
+              onClick={() => void submitDoneWithQuestion()}
+              className="mx-auto mt-3 flex font-sans text-[13px] font-normal normal-case text-[#7B8FA8] underline decoration-[#AAB6C5] underline-offset-4 hover:text-[#5A6B82]"
+            >
+              {t("doneWithQuestion")}
+            </button>
+          ) : null}
         </div>
       </div>
     </section>

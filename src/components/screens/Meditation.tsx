@@ -11,17 +11,20 @@ import { logEvent, updateSession } from "@/lib/tracking";
 const COUNTDOWN_MS = 3_000;
 const PREPARE_MS = 3_000;
 const INHALE_MS = 4_000;
-const HOLD_MS = 4_000;
-const EXHALE_MS = 4_000;
-const REST_MS = 4_000;
-const CYCLE_MS = INHALE_MS + HOLD_MS + EXHALE_MS + REST_MS;
-const TOTAL_CYCLES = 4;
+const HOLD_MS = 2_000;
+const EXHALE_MS = 6_000;
+const CYCLE_MS = INHALE_MS + HOLD_MS + EXHALE_MS;
+const TOTAL_CYCLES = 5;
 const STARTUP_MS = PREPARE_MS + COUNTDOWN_MS;
 const TOTAL_MS = STARTUP_MS + CYCLE_MS * TOTAL_CYCLES;
 const TICK_MS = 100;
 
-type BreathPhase = "inhale" | "hold" | "exhale" | "rest";
+type BreathPhase = "inhale" | "hold" | "exhale";
 type CirclePhase = BreathPhase | "prepare" | "countdown" | "ready" | "complete";
+
+function easeInOutSine(progress: number) {
+  return -(Math.cos(Math.PI * progress) - 1) / 2;
+}
 
 function getBreathingState(elapsedMs: number): {
   cueKey: BreathPhase;
@@ -43,20 +46,16 @@ function getBreathingState(elapsedMs: number): {
     return { cueKey: "hold", cycle, phaseElapsedMs: cycleElapsed - INHALE_MS };
   }
 
-  if (cycleElapsed < INHALE_MS + HOLD_MS + EXHALE_MS) {
-    return {
-      cueKey: "exhale",
-      cycle,
-      phaseElapsedMs: cycleElapsed - INHALE_MS - HOLD_MS,
-    };
-  }
-
-  return { cueKey: "rest", cycle, phaseElapsedMs: cycleElapsed - INHALE_MS - HOLD_MS - EXHALE_MS };
+  return {
+    cueKey: "exhale",
+    cycle,
+    phaseElapsedMs: cycleElapsed - INHALE_MS - HOLD_MS,
+  };
 }
 
 function getGradientProgress(phase: CirclePhase, phaseElapsedMs: number) {
   if (phase === "inhale") {
-    return Math.min(1, phaseElapsedMs / INHALE_MS);
+    return easeInOutSine(Math.min(1, phaseElapsedMs / INHALE_MS));
   }
 
   if (phase === "hold") {
@@ -64,11 +63,7 @@ function getGradientProgress(phase: CirclePhase, phaseElapsedMs: number) {
   }
 
   if (phase === "exhale") {
-    return Math.max(0, 1 - phaseElapsedMs / EXHALE_MS);
-  }
-
-  if (phase === "rest") {
-    return 0;
+    return easeInOutSine(Math.max(0, 1 - phaseElapsedMs / EXHALE_MS));
   }
 
   return 0;
@@ -82,7 +77,7 @@ function BreathingCircle({
   gradientProgress: number;
 }) {
   const circleStyle = {
-    "--breath-scale": 0.18 + gradientProgress * 0.82,
+    "--breath-scale": 0.18 + gradientProgress * 0.84,
     "--breath-opacity": phase === "ready" || phase === "complete" ? 0 : 1,
   } as CSSProperties;
 
@@ -94,7 +89,7 @@ function BreathingCircle({
       style={circleStyle}
       aria-live="polite"
     >
-      <div className="absolute inset-0 [transform:scale(var(--breath-scale))] rounded-full bg-[#9F77DD] opacity-[var(--breath-opacity)] transition-[transform,opacity] duration-100 ease-linear" />
+      <div className="absolute inset-0 rounded-full border border-[#9F77DD] bg-[#9F77DD] opacity-[var(--breath-opacity)] transition-[transform,opacity] duration-100 ease-linear [transform:scale(var(--breath-scale))]" />
       <style jsx>{`
         @keyframes meditation-ready-breathe {
           0%,
