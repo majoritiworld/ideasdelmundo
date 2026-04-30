@@ -834,7 +834,7 @@
     },
     "meditation": {
       "ready": "Asegúrate de estar en una posición cómoda.",
-      "instruction": "Respiraremos juntos durante 5 ciclos.",
+      "instruction": "Respiraremos juntos durante 1 min",
       "countdown": "Prepárate",
       "prepareToInhale": "Prepárate para inhalar en 3 segundos.",
       "countdownInstruction": "Empieza a inhalar cuando termine la cuenta regresiva.",
@@ -861,13 +861,47 @@
     "questionsIntro": {
       "stateLabel": "Hablando",
       "subtitle": "We're ready to begin. You'll now move through four sections of questions, each one exploring a different part of who you are. In each section, answer at least two questions to move forward. You can write your answers or use your voice, whatever feels most natural.",
+      "subtitleSegments": {
+        "ready": "We're ready to begin.",
+        "sections": "You'll now move through four sections of questions, each one exploring a different part of who you are.",
+        "sectionsQuestions": "You'll now move through four sections of questions,",
+        "sectionsEach": "each one exploring a different part of who you are.",
+        "instructionsSection": "In each section,",
+        "instructionsAnswer": "answer at least two questions to move forward.",
+        "instructionsEndStart": "You can write your answers or use your voice,",
+        "instructionsEndFinish": "whatever feels most natural."
+      },
       "cta": "I'm ready"
     },
     "board": {
       "sectionIndicator": "Section {current} of {total}",
       "questionNumber": "Question {number}",
       "answeredAria": "Answered",
+      "sectionIntros": {
+        "1": {
+          "alive": "This section is about what sets you alive.",
+          "time": "Take your time.",
+          "answers": "There are no wrong answers here."
+        },
+        "2": {
+          "gifts": "This section is about your natural gifts.",
+          "modest": "Don't be modest...",
+          "know": "you know more than you think."
+        },
+        "3": {
+          "place": "This section is about your place in the world.",
+          "moves": "Trust what moves you...",
+          "instincts": "your instincts matter."
+        },
+        "4": {
+          "value": "This section is about your value in the world.",
+          "honest": "Be honest...",
+          "between": "this is just between you and yourself."
+        }
+      },
+      "continue": "Continue",
       "nextSection": "Next section",
+      "answerRequirement": "Answer at least 2 questions to move on",
       "finish": "Finish"
     },
     "conversation": {
@@ -891,6 +925,11 @@
       "continueCta": "Continue",
       "nextTitle": "Your Blueprint is on its way.",
       "nextBody": "Our team is reviewing your answers and crafting your personalized Purpose Blueprint. You'll receive it in the next 48 hours at your email.",
+      "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
+      "emailPlaceholder": "your@email.com",
+      "notifyCta": "Notify me",
+      "notifySuccess": "You're all set. Check your inbox.",
+      "notifyError": "Something went wrong. Please try again.",
       "downloadCta": "Download my transcript",
       "shareCta": "Share this experience",
       "whatsappCta": "Share on WhatsApp",

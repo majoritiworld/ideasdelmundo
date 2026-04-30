@@ -2,58 +2,191 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { jsPDF } from "jspdf";
 import { useTranslations } from "next-intl";
 import Sphere from "@/components/Sphere";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Iconify from "@/components/ui/iconify";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce, type JourneyState } from "@/lib/journey-context";
+import { sendNotifyEmail } from "@/lib/notify";
 import { sections } from "@/lib/sections";
 import { markCompleted, updateSession } from "@/lib/tracking";
 import { useAudio } from "@/lib/useAudio";
 
 type ClosingStep = "congrats" | "next";
+type NotifyStatus = "idle" | "success" | "error";
 
 const WORD_REVEAL_DELAY_MS = 60;
 const SPEAKING_DURATION_MS = 9_000;
 const COPY_RESET_DELAY_MS = 2_000;
 const STEP_TRANSITION = { duration: 0.6, ease: "easeOut" } as const;
+const PDF_MARGIN = 40;
+const PDF_FOOTER_TEXT = "Your Purpose Blueprint · @majoriti.world";
+const PDF_COLORS = {
+  title: "#0F1B2D",
+  body: "#0F1B2D",
+  muted: "#5A6B82",
+  subtle: "#7B8FA8",
+  divider: "#D5DCE6",
+  accent: "#1B3DD4",
+} as const;
 
-function buildTranscript(conversations: JourneyState["conversations"]) {
-  const lines = ["YOUR PURPOSE BLUEPRINT — TRANSCRIPT", "====================================", ""];
+function sanitizePdfFileName(name: string) {
+  const safeName = name
+    .trim()
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "");
+
+  return `purpose-blueprint-${safeName || "guest"}.pdf`;
+}
+
+function formatGeneratedDate() {
+  return new Intl.DateTimeFormat(undefined, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
+}
+
+function addPdfFooters(doc: jsPDF) {
+  const pageCount = doc.getNumberOfPages();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  for (let page = 1; page <= pageCount; page += 1) {
+    doc.setPage(page);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(PDF_COLORS.subtle);
+    doc.text(PDF_FOOTER_TEXT, pageWidth / 2, pageHeight - 22, { align: "center" });
+  }
+}
+
+function createTranscriptPdf(name: string, conversations: JourneyState["conversations"]) {
+  const doc = new jsPDF({ format: "a4", hotfixes: ["px_scaling"], unit: "px" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const contentWidth = pageWidth - PDF_MARGIN * 2;
+  const contentBottom = pageHeight - PDF_MARGIN - 28;
+  let cursorY = PDF_MARGIN;
+
+  const addPageIfNeeded = (height: number) => {
+    if (cursorY + height <= contentBottom) return;
+
+    doc.addPage();
+    cursorY = PDF_MARGIN;
+  };
+
+  const addWrappedText = (
+    text: string,
+    options: {
+      color: string;
+      fontSize: number;
+      fontStyle?: "normal" | "bold" | "italic";
+      gapAfter?: number;
+      lineHeight?: number;
+    }
+  ) => {
+    const lineHeight = options.lineHeight ?? options.fontSize * 1.35;
+    const lines = doc.splitTextToSize(text, contentWidth) as string[];
+
+    doc.setFont("helvetica", options.fontStyle ?? "normal");
+    doc.setFontSize(options.fontSize);
+    doc.setTextColor(options.color);
+
+    lines.forEach((line) => {
+      addPageIfNeeded(lineHeight);
+      doc.text(line, PDF_MARGIN, cursorY);
+      cursorY += lineHeight;
+    });
+
+    cursorY += options.gapAfter ?? 0;
+  };
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(28);
+  doc.setTextColor(PDF_COLORS.title);
+  doc.text("Your Purpose Blueprint - Transcription", PDF_MARGIN, cursorY + 18);
+
+  cursorY += 48;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(14);
+  doc.setTextColor(PDF_COLORS.muted);
+  doc.text(`Prepared for ${name.trim() || "you"}`, PDF_MARGIN, cursorY);
+
+  cursorY += 22;
+  doc.setFontSize(11);
+  doc.setTextColor(PDF_COLORS.subtle);
+  doc.text(`Generated on ${formatGeneratedDate()}`, PDF_MARGIN, cursorY);
+
+  cursorY += 26;
+  doc.setDrawColor(PDF_COLORS.divider);
+  doc.setLineWidth(1);
+  doc.line(PDF_MARGIN, cursorY, pageWidth - PDF_MARGIN, cursorY);
+  cursorY += 20;
 
   sections.forEach((section) => {
-    const questionBlocks = section.questions
-      .map((question) => {
-        const messages = conversations[question.id];
-        if (!messages?.length) return null;
+    const questionsWithConversations = section.questions.filter(
+      (question) => conversations[question.id]?.length
+    );
 
-        return [
-          `Q: ${question.text}`,
-          ...messages.map(
-            (message) => `${message.role === "user" ? "You" : "Guide"}: ${message.text}`
-          ),
-        ].join("\n");
-      })
-      .filter((block): block is string => block !== null);
+    if (questionsWithConversations.length === 0) return;
 
-    if (questionBlocks.length === 0) return;
+    cursorY += 20;
+    addWrappedText(`Section ${section.id} — ${section.title}`, {
+      color: PDF_COLORS.accent,
+      fontSize: 13,
+      fontStyle: "bold",
+      gapAfter: 16,
+    });
 
-    const sectionHeading = `SECTION ${section.id}: ${section.title}`;
-    lines.push(sectionHeading, "-".repeat(sectionHeading.length), ...questionBlocks, "");
+    questionsWithConversations.forEach((question) => {
+      addWrappedText(`Q  ${question.text}`, {
+        color: PDF_COLORS.body,
+        fontSize: 11,
+        fontStyle: "bold",
+        gapAfter: 12,
+      });
+
+      conversations[question.id]?.forEach((message) => {
+        const isUserMessage = message.role === "user";
+
+        addWrappedText(isUserMessage ? "You" : "Guide", {
+          color: isUserMessage ? PDF_COLORS.accent : PDF_COLORS.subtle,
+          fontSize: 10,
+          fontStyle: "bold",
+          gapAfter: 4,
+          lineHeight: 12,
+        });
+        addWrappedText(message.text, {
+          color: isUserMessage ? PDF_COLORS.body : PDF_COLORS.muted,
+          fontSize: 11,
+          fontStyle: isUserMessage ? "normal" : "italic",
+          gapAfter: 12,
+        });
+      });
+
+      cursorY += 8;
+    });
   });
 
-  return lines.join("\n");
+  addPdfFooters(doc);
+  doc.save(sanitizePdfFileName(name));
 }
 
 export default function Closing() {
-  const { state } = useJourney();
+  const { state, dispatch } = useJourney();
   const t = useTranslations("journey.closing");
   const logSessionCompleted = useLogEventOnce(EVENTS.SESSION_COMPLETED);
   const [step, setStep] = useState<ClosingStep>("congrats");
   const [isSpeaking, setIsSpeaking] = useState(true);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [emailValue, setEmailValue] = useState(state.email);
+  const [notifyStatus, setNotifyStatus] = useState<NotifyStatus>("idle");
+  const [isNotifying, setIsNotifying] = useState(false);
   useAudio("/audio/closing-1.mp3");
 
   const congratsBodyLine1 = t("congratsBodyLine1");
@@ -74,6 +207,7 @@ export default function Closing() {
     () => congratsLines.reduce((total, line) => total + line.words.length, 0),
     [congratsLines]
   );
+  const emailReady = emailValue.trim().length > 0;
 
   useEffect(() => {
     void logSessionCompleted();
@@ -101,18 +235,14 @@ export default function Closing() {
     return () => clearTimeout(timeoutId);
   }, [copied]);
 
-  const downloadTranscript = () => {
-    const transcript = buildTranscript(state.conversations);
-    const blob = new Blob([transcript], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+  useEffect(() => {
+    if (!state.email || emailValue) return;
 
-    link.href = url;
-    link.download = "purpose-transcript.txt";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    setEmailValue(state.email);
+  }, [emailValue, state.email]);
+
+  const downloadTranscript = () => {
+    createTranscriptPdf(state.name, state.conversations);
   };
 
   const shareOnWhatsApp = () => {
@@ -123,6 +253,29 @@ export default function Closing() {
   const copyLink = async () => {
     await navigator.clipboard.writeText(window.location.origin);
     setCopied(true);
+  };
+
+  const notifyMe = async () => {
+    const email = emailValue.trim();
+    if (!email || isNotifying) return;
+
+    setIsNotifying(true);
+    setNotifyStatus("idle");
+
+    try {
+      await updateSession(state.sessionId, { email });
+      dispatch({ type: "SET_EMAIL", email });
+      await sendNotifyEmail({
+        name: state.name,
+        email,
+        sessionId: state.sessionId,
+      });
+      setNotifyStatus("success");
+    } catch {
+      setNotifyStatus("error");
+    } finally {
+      setIsNotifying(false);
+    }
   };
 
   return (
@@ -176,7 +329,7 @@ export default function Closing() {
               <Button
                 type="button"
                 onClick={() => setStep("next")}
-                className="mt-10 h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
               >
                 {t("continueCta")}
               </Button>
@@ -200,10 +353,56 @@ export default function Closing() {
               {t("nextBody")}
             </p>
             <div className="mt-10 flex w-full max-w-sm flex-col items-stretch gap-3">
+              {notifyStatus === "success" ? (
+                <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
+                  {t("notifySuccess")}
+                </p>
+              ) : (
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void notifyMe();
+                  }}
+                  className="flex flex-col gap-3 rounded-[28px] border border-[#D5DCE6] bg-white/70 p-3 shadow-[0_18px_55px_rgba(15,27,45,0.08)]"
+                >
+                  <label
+                    htmlFor="closing-email"
+                    className="px-2 text-sm leading-[1.6] text-[#5A6B82]"
+                  >
+                    {t("notifyLabel")}
+                  </label>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <Input
+                      id="closing-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      value={emailValue}
+                      onChange={(event) => {
+                        setEmailValue(event.target.value);
+                        if (notifyStatus === "error") setNotifyStatus("idle");
+                      }}
+                      placeholder={t("emailPlaceholder")}
+                      className="h-12 border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none sm:flex-1"
+                      aria-required
+                    />
+                    <Button
+                      type="submit"
+                      disabled={!emailReady || isNotifying}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
+                    >
+                      {t("notifyCta")}
+                    </Button>
+                  </div>
+                  {notifyStatus === "error" ? (
+                    <p className="px-2 text-sm font-medium text-[#D85A30]">{t("notifyError")}</p>
+                  ) : null}
+                </form>
+              )}
               <Button
                 type="button"
                 onClick={downloadTranscript}
-                className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
               >
                 {t("downloadCta")}
               </Button>

@@ -103,12 +103,13 @@ export default function Conversation() {
   const isInputLockedForReveal = guideReveal !== null;
   const composerLocked =
     isThinking || isInputLockedForReveal || doneWithQuestionFlowActive || isTranscribing;
+  const userMessageCount = messages.filter((m) => m.role === "user").length;
   const showDoneWithQuestionButton =
     !doneWithQuestionFlowActive &&
     !isInputLockedForReveal &&
     !isThinking &&
     !isRecording &&
-    !isTranscribing;
+    userMessageCount >= 3;
 
   micShortcutGuardsRef.current = {
     speechSupported,

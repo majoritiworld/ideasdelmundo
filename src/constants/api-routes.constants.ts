@@ -13,6 +13,7 @@ const API_ROUTES = {
     WRITE: "/api/tracking",
   },
   CHAT: "/api/chat",
+  NOTIFY: "/api/notify",
 } as const;
 
 export default API_ROUTES;
