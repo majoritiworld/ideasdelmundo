@@ -30,11 +30,12 @@ export default function Welcome() {
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
       <Sphere state="idle" size={160} />
       <h1 className="mt-10 text-[32px] leading-tight font-medium text-[#0F1B2D] sm:text-[40px]">
-        <span className="block">{t("titleLine1")}</span>
-        <span className="block">{t("titleLine2")}</span>
+        {t("title")}
       </h1>
-      <p className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
-        {t("subtitle")}
+      <p className="mt-4 max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
+        {t("subtitleLine1")}
+        <br />
+        {t("subtitleLine2")}
       </p>
 
       <div className="mt-8 w-full max-w-xl text-center">

@@ -19,6 +19,10 @@ import { sendChatMessage } from "@/lib/chat";
 import { EVENTS } from "@/lib/events";
 import { type ConversationMessage, useJourney } from "@/lib/journey-context";
 import { getQuestionById } from "@/lib/sections";
+import {
+  getSectionSphereCircleColors,
+  getSectionSphereCircleOpacities,
+} from "@/lib/section-sphere";
 import type { Json } from "@/lib/supabase/types";
 import { logEvent, updateSession } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
@@ -36,47 +40,6 @@ function splitMessageWords(text: string): string[] {
   return t ? t.split(/\s+/g) : [];
 }
 
-/** Minimal typing for the Web Speech API (names vary across browsers and TS lib versions). */
-type SpeechRecognitionInstance = {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
-  onerror: ((event: any) => void) | null;
-  onend: (() => void) | null;
-  start: () => void;
-  stop: () => void;
-};
-
-type SpeechRecognitionResultEvent = {
-  resultIndex: number;
-  results: {
-    length: number;
-    [index: number]: {
-      isFinal: boolean;
-      0: { transcript: string };
-    };
-  };
-};
-
-type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
-
-function isSpeechRecognitionAvailable(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
-  );
-}
-
-function getSpeechRecognitionCtor(): SpeechRecognitionConstructor | null {
-  if (typeof window === "undefined") return null;
-  const w = window as Window & {
-    SpeechRecognition?: SpeechRecognitionConstructor;
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
-  };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
-
 type GuideRevealState = { key: string; count: number };
 
 const EMPTY_MESSAGES: ConversationMessage[] = [];
@@ -90,6 +53,7 @@ export default function Conversation() {
   const [error, setError] = useState<string | null>(null);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [guideReveal, setGuideReveal] = useState<GuideRevealState | null>(null);
   const [doneWithQuestionFlowActive, setDoneWithQuestionFlowActive] = useState(false);
 
@@ -98,14 +62,8 @@ export default function Conversation() {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initializedQuestionId = useRef<number | null>(null);
   const completedGuideRevealRef = useRef<Set<string>>(new Set());
-  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
-  const finalTranscriptRef = useRef("");
-  const liveTranscriptRef = useRef("");
-  const snapshotBeforeMicRef = useRef<string | null>(null);
-  const speechExitModeRef = useRef<"none" | "stop" | "escape" | "error">("none");
-  const shouldKeepRecordingRef = useRef(false);
-  const inputForMicRef = useRef(input);
-  inputForMicRef.current = input;
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const stateRef = useRef(state);
   stateRef.current = state;
   const activeQuestionIdRef = useRef<number | null>(null);
@@ -116,38 +74,53 @@ export default function Conversation() {
   const micShortcutGuardsRef = useRef({
     speechSupported: false,
     isRecording: false,
+    isTranscribing: false,
     composerLocked: false,
   });
 
   const active = useMemo(
-    () => getQuestionById(state.activeQuestionId ?? 1),
+    () => (state.activeQuestionId === null ? null : getQuestionById(state.activeQuestionId)),
     [state.activeQuestionId]
   );
   const question = active?.question;
   const section = active?.section;
+  const sectionId = section?.id ?? state.currentSection;
+  const sphereCircleColors = getSectionSphereCircleColors(sectionId);
+  const sphereCircleOpacities = getSectionSphereCircleOpacities(sectionId);
   const messages = useMemo(
     () => (question ? (state.conversations[question.id] ?? EMPTY_MESSAGES) : EMPTY_MESSAGES),
     [question, state.conversations]
   );
+  const isUserComposing = input.trim().length > 0 || isRecording;
   const sphereState: SphereProps["state"] = isThinking
     ? "thinking"
     : isGuideSpeaking
       ? "speaking"
-      : "listening";
+      : isUserComposing
+        ? "listening"
+        : "idle";
 
   const isInputLockedForReveal = guideReveal !== null;
   const composerLocked =
-    isThinking || isInputLockedForReveal || doneWithQuestionFlowActive;
+    isThinking || isInputLockedForReveal || doneWithQuestionFlowActive || isTranscribing;
   const showDoneWithQuestionButton =
     !doneWithQuestionFlowActive &&
     !isInputLockedForReveal &&
     !isThinking &&
-    !isRecording;
+    !isRecording &&
+    !isTranscribing;
 
-  micShortcutGuardsRef.current = { speechSupported, isRecording, composerLocked };
+  micShortcutGuardsRef.current = {
+    speechSupported,
+    isRecording,
+    isTranscribing,
+    composerLocked,
+  };
 
   useEffect(() => {
-    setSpeechSupported(isSpeechRecognitionAvailable());
+    setSpeechSupported(
+      typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia
+    );
   }, []);
 
   useEffect(() => {
@@ -290,160 +263,90 @@ export default function Conversation() {
     };
   }, [messages, question]);
 
-  const stopSpeechRecognition = useCallback((mode: "stop" | "escape" = "stop") => {
-    const rec = recognitionRef.current;
-    shouldKeepRecordingRef.current = false;
-    speechExitModeRef.current = mode;
-    if (mode === "escape") {
-      finalTranscriptRef.current = "";
-      liveTranscriptRef.current = "";
-    }
-    if (!rec) {
-      setIsRecording(false);
-      return;
-    }
-    try {
-      rec.stop();
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  const startSpeechRecognition = useCallback(() => {
+  const startRecording = useCallback(async () => {
     if (
       !speechSupported ||
       isThinking ||
       isInputLockedForReveal ||
       isRecording ||
+      isTranscribing ||
       doneWithQuestionFlowActive
     )
       return;
-    const Ctor = getSpeechRecognitionCtor();
-    if (!Ctor) return;
-
-    speechExitModeRef.current = "none";
-    shouldKeepRecordingRef.current = true;
-    snapshotBeforeMicRef.current = inputForMicRef.current;
-    finalTranscriptRef.current = "";
-    liveTranscriptRef.current = "";
-    setIsRecording(true);
-
-    const rec = new Ctor();
-    recognitionRef.current = rec;
-    rec.lang = "en-US";
-    rec.continuous = true;
-    rec.interimResults = true;
-
-    rec.onresult = (event: SpeechRecognitionResultEvent) => {
-      let interim = "";
-      let finals = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          finals += `${result[0]?.transcript ?? ""} `;
-        } else {
-          interim += result[0]?.transcript ?? "";
-        }
-      }
-      if (finals) {
-        finalTranscriptRef.current = `${finalTranscriptRef.current} ${finals}`.trim();
-      }
-      const live = `${finalTranscriptRef.current} ${interim}`.trim();
-      liveTranscriptRef.current = live;
-      setInput(live);
-    };
-
-    rec.onerror = (event: any) => {
-      console.error("[Conversation] SpeechRecognition error:", event?.error);
-      speechExitModeRef.current = "error";
-      shouldKeepRecordingRef.current = false;
-      setIsRecording(false);
-      recognitionRef.current = null;
-      finalTranscriptRef.current = "";
-      liveTranscriptRef.current = "";
-      setInput(snapshotBeforeMicRef.current ?? "");
-      snapshotBeforeMicRef.current = null;
-      try {
-        rec.stop();
-      } catch {
-        /* already stopped */
-      }
-    };
-
-    rec.onend = () => {
-      recognitionRef.current = null;
-      const mode = speechExitModeRef.current;
-      if (mode === "none" && shouldKeepRecordingRef.current) {
-        try {
-          rec.start();
-          recognitionRef.current = rec;
-          setIsRecording(true);
-          return;
-        } catch (err) {
-          console.error("[Conversation] SpeechRecognition restart failed:", err);
-          speechExitModeRef.current = "error";
-          shouldKeepRecordingRef.current = false;
-        }
-      }
-      setIsRecording(false);
-      shouldKeepRecordingRef.current = false;
-      speechExitModeRef.current = "none";
-      if (mode === "escape" || mode === "error") {
-        finalTranscriptRef.current = "";
-        liveTranscriptRef.current = "";
-        setInput(snapshotBeforeMicRef.current ?? "");
-        snapshotBeforeMicRef.current = null;
-        return;
-      }
-      const finalText = (finalTranscriptRef.current || liveTranscriptRef.current).trim();
-      setInput(finalText);
-      finalTranscriptRef.current = "";
-      liveTranscriptRef.current = "";
-      snapshotBeforeMicRef.current = null;
-    };
 
     try {
-      rec.start();
-    } catch (err) {
-      console.error("[Conversation] SpeechRecognition.start() failed:", err);
-      setIsRecording(false);
-      recognitionRef.current = null;
-      shouldKeepRecordingRef.current = false;
-      speechExitModeRef.current = "none";
-      finalTranscriptRef.current = "";
-      liveTranscriptRef.current = "";
-      setInput(snapshotBeforeMicRef.current ?? "");
-      snapshotBeforeMicRef.current = null;
-    }
-  }, [speechSupported, isThinking, isInputLockedForReveal, isRecording, doneWithQuestionFlowActive]);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      recorder.ondataavailable = (event) => audioChunksRef.current.push(event.data);
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const formData = new FormData();
+        formData.append("audio", blob, "recording.webm");
 
-  const startSpeechRecognitionRef = useRef(startSpeechRecognition);
-  startSpeechRecognitionRef.current = startSpeechRecognition;
+        try {
+          const res = await fetch("/api/transcribe", { method: "POST", body: formData });
+          const { text } = (await res.json()) as { text?: string };
+          if (text) setInput((prev) => `${prev} ${text}`.trim());
+        } catch (err) {
+          console.error("[Conversation] Whisper transcription failed:", err);
+          setError(err instanceof Error ? err.message : t("fallbackError"));
+        } finally {
+          setIsTranscribing(false);
+          mediaRecorderRef.current = null;
+          audioChunksRef.current = [];
+        }
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("[Conversation] MediaRecorder start failed:", err);
+      setIsRecording(false);
+      setIsTranscribing(false);
+      setError(err instanceof Error ? err.message : t("fallbackError"));
+    }
+  }, [
+    speechSupported,
+    isThinking,
+    isInputLockedForReveal,
+    isRecording,
+    isTranscribing,
+    doneWithQuestionFlowActive,
+    t,
+  ]);
+
+  const stopRecording = useCallback(() => {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || recorder.state === "inactive") return;
+    recorder.stop();
+    setIsRecording(false);
+    setIsTranscribing(true);
+  }, []);
+
+  const startRecordingRef = useRef(startRecording);
+  startRecordingRef.current = startRecording;
+  const stopRecordingRef = useRef(stopRecording);
+  stopRecordingRef.current = stopRecording;
 
   useEffect(() => {
     const onDocumentKeyDown = (event: KeyboardEvent) => {
       if (event.key !== " ") return;
       const g = micShortcutGuardsRef.current;
-      if (!g.speechSupported || g.isRecording || g.composerLocked) return;
+      if (!g.speechSupported || g.isTranscribing || g.composerLocked) return;
       if (event.repeat || event.isComposing) return;
       if (document.activeElement === inputRef.current) return;
       event.preventDefault();
-      startSpeechRecognitionRef.current();
+      if (g.isRecording) {
+        stopRecordingRef.current();
+      } else {
+        void startRecordingRef.current();
+      }
     };
     document.addEventListener("keydown", onDocumentKeyDown);
     return () => document.removeEventListener("keydown", onDocumentKeyDown);
   }, []);
-
-  useEffect(() => {
-    if (!isRecording) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      stopSpeechRecognition("escape");
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isRecording, stopSpeechRecognition]);
 
   if (!question || !section) {
     return null;
@@ -474,6 +377,7 @@ export default function Conversation() {
       isThinking ||
       !state.sessionId ||
       isInputLockedForReveal ||
+      isTranscribing ||
       doneWithQuestionFlowActive
     )
       return;
@@ -522,6 +426,7 @@ export default function Conversation() {
       isInputLockedForReveal ||
       doneWithQuestionFlowActive ||
       isRecording ||
+      isTranscribing ||
       !state.sessionId
     ) {
       return;
@@ -529,7 +434,6 @@ export default function Conversation() {
     const doneText = t("doneWithQuestion");
     setError(null);
     setDoneWithQuestionFlowActive(true);
-    if (isRecording) stopSpeechRecognition();
 
     setIsThinking(true);
 
@@ -576,19 +480,31 @@ export default function Conversation() {
     const secId = activeSectionIdRef.current;
     if (qId == null || secId == null || !s.sessionId) return;
 
-    const answeredQuestionIds = Array.from(new Set([...s.answeredQuestions, qId]));
     const currentConversation = s.conversations[qId] ?? EMPTY_MESSAGES;
-    void logEvent(s.sessionId, EVENTS.QUESTION_ANSWERED, {
-      questionId: qId,
-      sectionId: secId,
-      messageCount: currentConversation.length,
-    });
+    const doneText = t("doneWithQuestion");
+    const hasUserAnswer = currentConversation.some(
+      (message) => message.role === "user" && message.text.trim() !== doneText
+    );
+    const answeredQuestionIds = hasUserAnswer
+      ? Array.from(new Set([...s.answeredQuestions, qId]))
+      : s.answeredQuestions;
+
+    if (hasUserAnswer) {
+      void logEvent(s.sessionId, EVENTS.QUESTION_ANSWERED, {
+        questionId: qId,
+        sectionId: secId,
+        messageCount: currentConversation.length,
+      });
+    }
+
     void updateSession(s.sessionId, {
       answered_question_ids: answeredQuestionIds,
       conversations: s.conversations as unknown as Json,
     });
 
-    dispatch({ type: "MARK_QUESTION_ANSWERED", id: qId });
+    if (hasUserAnswer) {
+      dispatch({ type: "MARK_QUESTION_ANSWERED", id: qId });
+    }
     dispatch({ type: "SET_ACTIVE_QUESTION", id: null });
     dispatch({ type: "GO_TO", screen: "board" });
   }
@@ -597,10 +513,10 @@ export default function Conversation() {
 
   function onMicClick() {
     if (isRecording) {
-      stopSpeechRecognition();
+      stopRecording();
       return;
     }
-    startSpeechRecognition();
+    void startRecording();
   }
 
   function onComposerKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
@@ -610,56 +526,67 @@ export default function Conversation() {
   }
 
   return (
-    <section className="relative mx-auto flex min-h-screen w-full max-w-4xl flex-col px-5 py-8 text-center sm:px-8">
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={returnToBoard}
-        className="absolute top-5 left-5 h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-primary hover:bg-white hover:text-primary sm:top-8 sm:left-8"
-      >
-        {t("back")}
-      </Button>
+    <section className="relative mx-auto flex h-screen min-h-screen w-full max-w-4xl flex-col px-5 text-center sm:px-8">
+      <div className="absolute top-5 left-1/2 w-full max-w-3xl -translate-x-1/2 text-left sm:top-8">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={returnToBoard}
+          className="h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-primary hover:bg-white hover:text-primary"
+        >
+          {t("back")}
+        </Button>
+      </div>
 
-      <div className="m-auto flex min-h-[calc(100vh-64px)] w-full max-w-3xl flex-col pt-16">
-        <div className="flex flex-col items-center text-center">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col pt-20 pb-8">
+        <div className="flex shrink-0 flex-col items-center text-center">
           <div>
-            <Sphere state={sphereState} size={80} />
+            <Sphere
+              state={sphereState}
+              size={100}
+              circleColors={sphereCircleColors}
+              circleOpacities={sphereCircleOpacities}
+              disableHoverEffect
+            />
           </div>
-          <p className="font-heading mt-6 max-w-xl text-[21px] leading-[1.35] font-medium text-[#0F1B2D]">
-            {activeQuestion.text}
-          </p>
         </div>
 
-        <div
-          ref={scrollRef}
-          className="mt-8 flex-1 space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 p-5 text-left"
-        >
-          {messages.map((message, index) => (
-            <div key={`${message.role}-${index}`}>
-              <p
-                className={`mb-1 text-[12px] font-medium ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}
-              >
-                {message.role === "user" ? t("you") : t("guide")}
-              </p>
-              <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">
-                {guideDisplayText(message, index)}
-              </p>
-            </div>
-          ))}
-          {isThinking ? (
-            <div>
-              <p className="mb-1 text-[12px] font-medium text-[#7B8FA8]">{t("guide")}</p>
-              <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">...</p>
-            </div>
-          ) : null}
-          <div ref={messagesEndRef} aria-hidden="true" />
+        <div className="relative mt-6 min-h-0 flex-1">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-px top-px z-10 h-12 rounded-t-2xl bg-gradient-to-b from-white/95 via-white/70 to-transparent"
+          />
+          <div
+            ref={scrollRef}
+            className="h-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 px-5 pt-8 pb-6 text-left"
+          >
+            {messages.map((message, index) => (
+              <div key={`${message.role}-${index}`}>
+                <p
+                  className={`mb-1 text-[12px] font-medium ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}
+                >
+                  {message.role === "user" ? t("you") : t("guide")}
+                </p>
+                <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">
+                  {guideDisplayText(message, index)}
+                </p>
+              </div>
+            ))}
+            {isThinking ? (
+              <div>
+                <p className="mb-1 text-[12px] font-medium text-[#7B8FA8]">{t("guide")}</p>
+                <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">...</p>
+              </div>
+            ) : null}
+            <div ref={messagesEndRef} aria-hidden="true" />
+          </div>
         </div>
 
         {error ? <p className="mt-4 max-w-md text-sm leading-6 text-[#D85A30]">{error}</p> : null}
 
         <div
           className={cn(
-            "mt-5 text-left transition-opacity",
+            "mt-5 shrink-0 text-left transition-opacity",
             composerLocked && "pointer-events-none opacity-50"
           )}
         >
@@ -684,7 +611,7 @@ export default function Conversation() {
                 <Button
                   type="button"
                   variant="outline"
-                  disabled={composerLocked}
+                  disabled={composerLocked || isTranscribing}
                   onClick={onMicClick}
                   aria-label={isRecording ? t("micRecording") : t("micStart")}
                   className={cn(
@@ -707,6 +634,11 @@ export default function Conversation() {
             </div>
             {isRecording ? (
               <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">{t("listeningHint")}</p>
+            ) : null}
+            {isTranscribing ? (
+              <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">
+                {t("transcribingHint")}
+              </p>
             ) : null}
           </form>
           {showDoneWithQuestionButton ? (

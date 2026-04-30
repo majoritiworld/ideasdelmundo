@@ -1,44 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce } from "@/lib/journey-context";
 import { categoryColors, sections, type Question } from "@/lib/sections";
+import {
+  getSectionSphereCircleColors,
+  getSectionSphereCircleOpacities,
+} from "@/lib/section-sphere";
 import { logEvent, updateSession } from "@/lib/tracking";
+import { useAudio } from "@/lib/useAudio";
 import { cn } from "@/lib/utils";
 
 const TOTAL_SECTIONS = 4;
-const INACTIVE_CIRCLE_COLOR = "#AEB8C6";
-const CIRCLE_COLORS_BY_POSITION = {
-  top: categoryColors.passion,
-  right: categoryColors.vocation,
-  bottom: categoryColors.mission,
-  left: categoryColors.profession,
-} as const;
+const STEPPER_ACTIVE_GRAY = "#6B7280";
+const STEPPER_INACTIVE_GRAY = "#D5DCE6";
+const STEPPER_TEXT_GRAY = "#4B5563";
+const SECTION_SPEAKING_DURATIONS_MS: Partial<Record<number, number>> = {
+  1: 6_000,
+};
 
 function withThirtyPercentOpacity(hexColor: string) {
   return `${hexColor}4D`;
-}
-
-function getSphereCircleColors(sectionId: number): readonly [string, string, string, string] {
-  return [
-    sectionId >= 1 ? CIRCLE_COLORS_BY_POSITION.top : INACTIVE_CIRCLE_COLOR,
-    sectionId >= 3 ? CIRCLE_COLORS_BY_POSITION.bottom : INACTIVE_CIRCLE_COLOR,
-    sectionId >= 4 ? CIRCLE_COLORS_BY_POSITION.left : INACTIVE_CIRCLE_COLOR,
-    sectionId >= 2 ? CIRCLE_COLORS_BY_POSITION.right : INACTIVE_CIRCLE_COLOR,
-  ];
-}
-
-function getSphereCircleOpacities(sectionId: number): readonly [number, number, number, number] {
-  return [
-    sectionId >= 1 ? 0.5 : 0.3,
-    sectionId >= 3 ? 0.5 : 0.3,
-    sectionId >= 4 ? 0.5 : 0.3,
-    sectionId >= 2 ? 0.5 : 0.3,
-  ];
 }
 
 function getHighestUnlockedSection(answeredQuestions: number[]) {
@@ -73,15 +59,22 @@ export default function Board() {
   const t = useTranslations("journey.board");
   const logBoardViewed = useLogEventOnce(EVENTS.BOARD_VIEWED);
   const section = sections.find((item) => item.id === state.currentSection) ?? sections[0];
+  const [isSectionSpeaking, setIsSectionSpeaking] = useState(false);
+  const [voiceoverSectionId, setVoiceoverSectionId] = useState<number | null>(null);
+  const sectionVoiceoversPlayedRef = useRef(state.sectionVoiceoversPlayed);
+  sectionVoiceoversPlayedRef.current = state.sectionVoiceoversPlayed;
   const sectionColor = categoryColors[section.theme];
   const completedCardColor = withThirtyPercentOpacity(sectionColor);
-  const sphereCircleColors = getSphereCircleColors(section.id);
-  const sphereCircleOpacities = getSphereCircleOpacities(section.id);
+  const sphereCircleColors = getSectionSphereCircleColors(section.id);
+  const sphereCircleOpacities = getSectionSphereCircleOpacities(section.id);
   const highestUnlockedSection = getHighestUnlockedSection(state.answeredQuestions);
   const answeredInSection = section.questions.filter((question) =>
     state.answeredQuestions.includes(question.id)
   ).length;
   const canAdvance = answeredInSection >= 2;
+  useAudio(`/audio/section-${voiceoverSectionId ?? section.id}.mp3`, {
+    enabled: voiceoverSectionId !== null,
+  });
 
   useEffect(() => {
     void logBoardViewed();
@@ -91,6 +84,30 @@ export default function Board() {
       answered_question_ids: state.answeredQuestions,
     });
   }, [logBoardViewed, state.answeredQuestions, state.currentSection, state.sessionId]);
+
+  useEffect(() => {
+    const hasPlayedSectionVoiceover = sectionVoiceoversPlayedRef.current.includes(section.id);
+
+    if (hasPlayedSectionVoiceover) {
+      setVoiceoverSectionId(null);
+      setIsSectionSpeaking(false);
+      return;
+    }
+
+    setVoiceoverSectionId(section.id);
+    dispatch({ type: "MARK_SECTION_VOICEOVER_PLAYED", section: section.id });
+
+    const speakingDuration = SECTION_SPEAKING_DURATIONS_MS[section.id];
+    setIsSectionSpeaking(Boolean(speakingDuration));
+
+    if (!speakingDuration) return;
+
+    const timeoutId = setTimeout(() => {
+      setIsSectionSpeaking(false);
+    }, speakingDuration);
+
+    return () => clearTimeout(timeoutId);
+  }, [dispatch, section.id]);
 
   function openQuestion(question: Question) {
     void logEvent(state.sessionId, EVENTS.QUESTION_OPENED, {
@@ -133,7 +150,6 @@ export default function Board() {
               const isCurrent = step === section.id;
               const isCompleted = getAnsweredCountForSection(step, state.answeredQuestions) >= 2;
               const canNavigate = !isCurrent && step <= highestUnlockedSection;
-              const stepColor = categoryColors[sections[index].theme];
 
               return (
                 <div key={step} className="flex flex-1 items-center last:flex-none">
@@ -145,15 +161,16 @@ export default function Board() {
                     aria-label={t("sectionIndicator", { current: step, total: TOTAL_SECTIONS })}
                     className={cn(
                       "relative z-10 flex size-6 items-center justify-center rounded-full border bg-white font-mono text-[11px] font-medium transition-all",
-                      isCurrent && "opacity-100 ring-4 ring-white",
+                      isCurrent && "opacity-100 ring-4 ring-[#E5E7EB]",
                       !isCurrent && "opacity-50",
                       step > highestUnlockedSection && "cursor-default",
                       canNavigate && "cursor-pointer",
                     )}
                     style={{
-                      borderColor: step <= highestUnlockedSection ? stepColor : "#D5DCE6",
-                      backgroundColor: isCompleted ? stepColor : "#FFFFFF",
-                      color: isCompleted ? "#FFFFFF" : stepColor,
+                      borderColor:
+                        step <= highestUnlockedSection ? STEPPER_ACTIVE_GRAY : STEPPER_INACTIVE_GRAY,
+                      backgroundColor: isCompleted ? STEPPER_ACTIVE_GRAY : "#FFFFFF",
+                      color: isCompleted ? "#FFFFFF" : STEPPER_TEXT_GRAY,
                     }}
                   >
                     {isCompleted ? "✓" : step}
@@ -167,7 +184,7 @@ export default function Board() {
           </div>
           <div className="mt-8 flex justify-center">
             <Sphere
-              state="idle"
+              state={isSectionSpeaking ? "speaking" : "idle"}
               size={100}
               circleColors={sphereCircleColors}
               circleOpacities={sphereCircleOpacities}

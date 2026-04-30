@@ -5,7 +5,7 @@ import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 export interface SphereProps {
   state: "idle" | "listening" | "speaking" | "thinking" | "breathing";
   size?: number;
-  variant?: "blue" | "lime" | "green";
+  variant?: "blue" | "lime" | "green" | "purple";
   breathPhase?: "inhale" | "hold" | "exhale" | "rest";
   circleColors?: readonly [string, string, string, string];
   circleOpacities?: readonly [number, number, number, number];
@@ -101,19 +101,20 @@ export default function Sphere({
         circle.style.transform = circleTransform === "none" ? "" : circleTransform;
       });
 
-      void sphere.offsetWidth;
-      setVisualState("idle");
-
       animationFrameRef.current = window.requestAnimationFrame(() => {
-        sphere.style.transition = `transform ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}`;
-        sphere.style.transform = "";
+        setVisualState("idle");
 
-        circles.forEach((circle) => {
-          circle.style.transition = `transform ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}, opacity ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}`;
-          circle.style.transform = "";
+        animationFrameRef.current = window.requestAnimationFrame(() => {
+          sphere.style.transition = `transform ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}`;
+          sphere.style.transform = "";
+
+          circles.forEach((circle) => {
+            circle.style.transition = `transform ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}, opacity ${SPEAKING_TO_IDLE_MS}ms ${SPEAKING_TO_IDLE_EASING}`;
+            circle.style.transform = "";
+          });
+
+          animationFrameRef.current = null;
         });
-
-        animationFrameRef.current = null;
       });
 
       settlingTimeoutRef.current = setTimeout(() => {
@@ -125,7 +126,10 @@ export default function Sphere({
     }
 
     clearSnapshotStyles();
-    setVisualState(state);
+    animationFrameRef.current = window.requestAnimationFrame(() => {
+      setVisualState(state);
+      animationFrameRef.current = null;
+    });
   }, [clearSettlingTimeout, clearSnapshotStyles, state, visualState]);
 
   useEffect(() => {
@@ -238,6 +242,10 @@ export default function Sphere({
           color: #9f77dd;
         }
 
+        .sphere--purple {
+          color: #9f77dd;
+        }
+
         .sphere__circle {
           position: absolute;
           top: 50%;
@@ -285,11 +293,23 @@ export default function Sphere({
         }
 
         .sphere--listening {
-          animation: sphere-group-spin 6s linear infinite;
+          animation: sphere-listening-pulse 1.9s ease-in-out infinite;
         }
 
         .sphere[data-state="listening"] .sphere__circle {
-          animation: sphere-listening-presence 6s linear infinite;
+          animation: sphere-listening-presence 1.9s ease-in-out infinite;
+        }
+
+        .sphere[data-state="listening"] .sphere__circle--2 {
+          animation-delay: -0.18s;
+        }
+
+        .sphere[data-state="listening"] .sphere__circle--3 {
+          animation-delay: -0.36s;
+        }
+
+        .sphere[data-state="listening"] .sphere__circle--4 {
+          animation-delay: -0.54s;
         }
 
         .sphere--speaking {
@@ -411,13 +431,23 @@ export default function Sphere({
           }
         }
 
+        @keyframes sphere-listening-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.06);
+          }
+        }
+
         @keyframes sphere-listening-presence {
           0%,
           100% {
             opacity: 0.28;
           }
           50% {
-            opacity: 0.34;
+            opacity: 0.42;
           }
         }
 

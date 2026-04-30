@@ -58,7 +58,7 @@ export const formValidator = {
       })
       .min(1, { error: props?.message?.required_error ?? "required" }),
 
-  optionalStringArray: (_props?: InputProps) => zod.array(zod.string()),
+  optionalStringArray: () => zod.array(zod.string()),
 
   /** Exact string length (e.g. OTP digits). */
   requiredExactStringLength: (length: number, props?: InputProps) =>
@@ -144,7 +144,7 @@ export const formValidator = {
       .optional()
       .nullable(),
 
-  requiredStringDate: (_props?: InputProps) =>
+  requiredStringDate: () =>
     zod.string().refine((val) => !isNaN(Date.parse(val)), {
       error: "invalidDate",
     }),

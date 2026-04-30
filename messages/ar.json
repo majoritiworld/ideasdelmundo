@@ -817,9 +817,9 @@
   },
   "journey": {
     "welcome": {
-      "titleLine1": "Welcome to your",
-      "titleLine2": "purpose experience",
-      "subtitle": "Discover who you are and what moves your world.",
+      "title": "Your Purpose Blueprint",
+      "subtitleLine1": "A guided experience to uncover your passions, strengths, and purpose.",
+      "subtitleLine2": "Discover the opportunities that a new world is opening up for you.",
       "nameLabel": "قبل أن نبدأ، ما اسمك؟",
       "namePlaceholder": "اسمك",
       "cta": "Meet your guide"
@@ -836,8 +836,8 @@
       "skip": "Skip"
     },
     "meditation": {
-      "ready": "قبل أن نبدأ، تأكد من أنك في وضعية مريحة.",
-      "instruction": "سنتنفس معًا لمدة دقيقة واحدة.",
+      "ready": "تأكد من أنك في وضعية مريحة.",
+      "instruction": "سنتنفس معًا لمدة 5 دورات.",
       "countdown": "استعد",
       "prepareToInhale": "استعد للشهيق خلال 3 ثوانٍ.",
       "countdownInstruction": "ابدأ بالشهيق عند انتهاء العد التنازلي.",
@@ -845,6 +845,8 @@
       "complete": "اكتمل",
       "start": "Start",
       "continue": "Continue",
+      "done": "انتهيت",
+      "repeat": "إعادة",
       "skip": "Skip",
       "finishSession": "إنهاء الجلسة",
       "cycle": "Cycle {current} of {total}",
@@ -861,8 +863,8 @@
     },
     "questionsIntro": {
       "stateLabel": "يتحدث",
-      "subtitle": "We're going to start with a few simple questions that will help me better understand who you are. There are no right or wrong answers — just be honest with yourself.",
-      "cta": "Let's go"
+      "subtitle": "We're ready to begin. You'll now move through four sections of questions, each one exploring a different part of who you are. In each section, answer at least two questions to move forward. You can write your answers or use your voice, whatever feels most natural.",
+      "cta": "I'm ready"
     },
     "board": {
       "sectionIndicator": "Section {current} of {total}",
@@ -879,16 +881,26 @@
       "send": "Send",
       "fallbackError": "Unable to get a guide response",
       "micStart": "بدء الإدخال الصوتي",
-      "micRecording": "جارٍ التسجيل — اضغط Escape للإلغاء",
-      "listeningHint": "جارٍ الاستماع… اضغط إرسال عند الانتهاء",
+      "micRecording": "إيقاف الإدخال الصوتي",
+      "listeningHint": "جارٍ الاستماع... اضغط Space أو زر الميكروفون عند الانتهاء",
+      "transcribingHint": "جارٍ التفريغ...",
       "doneWithQuestion": "انتهيت من هذا السؤال"
     },
     "closing": {
-      "title": "Congratulations, you're done!",
-      "body": "In the next 24 to 48 hours, you'll receive a Purpose Profile that reflects your answers and will help guide your next professional steps.",
-      "subtext": "In the meantime, you can watch a video that explains our vision on purpose and work.",
-      "cta": "Watch the video",
-      "footer": "@sebastian_majoriti"
+      "congratsTitle": "Congratulations, {name}.",
+      "congratsBodyLine1": "You just did something most people never do.",
+      "congratsBodyLine2": "Thank you for showing up with such honesty.",
+      "congratsBodyLine3": "It takes courage to look inward like this.",
+      "continueCta": "Continue",
+      "nextTitle": "Your Blueprint is on its way.",
+      "nextBody": "Our team is reviewing your answers and crafting your personalized Purpose Blueprint. You'll receive it in the next 48 hours at your email.",
+      "downloadCta": "Download my transcript",
+      "shareCta": "Share this experience",
+      "whatsappCta": "Share on WhatsApp",
+      "copyLinkCta": "Copy link",
+      "copiedCta": "Copied!",
+      "shareMessage": "I just mapped my purpose with Your Purpose Blueprint. Try it here: {origin}",
+      "footer": "majoriti.world"
     }
   },
   "errorBoundary": {

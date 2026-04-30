@@ -64,6 +64,7 @@ export function FormCombobox({
                   id={`form-combobox-${name}`}
                   type="button"
                   role="combobox"
+                  aria-controls={`form-combobox-${name}-list`}
                   aria-expanded={open}
                   aria-invalid={fieldState.invalid}
                   className={cn(
@@ -90,7 +91,7 @@ export function FormCombobox({
                   <CommandInput
                     placeholder={searchPlaceholder ? tr(searchPlaceholder) : tRoot("search")}
                   />
-                  <CommandList>
+                  <CommandList id={`form-combobox-${name}-list`}>
                     <CommandEmpty>{emptyLabel ? tr(emptyLabel) : tRoot("noResults")}</CommandEmpty>
                     <CommandGroup>
                       {options.map((option) => (

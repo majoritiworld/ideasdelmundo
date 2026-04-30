@@ -39,6 +39,7 @@ export interface JourneyState {
   source: string;
   currentSection: number;
   answeredQuestions: number[];
+  sectionVoiceoversPlayed: number[];
   activeQuestionId: number | null;
   conversations: Record<number, ConversationMessage[]>;
   meditationCompleted: boolean;
@@ -52,6 +53,7 @@ type JourneyAction =
   | { type: "SET_EMAIL"; email: string }
   | { type: "SET_SOURCE"; source: string }
   | { type: "SET_CURRENT_SECTION"; section: number }
+  | { type: "MARK_SECTION_VOICEOVER_PLAYED"; section: number }
   | { type: "SET_ACTIVE_QUESTION"; id: number | null }
   | { type: "MARK_QUESTION_ANSWERED"; id: number }
   | { type: "ADD_MESSAGE"; questionId: number; message: ConversationMessage }
@@ -67,6 +69,7 @@ const initialState: JourneyState = {
   source: "",
   currentSection: 1,
   answeredQuestions: [],
+  sectionVoiceoversPlayed: [],
   activeQuestionId: null,
   conversations: {},
   meditationCompleted: false,
@@ -88,6 +91,12 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       return { ...state, source: action.source };
     case "SET_CURRENT_SECTION":
       return { ...state, currentSection: Math.max(1, Math.min(4, action.section)) };
+    case "MARK_SECTION_VOICEOVER_PLAYED":
+      if (state.sectionVoiceoversPlayed.includes(action.section)) return state;
+      return {
+        ...state,
+        sectionVoiceoversPlayed: [...state.sectionVoiceoversPlayed, action.section],
+      };
     case "SET_ACTIVE_QUESTION":
       return { ...state, activeQuestionId: action.id };
     case "MARK_QUESTION_ANSWERED":
