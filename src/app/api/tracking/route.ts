@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 import type {
   Json,
   SessionInsert,
@@ -37,6 +37,7 @@ function jsonError(status: number, message: string) {
 export async function POST(request: NextRequest) {
   try {
     const payload = (await request.json()) as TrackingPayload;
+    const supabaseAdmin = getSupabaseAdmin();
 
     if (payload.action === "createSession") {
       const id = crypto.randomUUID();

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import WEB_ROUTES from "@/constants/web-routes.constants";
 import { requireAdminUser } from "@/lib/admin-auth";
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 import type { SessionRow, TranscriptMessageRow } from "@/lib/supabase/types";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +47,8 @@ function groupMessages(messages: TranscriptMessageRow[]) {
 }
 
 async function getRecentSessions() {
+  const supabaseAdmin = getSupabaseAdmin();
+
   const { data: sessions, error: sessionsError } = await supabaseAdmin
     .from("sessions")
     .select("*")
