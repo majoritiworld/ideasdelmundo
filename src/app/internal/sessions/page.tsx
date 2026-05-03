@@ -11,9 +11,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import WEB_ROUTES from "@/constants/web-routes.constants";
+import { generateBlueprintAction } from "@/lib/blueprints/actions";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import type { SessionRow, TranscriptMessageRow } from "@/lib/supabase/types";
+import type { BlueprintRow, SessionRow, TranscriptMessageRow } from "@/lib/supabase/types";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -46,6 +48,13 @@ function groupMessages(messages: TranscriptMessageRow[]) {
   }, {});
 }
 
+function groupBlueprints(blueprints: BlueprintRow[]) {
+  return blueprints.reduce<Record<string, BlueprintRow>>((acc, blueprint) => {
+    acc[blueprint.session_id] = blueprint;
+    return acc;
+  }, {});
+}
+
 async function getRecentSessions() {
   const supabaseAdmin = getSupabaseAdmin();
 
@@ -66,29 +75,38 @@ async function getRecentSessions() {
     return {
       sessions: sessionRows,
       messagesBySession: {},
+      blueprintsBySession: {},
     };
   }
 
-  const { data: messages, error: messagesError } = await supabaseAdmin
-    .from("transcript_messages")
-    .select("id, session_id, card_id, role, content, sequence, metadata, created_at")
-    .in("session_id", sessionIds)
-    .order("created_at", { ascending: true })
-    .order("sequence", { ascending: true });
+  const [messagesResult, blueprintsResult] = await Promise.all([
+    supabaseAdmin
+      .from("transcript_messages")
+      .select("id, session_id, card_id, role, content, sequence, metadata, created_at")
+      .in("session_id", sessionIds)
+      .order("created_at", { ascending: true })
+      .order("sequence", { ascending: true }),
+    supabaseAdmin.from("blueprints").select("*").in("session_id", sessionIds),
+  ]);
 
-  if (messagesError) {
-    throw new Error(messagesError.message);
+  if (messagesResult.error) {
+    throw new Error(messagesResult.error.message);
+  }
+
+  if (blueprintsResult.error) {
+    throw new Error(blueprintsResult.error.message);
   }
 
   return {
     sessions: sessionRows,
-    messagesBySession: groupMessages(messages ?? []),
+    messagesBySession: groupMessages(messagesResult.data ?? []),
+    blueprintsBySession: groupBlueprints(blueprintsResult.data ?? []),
   };
 }
 
 export default async function InternalSessionsPage() {
   const user = await requireAdminUser();
-  const { sessions, messagesBySession } = await getRecentSessions();
+  const { sessions, messagesBySession, blueprintsBySession } = await getRecentSessions();
 
   return (
     <PageContainer
@@ -118,19 +136,21 @@ export default async function InternalSessionsPage() {
                 <TableHead>Cards</TableHead>
                 <TableHead>Source</TableHead>
                 <TableHead>Created</TableHead>
+                <TableHead>Blueprint</TableHead>
                 <TableHead>Transcript</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sessions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-10 text-center text-[#5A6B82]">
+                  <TableCell colSpan={8} className="py-10 text-center text-[#5A6B82]">
                     No sessions captured yet.
                   </TableCell>
                 </TableRow>
               ) : (
                 sessions.map((session) => {
                   const messages = messagesBySession[session.id] ?? [];
+                  const blueprint = blueprintsBySession[session.id];
                   const preview = messages.slice(-2);
 
                   return (
@@ -159,6 +179,31 @@ export default async function InternalSessionsPage() {
                         {session.source || "Not set"}
                       </TableCell>
                       <TableCell>{formatDate(session.created_at)}</TableCell>
+                      <TableCell className="min-w-[170px]">
+                        {blueprint ? (
+                          <div className="grid gap-2">
+                            <Badge variant={getStatusVariant(session.status)}>
+                              {blueprint.status}
+                            </Badge>
+                            <Button asChild size="sm" variant="outline">
+                              <Link href={WEB_ROUTES.INTERNAL.BLUEPRINT_BY_ID(blueprint.id)}>
+                                Review
+                              </Link>
+                            </Button>
+                          </div>
+                        ) : session.status === "completed" &&
+                          session.email &&
+                          messages.length > 0 ? (
+                          <form action={generateBlueprintAction}>
+                            <input type="hidden" name="sessionId" value={session.id} />
+                            <Button type="submit" size="sm">
+                              Generate
+                            </Button>
+                          </form>
+                        ) : (
+                          <span className="text-xs text-[#7B8FA8]">Not ready</span>
+                        )}
+                      </TableCell>
                       <TableCell className="max-w-[360px] min-w-[280px] whitespace-normal">
                         {messages.length === 0 ? (
                           <span className="text-[#7B8FA8]">No messages yet</span>

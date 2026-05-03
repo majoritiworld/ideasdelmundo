@@ -49,6 +49,43 @@
   "themeSwitchToDarkAria": "מעבר למצב כהה",
   "themeLightMode": "מצב בהיר",
   "themeDarkMode": "מצב כהה",
+  "blueprint": {
+    "access": {
+      "loginTitle": "הבלופרינט שלך פרטי",
+      "loginDescription": "הכניסו את האימייל שמחובר לבלופרינט הזה ונשלח לכם קישור כניסה מאובטח.",
+      "emailLabel": "אימייל",
+      "emailPlaceholder": "you@example.com",
+      "submit": "שליחת קישור מאובטח",
+      "sent": "בדקו את האימייל שלכם לקבלת קישור הכניסה.",
+      "deniedTitle": "האימייל הזה לא יכול לפתוח את הבלופרינט",
+      "deniedDescription": "התחברו עם אותו אימייל שקיבל את הקישור לבלופרינט.",
+      "notReadyTitle": "הבלופרינט הזה עדיין לא מוכן",
+      "notReadyDescription": "צוות Majoriti עדיין מכין אותו."
+    },
+    "page": {
+      "eyebrow": "Purpose Blueprint שלך",
+      "ikigaiEyebrow": "האיקיגאי שלך",
+      "ikigaiTitle": "הצורה שלך.",
+      "ikigaiSub": "געו בכל עיגול כדי לראות מה הוא מחזיק.",
+      "tensionEyebrow": "מפת מתחים",
+      "tensionTitle": "החיכוך היצירתי שבתוכך.",
+      "tensionSub": "אלה לא בעיות לפתור. אלה כוחות להבין.",
+      "shadowEyebrow": "צד הצל שלך",
+      "opportunitiesEyebrow": "לאן אפשר ללכת",
+      "opportunitiesTitle": "הזדמנויות מקצועיות שכבר מתחילות לקבל צורה.",
+      "opportunitiesSub": "כל נתיב מגיע ממשהו שכבר גילית.",
+      "questionEyebrow": "השאלה עכשיו",
+      "booksEyebrow": "לדרך שלך",
+      "booksTitle": "שלושה ספרים ללכת איתם.",
+      "booksSub": "נבחרו לפי מה שמעסיק אותך עכשיו.",
+      "videosEyebrow": "מה לראות עכשיו",
+      "videosTitle": "שלושה סרטונים לפרק הזה.",
+      "videosSub": "השתמשו בהם כניצוצות, לא כהוראות.",
+      "watchVideo": "צפייה בסרטון",
+      "archetypeEyebrow": "ארכיטיפ מקצועי",
+      "signoff": "צוות Majoriti"
+    }
+  },
   "demo": {
     "pageTitle": "אפליקציית Skeleton",
     "pageSubtitle": "נקודת פתיחה מוכנה שעוזרת לך לבנות אתר טוב יותר עם AI — מהר יותר, מסודר יותר, ובצורה שמתכנת יכול להבין ולהמשיך ממנה.",

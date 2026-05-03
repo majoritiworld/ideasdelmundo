@@ -49,6 +49,43 @@
   "themeSwitchToDarkAria": "Switch to dark mode",
   "themeLightMode": "Light mode",
   "themeDarkMode": "Dark mode",
+  "blueprint": {
+    "access": {
+      "loginTitle": "Your blueprint is private",
+      "loginDescription": "Enter the email connected to this blueprint and we will send you a secure sign-in link.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send secure link",
+      "sent": "Check your email for the sign-in link.",
+      "deniedTitle": "This email cannot open this blueprint",
+      "deniedDescription": "Sign in with the same email that received the blueprint link.",
+      "notReadyTitle": "This blueprint is not ready yet",
+      "notReadyDescription": "The Majoriti team is still preparing it."
+    },
+    "page": {
+      "eyebrow": "Your Purpose Blueprint",
+      "ikigaiEyebrow": "Your Ikigai",
+      "ikigaiTitle": "The shape of you.",
+      "ikigaiSub": "Touch each circle to see what it holds.",
+      "tensionEyebrow": "Tension Map",
+      "tensionTitle": "The creative friction inside you.",
+      "tensionSub": "These are not problems to solve. They are forces to understand.",
+      "shadowEyebrow": "Your Shadow Side",
+      "opportunitiesEyebrow": "Where you could go",
+      "opportunitiesTitle": "Professional opportunities already taking shape.",
+      "opportunitiesSub": "Each path comes from something you already revealed.",
+      "questionEyebrow": "The question now",
+      "booksEyebrow": "For your journey",
+      "booksTitle": "Three books to walk with.",
+      "booksSub": "Chosen for what you are circling right now.",
+      "videosEyebrow": "Watch next",
+      "videosTitle": "Three videos for this chapter.",
+      "videosSub": "Use these as sparks, not instructions.",
+      "watchVideo": "Watch video",
+      "archetypeEyebrow": "Career Archetype",
+      "signoff": "The Majoriti team"
+    }
+  },
   "demo": {
     "pageTitle": "Skeleton App",
     "pageSubtitle": "A ready-made starting point that helps you build a better website with AI — faster, more organized, and in a way that a developer can understand and continue from.",

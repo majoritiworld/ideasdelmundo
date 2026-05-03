@@ -49,6 +49,43 @@
   "themeSwitchToDarkAria": "التبديل إلى الوضع الداكن",
   "themeLightMode": "الوضع الفاتح",
   "themeDarkMode": "الوضع الداكن",
+  "blueprint": {
+    "access": {
+      "loginTitle": "البلوپرنت الخاص بك خاص",
+      "loginDescription": "أدخل البريد الإلكتروني المرتبط بهذا البلوپرنت وسنرسل لك رابط دخول آمن.",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "you@example.com",
+      "submit": "إرسال رابط آمن",
+      "sent": "تحقق من بريدك الإلكتروني للحصول على رابط الدخول.",
+      "deniedTitle": "هذا البريد لا يمكنه فتح هذا البلوپرنت",
+      "deniedDescription": "سجّل الدخول بنفس البريد الذي استلم رابط البلوپرنت.",
+      "notReadyTitle": "هذا البلوپرنت ليس جاهزًا بعد",
+      "notReadyDescription": "فريق Majoriti ما زال يجهزه."
+    },
+    "page": {
+      "eyebrow": "Purpose Blueprint الخاص بك",
+      "ikigaiEyebrow": "الإيكيغاي الخاص بك",
+      "ikigaiTitle": "شكل ما بداخلك.",
+      "ikigaiSub": "المس كل دائرة لترى ما تحمله.",
+      "tensionEyebrow": "خريطة التوترات",
+      "tensionTitle": "الاحتكاك الإبداعي داخلك.",
+      "tensionSub": "هذه ليست مشكلات لحلها. إنها قوى لفهمها.",
+      "shadowEyebrow": "جانب الظل لديك",
+      "opportunitiesEyebrow": "إلى أين يمكنك الذهاب",
+      "opportunitiesTitle": "فرص مهنية بدأت تتشكل بالفعل.",
+      "opportunitiesSub": "كل مسار يأتي من شيء كشفته بالفعل.",
+      "questionEyebrow": "السؤال الآن",
+      "booksEyebrow": "لرحلتك",
+      "booksTitle": "ثلاثة كتب ترافقك.",
+      "booksSub": "اختيرت لما يدور حولك الآن.",
+      "videosEyebrow": "شاهد بعد ذلك",
+      "videosTitle": "ثلاثة فيديوهات لهذا الفصل.",
+      "videosSub": "استخدمها كشرارات، لا كتعليمات.",
+      "watchVideo": "مشاهدة الفيديو",
+      "archetypeEyebrow": "النمط المهني",
+      "signoff": "فريق Majoriti"
+    }
+  },
   "demo": {
     "pageTitle": "تطبيق Skeleton",
     "pageSubtitle": "نقطة بداية جاهزة تساعدك على بناء موقع أفضل باستخدام الذكاء الاصطناعي — بشكل أسرع، أكثر ترتيبًا، وبطريقة يمكن للمطور فهمها ومتابعة العمل عليها.",

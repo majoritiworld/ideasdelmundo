@@ -2,6 +2,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export type SessionStatus = "started" | "in_progress" | "completed" | "abandoned";
 export type ReportStatus = "pending" | "drafted" | "reviewed" | "sent";
+export type BlueprintStatus = "draft" | "reviewed" | "published" | "sent";
 export type TranscriptRole = "guide" | "user";
 
 export interface Database {
@@ -169,6 +170,75 @@ export interface Database {
           },
         ];
       };
+      blueprints: {
+        Row: {
+          id: string;
+          session_id: string;
+          user_id: string | null;
+          email: string;
+          name: string;
+          slug: string;
+          status: BlueprintStatus;
+          prompt_version: string;
+          content: Json;
+          generated_at: string | null;
+          reviewed_at: string | null;
+          published_at: string | null;
+          sent_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          user_id?: string | null;
+          email: string;
+          name: string;
+          slug: string;
+          status?: BlueprintStatus;
+          prompt_version: string;
+          content?: Json;
+          generated_at?: string | null;
+          reviewed_at?: string | null;
+          published_at?: string | null;
+          sent_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          session_id?: string;
+          user_id?: string | null;
+          email?: string;
+          name?: string;
+          slug?: string;
+          status?: BlueprintStatus;
+          prompt_version?: string;
+          content?: Json;
+          generated_at?: string | null;
+          reviewed_at?: string | null;
+          published_at?: string | null;
+          sent_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "blueprints_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blueprints_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -182,3 +252,6 @@ export type SessionRow = Database["public"]["Tables"]["sessions"]["Row"];
 export type SessionUpdate = Database["public"]["Tables"]["sessions"]["Update"];
 export type TranscriptMessageInsert = Database["public"]["Tables"]["transcript_messages"]["Insert"];
 export type TranscriptMessageRow = Database["public"]["Tables"]["transcript_messages"]["Row"];
+export type BlueprintInsert = Database["public"]["Tables"]["blueprints"]["Insert"];
+export type BlueprintRow = Database["public"]["Tables"]["blueprints"]["Row"];
+export type BlueprintUpdate = Database["public"]["Tables"]["blueprints"]["Update"];

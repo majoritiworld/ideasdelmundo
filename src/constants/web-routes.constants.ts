@@ -1,8 +1,14 @@
 const WEB_ROUTES = {
   HOME: "/",
+  BLUEPRINT: {
+    BY_SLUG: (slug: string) => `/blueprint/${slug}`,
+    AUTH_CALLBACK: "/auth/callback",
+  },
   INTERNAL: {
     LOGIN: "/internal/login",
     SESSIONS: "/internal/sessions",
+    BLUEPRINTS: "/internal/blueprints",
+    BLUEPRINT_BY_ID: (id: string) => `/internal/blueprints/${id}`,
     AUTH_CALLBACK: "/internal/auth/callback",
     LOGOUT: "/internal/logout",
   },

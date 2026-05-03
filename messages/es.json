@@ -49,6 +49,43 @@
   "themeSwitchToDarkAria": "Cambiar a modo oscuro",
   "themeLightMode": "Modo claro",
   "themeDarkMode": "Modo oscuro",
+  "blueprint": {
+    "access": {
+      "loginTitle": "Tu blueprint es privado",
+      "loginDescription": "Introduce el email conectado a este blueprint y te enviaremos un enlace seguro para entrar.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "submit": "Enviar enlace seguro",
+      "sent": "Revisa tu email para encontrar el enlace de acceso.",
+      "deniedTitle": "Este email no puede abrir este blueprint",
+      "deniedDescription": "Entra con el mismo email que recibió el enlace del blueprint.",
+      "notReadyTitle": "Este blueprint todavía no está listo",
+      "notReadyDescription": "El equipo de Majoriti aún lo está preparando."
+    },
+    "page": {
+      "eyebrow": "Tu Purpose Blueprint",
+      "ikigaiEyebrow": "Tu Ikigai",
+      "ikigaiTitle": "La forma de ti.",
+      "ikigaiSub": "Toca cada círculo para ver lo que contiene.",
+      "tensionEyebrow": "Mapa de tensiones",
+      "tensionTitle": "La fricción creativa dentro de ti.",
+      "tensionSub": "No son problemas que resolver. Son fuerzas que entender.",
+      "shadowEyebrow": "Tu lado sombra",
+      "opportunitiesEyebrow": "Hacia dónde podrías ir",
+      "opportunitiesTitle": "Oportunidades profesionales que ya están tomando forma.",
+      "opportunitiesSub": "Cada camino nace de algo que ya revelaste.",
+      "questionEyebrow": "La pregunta ahora",
+      "booksEyebrow": "Para tu camino",
+      "booksTitle": "Tres libros para acompañarte.",
+      "booksSub": "Elegidos para lo que estás rodeando ahora mismo.",
+      "videosEyebrow": "Qué ver después",
+      "videosTitle": "Tres videos para este capítulo.",
+      "videosSub": "Úsalos como chispas, no como instrucciones.",
+      "watchVideo": "Ver video",
+      "archetypeEyebrow": "Arquetipo profesional",
+      "signoff": "El equipo de Majoriti"
+    }
+  },
   "demo": {
     "pageTitle": "Aplicación Skeleton",
     "pageSubtitle": "Un punto de partida listo que te ayuda a crear un mejor sitio web con AI: más rápido, más ordenado y de una forma que un desarrollador pueda entender y continuar.",
