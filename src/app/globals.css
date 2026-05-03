@@ -421,8 +421,6 @@
   src: url("/fonts/JerBrainsMono/JetBrainsMonoNL-ExtraBoldItalic.ttf") format("truetype");
 }
 
-
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -474,8 +472,9 @@
   --font-app-body:
     "ArizonaSans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
-  --font-app-mono: "JetBrainsMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  --font-app-mono:
+    "JetBrainsMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   --radius: 0.625rem;
   --background: #fafbfe;
   --foreground: #0f1b2d;

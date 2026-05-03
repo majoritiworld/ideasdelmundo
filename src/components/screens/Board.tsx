@@ -3,12 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce } from "@/lib/journey-context";
@@ -34,7 +29,10 @@ const SECTION_SPEAKING_DURATIONS_MS: Partial<Record<number, number>> = {
 const SECTION_REVEAL_CLASS =
   "animate-[board-section-reveal_650ms_cubic-bezier(0.22,1,0.36,1)_both]";
 
-const SECTION_INTRO_SEGMENTS: Record<number, Array<Omit<TimedIntroSegment, "text"> & { key: string }>> = {
+const SECTION_INTRO_SEGMENTS: Record<
+  number,
+  Array<Omit<TimedIntroSegment, "text"> & { key: string }>
+> = {
   1: [
     { key: "alive", startMs: 0, endMs: 1_500 },
     { key: "time", startMs: 2_500, endMs: 3_500 },
@@ -116,13 +114,11 @@ function getHighestUnlockedSection(answeredQuestions: number[]) {
 function getAnsweredCountForSection(sectionId: number, answeredQuestions: number[]) {
   const targetSection = sections.find((item) => item.id === sectionId);
 
-  return (
-    targetSection
-      ? getSectionQuestions(targetSection).filter((question) =>
-          answeredQuestions.includes(question.id)
-        ).length
-      : 0
-  );
+  return targetSection
+    ? getSectionQuestions(targetSection).filter((question) =>
+        answeredQuestions.includes(question.id)
+      ).length
+    : 0;
 }
 
 export default function Board() {
@@ -200,9 +196,7 @@ export default function Board() {
         timeoutIds.push(
           ...timedIntroWords.map((word, index) =>
             setTimeout(() => {
-              setVisibleIntroWordCount((currentCount) =>
-                Math.max(currentCount, index + 1)
-              );
+              setVisibleIntroWordCount((currentCount) => Math.max(currentCount, index + 1));
             }, word.revealAtMs)
           )
         );
@@ -291,11 +285,13 @@ export default function Board() {
                         isCurrent && "opacity-100 ring-4 ring-[#E5E7EB]",
                         !isCurrent && "opacity-50",
                         step > highestUnlockedSection && "cursor-default",
-                        canNavigate && "cursor-pointer",
+                        canNavigate && "cursor-pointer"
                       )}
                       style={{
                         borderColor:
-                          step <= highestUnlockedSection ? STEPPER_ACTIVE_GRAY : STEPPER_INACTIVE_GRAY,
+                          step <= highestUnlockedSection
+                            ? STEPPER_ACTIVE_GRAY
+                            : STEPPER_INACTIVE_GRAY,
                         backgroundColor: isCompleted ? STEPPER_ACTIVE_GRAY : "#FFFFFF",
                         color: isCompleted ? "#FFFFFF" : STEPPER_TEXT_GRAY,
                       }}
@@ -358,7 +354,7 @@ export default function Board() {
                   onClick={continueFromSectionIntro}
                   disabled={isSectionSpeaking}
                   className={cn(
-                    "h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all duration-500 hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]",
+                    "bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all duration-500 hover:-translate-y-px active:scale-[0.98]",
                     isSectionSpeaking && "pointer-events-none translate-y-1 opacity-0"
                   )}
                 >
@@ -386,7 +382,7 @@ export default function Board() {
                     type="button"
                     onClick={() => openQuestion(question)}
                     className={cn(
-                      "flex min-h-[150px] flex-col justify-start rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left font-sans normal-case transition-all hover:-translate-y-px hover:border-primary active:scale-[0.98]",
+                      "hover:border-primary flex min-h-[150px] flex-col justify-start rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left font-sans normal-case transition-all hover:-translate-y-px active:scale-[0.98]",
                       isAnswered && "border-[#CBD5E1] text-[#0F1B2D]"
                     )}
                     style={isAnswered ? { backgroundColor: completedCardColor } : undefined}
@@ -438,7 +434,7 @@ export default function Board() {
                 <Button
                   type="button"
                   onClick={advanceSection}
-                  className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
                 >
                   {section.id === TOTAL_SECTIONS ? t("finish") : t("nextSection")}
                 </Button>
@@ -450,7 +446,7 @@ export default function Board() {
                         <Button
                           type="button"
                           disabled
-                          className="h-12 rounded-full bg-primary px-7 text-primary-foreground opacity-45"
+                          className="bg-primary text-primary-foreground h-12 rounded-full px-7 opacity-45"
                         >
                           {section.id === TOTAL_SECTIONS ? t("finish") : t("nextSection")}
                         </Button>

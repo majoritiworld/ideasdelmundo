@@ -75,9 +75,7 @@ function parseConversations(value: Json | null): Record<number, ConversationMess
 
 function toResumeSnapshot(session: SessionRow): ResumeJourneySnapshot {
   const conversations = parseConversations(session.conversations);
-  const conversationQuestionIds = Object.keys(conversations)
-    .map(Number)
-    .filter(Number.isFinite);
+  const conversationQuestionIds = Object.keys(conversations).map(Number).filter(Number.isFinite);
   const activeQuestionId = conversationQuestionIds.at(-1) ?? null;
   const screen = isScreen(session.current_screen) ? session.current_screen : "welcome";
 

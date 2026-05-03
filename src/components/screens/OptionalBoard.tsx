@@ -80,7 +80,7 @@ export default function OptionalBoard() {
             />
           )}
 
-          <h2 className="mt-8 font-heading text-[28px] leading-tight font-medium text-[#0F1B2D]">
+          <h2 className="font-heading mt-8 text-[28px] leading-tight font-medium text-[#0F1B2D]">
             Go deeper
           </h2>
           <p className="mt-3 text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[17px]">
@@ -98,7 +98,7 @@ export default function OptionalBoard() {
                 type="button"
                 onClick={() => openQuestion(question)}
                 className={cn(
-                  "flex min-h-[150px] flex-col justify-start rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left font-sans normal-case transition-all hover:-translate-y-px hover:border-primary active:scale-[0.98]",
+                  "hover:border-primary flex min-h-[150px] flex-col justify-start rounded-[18px] border border-[#D5DCE6] bg-white p-5 text-left font-sans normal-case transition-all hover:-translate-y-px active:scale-[0.98]",
                   isAnswered && "border-[#CBD5E1] text-[#0F1B2D]"
                 )}
                 style={isAnswered ? { backgroundColor: ANSWERED_CARD_BACKGROUND } : undefined}
@@ -142,7 +142,7 @@ export default function OptionalBoard() {
             type="button"
             variant="ghost"
             onClick={continueJourney}
-            className="h-12 rounded-full border border-[#D5DCE6] bg-white/70 px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:border-primary hover:bg-white active:scale-[0.98]"
+            className="hover:border-primary h-12 rounded-full border border-[#D5DCE6] bg-white/70 px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
           >
             {isFinalSection ? "I'm done" : "Next section"}
           </Button>

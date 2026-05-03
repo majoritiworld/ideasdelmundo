@@ -89,7 +89,7 @@ export default function Welcome() {
             type="button"
             onClick={() => void startJourney()}
             disabled={!nameReady || isStarting}
-            className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98] disabled:cursor-not-allowed"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
           >
             {t("cta")}
           </Button>

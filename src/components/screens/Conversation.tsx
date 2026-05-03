@@ -121,9 +121,7 @@ export default function Conversation() {
   };
 
   useEffect(() => {
-    setSpeechSupported(
-      typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia
-    );
+    setSpeechSupported(typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia);
   }, []);
 
   useEffect(() => {
@@ -542,7 +540,7 @@ export default function Conversation() {
           type="button"
           variant="ghost"
           onClick={returnToBoard}
-          className="h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:border-primary hover:bg-white hover:text-primary"
+          className="hover:border-primary hover:text-primary h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:bg-white"
         >
           {t("back")}
         </Button>
@@ -612,9 +610,7 @@ export default function Conversation() {
                 rows={1}
                 className={cn(
                   "max-h-[180px] min-h-12 resize-none overflow-y-auto rounded-[24px] border-[#D5DCE6] bg-white px-5 py-3 leading-6 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
-                  isRecording
-                    ? "italic text-[#7B8FA8]"
-                    : "text-[#0F1B2D] not-italic"
+                  isRecording ? "text-[#7B8FA8] italic" : "text-[#0F1B2D] not-italic"
                 )}
               />
               {speechSupported ? (
@@ -628,7 +624,7 @@ export default function Conversation() {
                     "h-12 w-12 shrink-0 rounded-full p-0 shadow-none",
                     isRecording
                       ? "animate-pulse border-transparent bg-[#EF4444] text-white hover:bg-[#EF4444] hover:text-white"
-                      : "border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white hover:text-primary"
+                      : "hover:text-primary border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white"
                   )}
                 >
                   <Iconify icon="lucide:mic" className="mx-auto size-5" />
@@ -637,7 +633,7 @@ export default function Conversation() {
               <Button
                 type="submit"
                 disabled={!input.trim() || composerLocked}
-                className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
               >
                 {t("send")}
               </Button>
@@ -655,7 +651,7 @@ export default function Conversation() {
             <button
               type="button"
               onClick={() => void submitDoneWithQuestion()}
-              className="mx-auto mt-3 flex font-sans text-[13px] font-normal normal-case text-[#7B8FA8] underline decoration-[#AAB6C5] underline-offset-4 hover:text-[#5A6B82]"
+              className="mx-auto mt-3 flex font-sans text-[13px] font-normal text-[#7B8FA8] normal-case underline decoration-[#AAB6C5] underline-offset-4 hover:text-[#5A6B82]"
             >
               {t("doneWithQuestion")}
             </button>

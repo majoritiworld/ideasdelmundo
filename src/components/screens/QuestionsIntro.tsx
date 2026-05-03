@@ -81,9 +81,7 @@ export default function QuestionsIntro() {
 
     const wordTimeoutIds = timedWords.map((word, index) =>
       setTimeout(() => {
-        setVisibleWordCount((currentCount) =>
-          Math.max(currentCount, index + 1)
-        );
+        setVisibleWordCount((currentCount) => Math.max(currentCount, index + 1));
       }, word.revealAtMs)
     );
 

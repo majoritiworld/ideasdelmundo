@@ -65,7 +65,7 @@ export default function InternalLoginPage() {
             <Button
               type="submit"
               loading={status === "loading"}
-              className="h-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full"
             >
               Send magic link
             </Button>

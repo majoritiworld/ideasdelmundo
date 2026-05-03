@@ -53,7 +53,7 @@ export default function BreathingOffer() {
         <Button
           type="button"
           onClick={startMeditation}
-          className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
         >
           {t("yes")}
         </Button>
@@ -61,7 +61,7 @@ export default function BreathingOffer() {
           type="button"
           variant="ghost"
           onClick={skipMeditation}
-          className="h-12 rounded-full border border-[#D5DCE6] bg-transparent px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:border-primary hover:bg-white active:scale-[0.98]"
+          className="hover:border-primary h-12 rounded-full border border-[#D5DCE6] bg-transparent px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
         >
           {t("skip")}
         </Button>

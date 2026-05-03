@@ -97,7 +97,7 @@ function BreathingCircle({
       style={circleStyle}
       aria-live="polite"
     >
-      <div className="absolute inset-0 rounded-full border border-[#9F77DD] bg-[#9F77DD] opacity-[var(--breath-opacity)] transition-[transform,opacity] duration-100 ease-linear [transform:scale(var(--breath-scale))]" />
+      <div className="absolute inset-0 [transform:scale(var(--breath-scale))] rounded-full border border-[#9F77DD] bg-[#9F77DD] opacity-[var(--breath-opacity)] transition-[transform,opacity] duration-100 ease-linear" />
       <style jsx>{`
         @keyframes meditation-circle-fade-in {
           from {

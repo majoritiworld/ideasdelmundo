@@ -11,8 +11,7 @@ import { updateSession } from "@/lib/tracking";
 const SPEAKING_DURATION_MS = 16_000;
 
 const SENTENCE_2 = "I'm Emma, and I'll be your guide in this experience.";
-const SENTENCE_3 =
-  "I'm here to help you explore your purpose and connect it with your work.";
+const SENTENCE_3 = "I'm here to help you explore your purpose and connect it with your work.";
 const SENTENCE_4 =
   "Together we'll discover what moves you, what gives you energy, and how you can contribute to the world in your own unique way.";
 
@@ -77,9 +76,7 @@ export default function MeetGuide() {
 
     const wordTimeoutIds = timedWords.map((word, index) =>
       setTimeout(() => {
-        setVisibleWordCount((currentCount) =>
-          Math.max(currentCount, index + 1)
-        );
+        setVisibleWordCount((currentCount) => Math.max(currentCount, index + 1));
       }, word.revealAtMs)
     );
 
@@ -124,7 +121,7 @@ export default function MeetGuide() {
         <Button
           type="button"
           onClick={() => dispatch({ type: "GO_TO", screen: "breathing_offer" })}
-          className="mt-10 h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
         >
           I&apos;M READY
         </Button>

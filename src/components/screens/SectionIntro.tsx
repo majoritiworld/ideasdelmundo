@@ -17,7 +17,10 @@ const BUTTON_FADE_DELAY_MS = 1_200;
 export default function SectionIntro() {
   const { state, dispatch } = useJourney();
   const section = sections.find((item) => item.id === state.currentSection) ?? sections[0];
-  const words = useMemo(() => section.introMessage.split(/\s+/).filter(Boolean), [section.introMessage]);
+  const words = useMemo(
+    () => section.introMessage.split(/\s+/).filter(Boolean),
+    [section.introMessage]
+  );
   const [visibleWordCount, setVisibleWordCount] = useState(0);
   const [showCoreQuestion, setShowCoreQuestion] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -94,7 +97,7 @@ export default function SectionIntro() {
 
         <p
           className={cn(
-            "mt-8 max-w-2xl font-heading text-[30px] leading-[1.2] font-medium text-[#0F1B2D] transition-opacity duration-[1200ms] ease-out sm:text-[38px]",
+            "font-heading mt-8 max-w-2xl text-[30px] leading-[1.2] font-medium text-[#0F1B2D] transition-opacity duration-[1200ms] ease-out sm:text-[38px]",
             showCoreQuestion ? "opacity-100" : "opacity-0"
           )}
         >
@@ -105,7 +108,7 @@ export default function SectionIntro() {
           type="button"
           onClick={answerCoreQuestion}
           className={cn(
-            "mt-10 h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all duration-700 hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98]",
+            "bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all duration-700 hover:-translate-y-px active:scale-[0.98]",
             showButton ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
           )}
         >

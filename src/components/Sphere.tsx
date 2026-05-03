@@ -194,7 +194,7 @@ export default function Sphere({
       ref={sphereRef}
       aria-label={`${visualState} guide sphere`}
       className={`sphere sphere--${visualState} sphere--${variant} sphere--${breathPhase}${
-        isAssembling ? " sphere--assembling" : ""
+        isAssembling ? "sphere--assembling" : ""
       }`}
       data-state={visualState}
       onMouseEnter={handleMouseEnter}
