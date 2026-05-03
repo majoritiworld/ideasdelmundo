@@ -71,13 +71,15 @@ export default function OptionalBoard() {
           {isFinalSection ? (
             <IkigaiFigure size={200} />
           ) : (
-            <Sphere
-              state="idle"
-              size={100}
-              circleColors={sphereCircleColors}
-              circleOpacities={sphereCircleOpacities}
-              disableHoverEffect
-            />
+            <div className="scale-[0.7]">
+              <Sphere
+                state="idle"
+                size={100}
+                circleColors={sphereCircleColors}
+                circleOpacities={sphereCircleOpacities}
+                disableHoverEffect
+              />
+            </div>
           )}
 
           <h2 className="font-heading mt-8 text-[28px] leading-tight font-medium text-[#0F1B2D]">

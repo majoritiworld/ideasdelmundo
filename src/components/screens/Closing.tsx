@@ -11,10 +11,10 @@ import Iconify from "@/components/ui/iconify";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce, type JourneyState } from "@/lib/journey-context";
 import { sendNotifyEmail } from "@/lib/notify";
+import { getSectionSphereCircleColors, getSectionSphereCircleOpacities } from "@/lib/section-sphere";
 import { getSectionQuestions, sections } from "@/lib/sections";
 import { supabase } from "@/lib/supabase/client";
 import { markCompleted, updateSession } from "@/lib/tracking";
-import { useAudio } from "@/lib/useAudio";
 
 type ClosingStep = "congrats" | "next";
 type NotifyStatus = "idle" | "success" | "error";
@@ -23,6 +23,8 @@ const WORD_REVEAL_DELAY_MS = 60;
 const SPEAKING_DURATION_MS = 9_000;
 const COPY_RESET_DELAY_MS = 2_000;
 const STEP_TRANSITION = { duration: 0.6, ease: "easeOut" } as const;
+const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
+const multicolorSphereCircleOpacities = getSectionSphereCircleOpacities(5);
 const PDF_MARGIN = 40;
 const PDF_FOOTER_TEXT = "Your Purpose Blueprint · @majoriti.world";
 const PDF_COLORS = {
@@ -177,6 +179,13 @@ function createTranscriptPdf(name: string, conversations: JourneyState["conversa
   doc.save(sanitizePdfFileName(name));
 }
 
+function capitalizeFirstLetter(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+
+  return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
+}
+
 export default function Closing() {
   const { state, dispatch } = useJourney();
   const t = useTranslations("journey.closing");
@@ -190,7 +199,7 @@ export default function Closing() {
   const [notifyStatus, setNotifyStatus] = useState<NotifyStatus>("idle");
   const [isNotifying, setIsNotifying] = useState(false);
   const autoNotifyEmailRef = useRef<string | null>(null);
-  useAudio("/audio/closing-1.mp3");
+  const displayName = capitalizeFirstLetter(state.name);
 
   const congratsBodyLine1 = t("congratsBodyLine1");
   const congratsBodyLine2 = t("congratsBodyLine2");
@@ -262,7 +271,7 @@ export default function Closing() {
   }, []);
 
   const downloadTranscript = () => {
-    createTranscriptPdf(state.name, state.conversations);
+    createTranscriptPdf(displayName, state.conversations);
   };
 
   const shareOnWhatsApp = () => {
@@ -286,7 +295,7 @@ export default function Closing() {
         await updateSession(state.sessionId, { email });
         dispatch({ type: "SET_EMAIL", email });
         await sendNotifyEmail({
-          name: state.name,
+          name: displayName,
           email,
           sessionId: state.sessionId,
         });
@@ -297,7 +306,7 @@ export default function Closing() {
         setIsNotifying(false);
       }
     },
-    [dispatch, isNotifying, state.name, state.sessionId]
+    [dispatch, displayName, isNotifying, state.sessionId]
   );
 
   const notifyMe = async () => {
@@ -324,9 +333,14 @@ export default function Closing() {
             transition={STEP_TRANSITION}
             className="flex w-full flex-col items-center"
           >
-            <Sphere state={isSpeaking ? "speaking" : "idle"} size={160} />
+            <Sphere
+              state={isSpeaking ? "speaking" : "idle"}
+              size={160}
+              circleColors={multicolorSphereCircleColors}
+              circleOpacities={multicolorSphereCircleOpacities}
+            />
             <h2 className="mt-10 font-['ArizonaFlare'] text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
-              {t("congratsTitle", { name: state.name })}
+              {t("congratsTitle", { name: displayName })}
             </h2>
             <p className="mt-6 w-full max-w-3xl text-[19px] leading-[1.75] text-[#5A6B82] sm:text-[22px]">
               {congratsLines.map((line, lineIndex) => (
@@ -368,7 +382,6 @@ export default function Closing() {
                 {t("continueCta")}
               </Button>
             </motion.div>
-            <p className="mt-12 text-sm font-medium text-[#7B8FA8]">{t("footer")}</p>
           </motion.div>
         ) : (
           <motion.div
@@ -379,7 +392,12 @@ export default function Closing() {
             transition={STEP_TRANSITION}
             className="flex w-full flex-col items-center"
           >
-            <Sphere state="idle" size={160} />
+            <Sphere
+              state="idle"
+              size={160}
+              circleColors={multicolorSphereCircleColors}
+              circleOpacities={multicolorSphereCircleOpacities}
+            />
             <h2 className="mt-10 text-3xl leading-tight font-medium text-[#0F1B2D] sm:text-[40px]">
               {t("nextTitle")}
             </h2>
@@ -489,7 +507,6 @@ export default function Closing() {
                 ) : null}
               </AnimatePresence>
             </div>
-            <p className="mt-12 text-sm font-medium text-[#7B8FA8]">{t("footer")}</p>
           </motion.div>
         )}
       </AnimatePresence>

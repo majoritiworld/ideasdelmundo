@@ -111,7 +111,7 @@ export default function Conversation() {
     !isInputLockedForReveal &&
     !isThinking &&
     !isRecording &&
-    userMessageCount >= 3;
+    userMessageCount >= 1;
 
   micShortcutGuardsRef.current = {
     speechSupported,
@@ -377,7 +377,6 @@ export default function Conversation() {
     if (
       !text ||
       isThinking ||
-      !state.sessionId ||
       isInputLockedForReveal ||
       isTranscribing ||
       doneWithQuestionFlowActive
@@ -429,8 +428,7 @@ export default function Conversation() {
       isInputLockedForReveal ||
       doneWithQuestionFlowActive ||
       isRecording ||
-      isTranscribing ||
-      !state.sessionId
+      isTranscribing
     ) {
       return;
     }
@@ -471,8 +469,8 @@ export default function Conversation() {
       void updateSession(state.sessionId, { conversations: nextConversations as unknown as Json });
     } catch (err) {
       pendingDoneAfterRevealKeyRef.current = null;
-      setDoneWithQuestionFlowActive(false);
-      setError(err instanceof Error ? err.message : t("fallbackError"));
+      console.warn("[Conversation] Done guide response failed:", err);
+      returnToBoard();
     } finally {
       setIsThinking(false);
     }
@@ -483,7 +481,7 @@ export default function Conversation() {
     const qId = activeQuestionIdRef.current;
     const secId = activeSectionIdRef.current;
     const isCoreQuestion = activeIsCoreRef.current;
-    if (qId == null || secId == null || !s.sessionId) return;
+    if (qId == null || secId == null) return;
 
     const currentConversation = s.conversations[qId] ?? EMPTY_MESSAGES;
     const doneText = t("doneWithQuestion");
@@ -507,6 +505,7 @@ export default function Conversation() {
       conversations: s.conversations as unknown as Json,
     });
 
+    dispatch({ type: "SET_CURRENT_SECTION", sectionId: secId });
     if (hasUserAnswer) {
       dispatch({ type: "MARK_QUESTION_ANSWERED", id: qId });
       if (isCoreQuestion) {
@@ -548,7 +547,7 @@ export default function Conversation() {
 
       <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col pt-20 pb-8">
         <div className="flex shrink-0 flex-col items-center text-center">
-          <div>
+          <div className="scale-[0.7]">
             <Sphere
               state={sphereState}
               size={100}

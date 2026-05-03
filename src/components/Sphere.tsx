@@ -13,6 +13,9 @@ export interface SphereProps {
 }
 
 const SPHERE_SCALE = 1.25;
+const REFERENCE_SPHERE_SIZE = 140;
+const CIRCLE_SIZE_RATIO = 0.7;
+const REFERENCE_CIRCLE_SIZE = REFERENCE_SPHERE_SIZE * SPHERE_SCALE * CIRCLE_SIZE_RATIO;
 const SPEAKING_TO_IDLE_MS = 650;
 const SPEAKING_TO_IDLE_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
 
@@ -38,6 +41,7 @@ export default function Sphere({
   const sphereStyle = {
     width: size * SPHERE_SCALE,
     height: size * SPHERE_SCALE,
+    "--sphere-circle-size": `${REFERENCE_CIRCLE_SIZE}px`,
   } as CSSProperties;
 
   function getCircleStyle(index: number): CSSProperties | undefined {
@@ -250,8 +254,8 @@ export default function Sphere({
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 70%;
-          height: 70%;
+          width: var(--sphere-circle-size);
+          height: var(--sphere-circle-size);
           border-radius: 50%;
           background: currentColor;
           opacity: 0.3;

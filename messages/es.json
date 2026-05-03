@@ -814,22 +814,26 @@
   },
   "journey": {
     "login": {
-      "title": "Welcome back.",
-      "subtitle": "Sign in to save your progress and pick up where you left off.",
-      "googleCta": "Continue with Google",
-      "emailLabel": "Or sign in with email",
-      "emailPlaceholder": "your@email.com",
-      "emailCta": "Send me a link",
-      "magicSent": "Check your inbox — we sent you a magic link.",
-      "skip": "Continue without signing in",
-      "error": "Something went wrong. Please try again."
+      "titleLine1": "Bienvenido a tu",
+      "titleLine2": "Blueprint de Propósito.",
+      "subtitle": "Inicia sesión para guardar tu progreso y recibir tu blueprint al final.",
+      "returningTitle": "Bienvenido de nuevo.",
+      "returningSubtitle": "Continúa tu sesión guardada y retoma donde la dejaste.",
+      "continueSession": "Continuar sesión",
+      "googleCta": "Continuar con Google",
+      "emailLabel": "O inicia sesión con email",
+      "emailPlaceholder": "tu@email.com",
+      "emailCta": "Enviarme un enlace",
+      "magicSent": "Revisa tu inbox. Te enviamos un enlace mágico.",
+      "startWithoutSignIn": "Empezar sin iniciar sesión",
+      "error": "Algo salió mal. Inténtalo de nuevo."
     },
     "welcome": {
-      "title": "Your Purpose Blueprint",
+      "title": "Descubre tu Camino de Propósito Profesional",
       "subtitleLine1": "A guided experience to uncover your passions, strengths, and purpose.",
       "subtitleLine2": "Discover the opportunities that a new world is opening up for you.",
-      "nameLabel": "Antes de empezar, ¿cómo te llamas?",
-      "namePlaceholder": "Tu nombre",
+      "nameLabel": "Antes de empezar, ¿cuál es tu nombre?",
+      "namePlaceholder": "Nombre",
       "cta": "Meet your guide",
       "resumeCta": "Continue where you left off"
     },

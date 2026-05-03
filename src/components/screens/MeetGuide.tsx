@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce } from "@/lib/journey-context";
-import { useAudio } from "@/lib/useAudio";
+import { getSectionSphereCircleColors } from "@/lib/section-sphere";
 import { updateSession } from "@/lib/tracking";
 
-const SPEAKING_DURATION_MS = 16_000;
+const SPEAKING_DURATION_MS = 5_000;
+const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
+const multicolorSphereCircleOpacities = [0.3, 0.3, 0.3, 0.3] as const;
 
-const SENTENCE_2 = "I'm Emma, and I'll be your guide in this experience.";
+const SENTENCE_2 = "I'll be your guide in this experience.";
 const SENTENCE_3 = "I'm here to help you explore your purpose and connect it with your work.";
 const SENTENCE_4 =
   "Together we'll discover what moves you, what gives you energy, and how you can contribute to the world in your own unique way.";
@@ -46,14 +48,15 @@ export default function MeetGuide() {
   const logMeetGuideViewed = useLogEventOnce(EVENTS.MEET_GUIDE_VIEWED);
   const [isSpeaking, setIsSpeaking] = useState(true);
   const [visibleWordCount, setVisibleWordCount] = useState(0);
-  useAudio("/audio/welcome.mp3");
 
   const phrase1 = state.name ? `Welcome, ${state.name}!` : "Welcome!";
   const introSegments = useMemo<TimedIntroSegment[]>(
     () => [
-      { text: `${phrase1} ${SENTENCE_2}`, startMs: 0, endMs: 4_000 },
-      { text: SENTENCE_3, startMs: 5_000, endMs: 7_000 },
-      { text: SENTENCE_4, startMs: 8_000, endMs: 14_000 },
+      {
+        text: `${phrase1} ${SENTENCE_2} ${SENTENCE_3} ${SENTENCE_4}`,
+        startMs: 0,
+        endMs: SPEAKING_DURATION_MS,
+      },
     ],
     [phrase1]
   );
@@ -96,7 +99,12 @@ export default function MeetGuide() {
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 text-center sm:px-8">
       <div className="m-auto flex flex-col items-center">
-        <Sphere state={sphereState} size={200} />
+        <Sphere
+          state={sphereState}
+          size={200}
+          circleColors={multicolorSphereCircleColors}
+          circleOpacities={multicolorSphereCircleOpacities}
+        />
         <div className="mt-8 w-full max-w-2xl rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
           <p
             className="text-[18px] leading-[1.7] font-normal text-[#0F1B2D] sm:text-[20px]"
@@ -121,7 +129,8 @@ export default function MeetGuide() {
         <Button
           type="button"
           onClick={() => dispatch({ type: "GO_TO", screen: "breathing_offer" })}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+          disabled={isSpeaking}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
         >
           I&apos;M READY
         </Button>

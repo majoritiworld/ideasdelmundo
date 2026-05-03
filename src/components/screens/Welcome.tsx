@@ -7,7 +7,14 @@ import { Input } from "@/components/ui/input";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
+import {
+  getSectionSphereCircleColors,
+  getSectionSphereCircleOpacities,
+} from "@/lib/section-sphere";
 import { createSession, logEvent, updateSession } from "@/lib/tracking";
+
+const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
+const multicolorSphereCircleOpacities = getSectionSphereCircleOpacities(5);
 
 export default function Welcome() {
   const { state, dispatch } = useJourney();
@@ -57,8 +64,13 @@ export default function Welcome() {
 
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
-      <Sphere state="idle" size={160} />
-      <h1 className="mt-10 text-[32px] leading-tight font-medium text-[#0F1B2D] sm:text-[40px]">
+      <Sphere
+        state="idle"
+        size={160}
+        circleColors={multicolorSphereCircleColors}
+        circleOpacities={multicolorSphereCircleOpacities}
+      />
+      <h1 className="font-heading mt-10 text-[32px] leading-tight font-medium text-[#0F1B2D] sm:text-[40px]">
         {t("title")}
       </h1>
       <p className="mt-4 max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">

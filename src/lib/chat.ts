@@ -14,7 +14,7 @@ export interface SendChatMessagePayload {
   isCore: boolean;
   conversationHistory: ChatHistoryMessage[];
   userMessage: string;
-  sessionId: string;
+  sessionId: string | null;
 }
 
 export async function sendChatMessage(payload: SendChatMessagePayload): Promise<string> {

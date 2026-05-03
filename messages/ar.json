@@ -817,22 +817,26 @@
   },
   "journey": {
     "login": {
-      "title": "Welcome back.",
-      "subtitle": "Sign in to save your progress and pick up where you left off.",
-      "googleCta": "Continue with Google",
-      "emailLabel": "Or sign in with email",
+      "titleLine1": "مرحبًا بك في Purpose Blueprint",
+      "titleLine2": "الخاص بك.",
+      "subtitle": "سجّل الدخول لحفظ تقدمك واستلام الـ blueprint في النهاية.",
+      "returningTitle": "مرحبًا بعودتك.",
+      "returningSubtitle": "تابع جلستك المحفوظة من حيث توقفت.",
+      "continueSession": "متابعة الجلسة",
+      "googleCta": "المتابعة باستخدام Google",
+      "emailLabel": "أو سجّل الدخول بالبريد الإلكتروني",
       "emailPlaceholder": "your@email.com",
-      "emailCta": "Send me a link",
-      "magicSent": "Check your inbox — we sent you a magic link.",
-      "skip": "Continue without signing in",
-      "error": "Something went wrong. Please try again."
+      "emailCta": "أرسل لي رابطًا",
+      "magicSent": "تحقق من بريدك. أرسلنا لك رابطًا سحريًا.",
+      "startWithoutSignIn": "ابدأ من دون تسجيل الدخول",
+      "error": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
     },
     "welcome": {
-      "title": "Your Purpose Blueprint",
+      "title": "اكتشف مسار هدفك المهني",
       "subtitleLine1": "A guided experience to uncover your passions, strengths, and purpose.",
       "subtitleLine2": "Discover the opportunities that a new world is opening up for you.",
-      "nameLabel": "قبل أن نبدأ، ما اسمك؟",
-      "namePlaceholder": "اسمك",
+      "nameLabel": "قبل أن نبدأ، ما اسمك الأول؟",
+      "namePlaceholder": "الاسم الأول",
       "cta": "Meet your guide",
       "resumeCta": "Continue where you left off"
     },

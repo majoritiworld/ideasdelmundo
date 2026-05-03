@@ -260,7 +260,6 @@ export default function Meditation() {
   const [isIntroSpeaking, setIsIntroSpeaking] = useState(true);
   const startedAt = useRef<number>(0);
   const completedLogged = useRef(false);
-  useAudio("/audio/meditation.mp3");
   useAudio("/audio/meditation-music.mp3", {
     enabled: started && !completed && elapsedMs >= STARTUP_MS,
     loop: true,

@@ -107,10 +107,26 @@ const screenComponents = {
   closing: Closing,
 };
 
+function isPreviewScreen(value: string | null): value is Screen {
+  return Boolean(value && value in screenComponents);
+}
+
 function JourneyShell() {
   const { state, dispatch } = useJourney();
   const resumeLookupUserId = useRef<string | null>(null);
   const Screen = screenComponents[state.screen];
+
+  useEffect(() => {
+    if (window.location.hostname !== "localhost") return;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const screen = searchParams.get("screen");
+    const name = searchParams.get("name");
+
+    if (!isPreviewScreen(screen)) return;
+    if (name) dispatch({ type: "SET_NAME", name });
+    dispatch({ type: "GO_TO", screen });
+  }, [dispatch]);
 
   useEffect(() => {
     if (!state.authChecked) return;

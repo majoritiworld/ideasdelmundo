@@ -26,8 +26,7 @@ export const sections: Section[] = [
     id: 1,
     theme: "passion",
     title: "What you love",
-    introMessage:
-      "This section is about what sets you alive. Take your time — there are no wrong answers here.",
+    introMessage: "This section is about what moves you.",
     coreQuestion: {
       id: 1,
       text: "When was the last time you felt completely alive?",
@@ -65,8 +64,7 @@ export const sections: Section[] = [
     id: 2,
     theme: "vocation",
     title: "What you're good at",
-    introMessage:
-      "This section is about your natural gifts. Don't be modest — you know more than you think.",
+    introMessage: "This section is about your natural gifts.",
     coreQuestion: {
       id: 6,
       text: "What do you do with ease that others find difficult?",
@@ -104,8 +102,7 @@ export const sections: Section[] = [
     id: 3,
     theme: "mission",
     title: "What the world needs",
-    introMessage:
-      "This section is about your place in the world. Trust what moves you — your instincts matter.",
+    introMessage: "This section is about your mission.",
     coreQuestion: {
       id: 11,
       text: "What problems in the world hurt or frustrate you most?",
@@ -143,8 +140,7 @@ export const sections: Section[] = [
     id: 4,
     theme: "profession",
     title: "What you can be paid for",
-    introMessage:
-      "This section is about your value in the world. Be honest — this is just between you and yourself.",
+    introMessage: "This section is about your professional journey.",
     coreQuestion: {
       id: 16,
       text: "What kind of work do you picture yourself doing in 5 years?",
@@ -182,8 +178,7 @@ export const sections: Section[] = [
     id: 5,
     theme: "becoming",
     title: "Who you are becoming",
-    introMessage:
-      "This final section brings it all together. You have looked at what moves you, what you're good at, what the world needs, and what you can offer. Now the deepest question: who are you becoming?",
+    introMessage: "This final section brings it all together.",
     coreQuestion: {
       id: 21,
       text: "What version of yourself are you done being?",

@@ -817,22 +817,26 @@
   },
   "journey": {
     "login": {
-      "title": "Welcome back.",
-      "subtitle": "Sign in to save your progress and pick up where you left off.",
+      "titleLine1": "Welcome to your",
+      "titleLine2": "Purpose Blueprint.",
+      "subtitle": "Sign in to save your progress and receive your blueprint at the end.",
+      "returningTitle": "Welcome back.",
+      "returningSubtitle": "Continue your saved session and pick up where you left off.",
+      "continueSession": "Continue session",
       "googleCta": "Continue with Google",
       "emailLabel": "Or sign in with email",
       "emailPlaceholder": "your@email.com",
       "emailCta": "Send me a link",
-      "magicSent": "Check your inbox — we sent you a magic link.",
-      "skip": "Continue without signing in",
+      "magicSent": "Check your inbox. We sent you a magic link.",
+      "startWithoutSignIn": "Start without signing in",
       "error": "Something went wrong. Please try again."
     },
     "welcome": {
-      "title": "Your Purpose Blueprint",
+      "title": "Discover your Professional Purpose Path",
       "subtitleLine1": "A guided experience to uncover your passions, strengths, and purpose.",
       "subtitleLine2": "Discover the opportunities that a new world is opening up for you.",
-      "nameLabel": "Before we begin, what's your name?",
-      "namePlaceholder": "Your Name",
+      "nameLabel": "Before we begin, what's your first name?",
+      "namePlaceholder": "First name",
       "cta": "Meet your guide",
       "resumeCta": "Continue where you left off"
     },

@@ -8,7 +8,7 @@ interface ChatRequest {
   isCore: boolean;
   conversationHistory: { role: "user" | "assistant"; content: string }[];
   userMessage: string;
-  sessionId: string;
+  sessionId?: string | null;
 }
 
 const anthropic = new Anthropic({
@@ -64,8 +64,7 @@ export async function POST(request: NextRequest) {
       !payload.questionText ||
       !payload.sectionTheme ||
       typeof payload.isCore !== "boolean" ||
-      !payload.userMessage ||
-      !payload.sessionId
+      !payload.userMessage
     ) {
       return jsonError(400, "Missing required chat fields");
     }

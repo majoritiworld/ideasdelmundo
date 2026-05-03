@@ -12,6 +12,15 @@ const CIRCLE_COLORS_BY_POSITION = {
 export function getSectionSphereCircleColors(
   sectionId: number
 ): readonly [string, string, string, string] {
+  if (sectionId === 5) {
+    return [
+      CIRCLE_COLORS_BY_POSITION.top,
+      CIRCLE_COLORS_BY_POSITION.bottom,
+      CIRCLE_COLORS_BY_POSITION.left,
+      CIRCLE_COLORS_BY_POSITION.right,
+    ];
+  }
+
   return [
     sectionId === 1 ? CIRCLE_COLORS_BY_POSITION.top : INACTIVE_CIRCLE_COLOR,
     sectionId === 3 ? CIRCLE_COLORS_BY_POSITION.bottom : INACTIVE_CIRCLE_COLOR,
@@ -23,6 +32,10 @@ export function getSectionSphereCircleColors(
 export function getSectionSphereCircleOpacities(
   sectionId: number
 ): readonly [number, number, number, number] {
+  if (sectionId === 5) {
+    return [0.3, 0.3, 0.3, 0.3];
+  }
+
   return [
     sectionId === 1 ? 0.5 : 0.3,
     sectionId === 3 ? 0.5 : 0.3,
