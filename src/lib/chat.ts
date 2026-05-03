@@ -11,6 +11,7 @@ export interface SendChatMessagePayload {
   questionId: number;
   questionText: string;
   sectionTheme: string;
+  isCore: boolean;
   conversationHistory: ChatHistoryMessage[];
   userMessage: string;
   sessionId: string;

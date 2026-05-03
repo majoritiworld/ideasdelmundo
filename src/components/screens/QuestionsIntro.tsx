@@ -74,8 +74,10 @@ export default function QuestionsIntro() {
   }, [state.sessionId]);
 
   useEffect(() => {
-    setIsSpeaking(true);
-    setVisibleWordCount(0);
+    const resetTimeoutId = setTimeout(() => {
+      setIsSpeaking(true);
+      setVisibleWordCount(0);
+    }, 0);
 
     const wordTimeoutIds = timedWords.map((word, index) =>
       setTimeout(() => {
@@ -90,6 +92,7 @@ export default function QuestionsIntro() {
     }, SPEAKING_DURATION_MS);
 
     return () => {
+      clearTimeout(resetTimeoutId);
       wordTimeoutIds.forEach(clearTimeout);
       clearTimeout(timeoutId);
     };

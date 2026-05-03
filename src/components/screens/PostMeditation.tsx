@@ -21,7 +21,6 @@ export default function PostMeditation() {
   }, [state.sessionId]);
 
   useEffect(() => {
-    setIsSpeaking(true);
     const timeoutId = setTimeout(() => {
       setIsSpeaking(false);
     }, SPEAKING_DURATION_MS);
@@ -37,7 +36,7 @@ export default function PostMeditation() {
       </p>
       <Button
         type="button"
-        onClick={() => dispatch({ type: "GO_TO", screen: "questions_intro" })}
+        onClick={() => dispatch({ type: "GO_TO", screen: "section_intro" })}
         className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
       >
         {t("cta")}

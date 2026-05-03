@@ -15,6 +15,7 @@ export interface Database {
           name: string | null;
           email: string | null;
           source: string | null;
+          user_id: string | null;
           user_agent: string | null;
           referrer: string | null;
           visited_card_ids: number[] | null;
@@ -40,6 +41,7 @@ export interface Database {
           name?: string | null;
           email?: string | null;
           source?: string | null;
+          user_id?: string | null;
           user_agent?: string | null;
           referrer?: string | null;
           visited_card_ids?: number[] | null;
@@ -65,6 +67,7 @@ export interface Database {
           name?: string | null;
           email?: string | null;
           source?: string | null;
+          user_id?: string | null;
           user_agent?: string | null;
           referrer?: string | null;
           visited_card_ids?: number[] | null;
@@ -83,7 +86,15 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "sessions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       events: {
         Row: {

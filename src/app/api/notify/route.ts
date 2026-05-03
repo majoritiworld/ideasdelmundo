@@ -1,8 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -14,6 +12,13 @@ function escapeHtml(value: string) {
 
 function jsonError(status: number, message: string) {
   return NextResponse.json({ ok: false, error: message }, { status });
+}
+
+function parseNotifyEmails(value: string | undefined) {
+  return value
+    ?.split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
 }
 
 export async function POST(req: NextRequest) {
@@ -28,18 +33,22 @@ export async function POST(req: NextRequest) {
       return jsonError(400, "Missing required fields");
     }
 
-    if (!process.env.RESEND_API_KEY || !process.env.NOTIFY_EMAIL) {
+    const notifyEmails = parseNotifyEmails(process.env.NOTIFY_EMAIL);
+
+    if (!process.env.RESEND_API_KEY || !notifyEmails?.length) {
+      console.error("[notify-api] Missing RESEND_API_KEY or NOTIFY_EMAIL");
       return jsonError(500, "Notification email is not configured");
     }
 
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const safeName = escapeHtml(name);
     const safeEmail = escapeHtml(email);
     const safeSessionId = escapeHtml(sessionId);
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? req.nextUrl.origin;
 
-    await resend.emails.send({
+    const ownerEmail = await resend.emails.send({
       from: "Purpose Blueprint <onboarding@resend.dev>",
-      to: process.env.NOTIFY_EMAIL,
+      to: notifyEmails,
       subject: `New Purpose Blueprint completed - ${name}`,
       html: `
         <h2>New completion</h2>
@@ -50,7 +59,12 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    await resend.emails.send({
+    if (ownerEmail.error) {
+      console.error("[notify-api] Owner email failed", ownerEmail.error);
+      return jsonError(500, "Owner notification email failed");
+    }
+
+    const confirmationEmail = await resend.emails.send({
       from: "Purpose Blueprint <onboarding@resend.dev>",
       to: email,
       subject: "Your Purpose Blueprint is being prepared",
@@ -70,6 +84,11 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     });
+
+    if (confirmationEmail.error) {
+      console.error("[notify-api] Confirmation email failed", confirmationEmail.error);
+      return jsonError(500, "Confirmation email failed");
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

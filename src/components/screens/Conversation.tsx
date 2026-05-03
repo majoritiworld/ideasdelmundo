@@ -68,6 +68,7 @@ export default function Conversation() {
   stateRef.current = state;
   const activeQuestionIdRef = useRef<number | null>(null);
   const activeSectionIdRef = useRef<number | null>(null);
+  const activeIsCoreRef = useRef(false);
   const pendingDoneAfterRevealKeyRef = useRef<string | null>(null);
   const doneNavigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const returnToBoardRef = useRef<() => void>(() => {});
@@ -84,6 +85,7 @@ export default function Conversation() {
   );
   const question = active?.question;
   const section = active?.section;
+  const isCore = active?.isCore ?? false;
   const sectionId = section?.id ?? state.currentSection;
   const sphereCircleColors = getSectionSphereCircleColors(sectionId);
   const sphereCircleOpacities = getSectionSphereCircleOpacities(sectionId);
@@ -357,6 +359,7 @@ export default function Conversation() {
   const activeSection = section;
   activeQuestionIdRef.current = activeQuestion.id;
   activeSectionIdRef.current = activeSection.id;
+  activeIsCoreRef.current = isCore;
 
   function guideDisplayText(message: ConversationMessage, index: number): string {
     if (message.role !== "guide") return message.text;
@@ -396,6 +399,7 @@ export default function Conversation() {
         questionId: activeQuestion.id,
         questionText: activeQuestion.text,
         sectionTheme: activeSection.theme,
+        isCore,
         conversationHistory: currentMessages.map((message) => ({
           role: message.role === "guide" ? "assistant" : "user",
           content: message.text,
@@ -447,6 +451,7 @@ export default function Conversation() {
         questionId: activeQuestion.id,
         questionText: activeQuestion.text,
         sectionTheme: activeSection.theme,
+        isCore,
         conversationHistory: currentMessages.map((message) => ({
           role: message.role === "guide" ? "assistant" : "user",
           content: message.text,
@@ -479,6 +484,7 @@ export default function Conversation() {
     const s = stateRef.current;
     const qId = activeQuestionIdRef.current;
     const secId = activeSectionIdRef.current;
+    const isCoreQuestion = activeIsCoreRef.current;
     if (qId == null || secId == null || !s.sessionId) return;
 
     const currentConversation = s.conversations[qId] ?? EMPTY_MESSAGES;
@@ -505,9 +511,12 @@ export default function Conversation() {
 
     if (hasUserAnswer) {
       dispatch({ type: "MARK_QUESTION_ANSWERED", id: qId });
+      if (isCoreQuestion) {
+        dispatch({ type: "MARK_CORE_ANSWERED", sectionId: secId });
+      }
     }
     dispatch({ type: "SET_ACTIVE_QUESTION", id: null });
-    dispatch({ type: "GO_TO", screen: "board" });
+    dispatch({ type: "GO_TO", screen: "optional_board" });
   }
 
   returnToBoardRef.current = returnToBoard;

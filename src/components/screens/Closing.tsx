@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 import { useTranslations } from "next-intl";
@@ -11,7 +11,8 @@ import Iconify from "@/components/ui/iconify";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce, type JourneyState } from "@/lib/journey-context";
 import { sendNotifyEmail } from "@/lib/notify";
-import { sections } from "@/lib/sections";
+import { getSectionQuestions, sections } from "@/lib/sections";
+import { supabase } from "@/lib/supabase/client";
 import { markCompleted, updateSession } from "@/lib/tracking";
 import { useAudio } from "@/lib/useAudio";
 
@@ -128,7 +129,7 @@ function createTranscriptPdf(name: string, conversations: JourneyState["conversa
   cursorY += 20;
 
   sections.forEach((section) => {
-    const questionsWithConversations = section.questions.filter(
+    const questionsWithConversations = getSectionQuestions(section).filter(
       (question) => conversations[question.id]?.length
     );
 
@@ -185,8 +186,10 @@ export default function Closing() {
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [emailValue, setEmailValue] = useState(state.email);
+  const [authEmail, setAuthEmail] = useState("");
   const [notifyStatus, setNotifyStatus] = useState<NotifyStatus>("idle");
   const [isNotifying, setIsNotifying] = useState(false);
+  const autoNotifyEmailRef = useRef<string | null>(null);
   useAudio("/audio/closing-1.mp3");
 
   const congratsBodyLine1 = t("congratsBodyLine1");
@@ -208,6 +211,7 @@ export default function Closing() {
     [congratsLines]
   );
   const emailReady = emailValue.trim().length > 0;
+  const knownEmail = state.email.trim() || authEmail.trim();
 
   useEffect(() => {
     void logSessionCompleted();
@@ -241,6 +245,22 @@ export default function Closing() {
     setEmailValue(state.email);
   }, [emailValue, state.email]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!cancelled) setAuthEmail(session?.user.email ?? "");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const downloadTranscript = () => {
     createTranscriptPdf(state.name, state.conversations);
   };
@@ -255,28 +275,42 @@ export default function Closing() {
     setCopied(true);
   };
 
+  const notifyEmail = useCallback(
+    async (email: string) => {
+      if (!email || isNotifying) return;
+
+      setIsNotifying(true);
+      setNotifyStatus("idle");
+
+      try {
+        await updateSession(state.sessionId, { email });
+        dispatch({ type: "SET_EMAIL", email });
+        await sendNotifyEmail({
+          name: state.name,
+          email,
+          sessionId: state.sessionId,
+        });
+        setNotifyStatus("success");
+      } catch {
+        setNotifyStatus("error");
+      } finally {
+        setIsNotifying(false);
+      }
+    },
+    [dispatch, isNotifying, state.name, state.sessionId]
+  );
+
   const notifyMe = async () => {
-    const email = emailValue.trim();
-    if (!email || isNotifying) return;
-
-    setIsNotifying(true);
-    setNotifyStatus("idle");
-
-    try {
-      await updateSession(state.sessionId, { email });
-      dispatch({ type: "SET_EMAIL", email });
-      await sendNotifyEmail({
-        name: state.name,
-        email,
-        sessionId: state.sessionId,
-      });
-      setNotifyStatus("success");
-    } catch {
-      setNotifyStatus("error");
-    } finally {
-      setIsNotifying(false);
-    }
+    await notifyEmail(emailValue.trim());
   };
+
+  useEffect(() => {
+    if (step !== "next" || !knownEmail || notifyStatus === "success") return;
+    if (autoNotifyEmailRef.current === knownEmail) return;
+
+    autoNotifyEmailRef.current = knownEmail;
+    void notifyEmail(knownEmail);
+  }, [knownEmail, notifyEmail, notifyStatus, step]);
 
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
@@ -357,6 +391,13 @@ export default function Closing() {
                 <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
                   {t("notifySuccess")}
                 </p>
+              ) : knownEmail ? (
+                <div className="rounded-[28px] bg-white/70 px-5 py-4 text-sm text-[#5A6B82] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
+                  <p>{t("notifyKnownEmail", { email: knownEmail })}</p>
+                  {notifyStatus === "error" ? (
+                    <p className="mt-2 font-medium text-[#D85A30]">{t("notifyError")}</p>
+                  ) : null}
+                </div>
               ) : (
                 <form
                   onSubmit={(event) => {

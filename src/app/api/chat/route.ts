@@ -5,6 +5,7 @@ interface ChatRequest {
   questionId: number;
   questionText: string;
   sectionTheme: string;
+  isCore: boolean;
   conversationHistory: { role: "user" | "assistant"; content: string }[];
   userMessage: string;
   sessionId: string;
@@ -18,13 +19,19 @@ function jsonError(status: number, message: string) {
   return NextResponse.json({ ok: false, error: message }, { status });
 }
 
-function getSystemPrompt(sectionTheme: string, questionText: string) {
+function getSystemPrompt(sectionTheme: string, questionText: string, isCore: boolean) {
+  const depthGuidance = isCore
+    ? "This is the mandatory core question for the section. Follow up more thoroughly, help the user stay with the deeper layer of the answer, and invite specificity without pushing."
+    : "This is an optional exploration question. Keep the tone slightly lighter while still being reflective and useful.";
+
   return `You are a warm, empathetic guide helping someone explore their purpose
 and ikigai. You are part of an experience created by Majoriti, a company
 that helps people connect their purpose with their professional life.
 
 Your role in this specific conversation is to explore the theme of
 '${sectionTheme}' through the question: '${questionText}'.
+
+${depthGuidance}
 
 Guidelines:
 - Always respond in English
@@ -54,6 +61,7 @@ export async function POST(request: NextRequest) {
       !payload.questionId ||
       !payload.questionText ||
       !payload.sectionTheme ||
+      typeof payload.isCore !== "boolean" ||
       !payload.userMessage ||
       !payload.sessionId
     ) {
@@ -72,7 +80,7 @@ export async function POST(request: NextRequest) {
       model: "claude-sonnet-4-5-20250929",
       max_tokens: 220,
       temperature: 0.7,
-      system: getSystemPrompt(payload.sectionTheme, payload.questionText),
+      system: getSystemPrompt(payload.sectionTheme, payload.questionText, payload.isCore),
       messages: [
         ...payload.conversationHistory,
         {

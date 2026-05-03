@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce } from "@/lib/journey-context";
-import { categoryColors, sections, type Question } from "@/lib/sections";
+import { categoryColors, getSectionQuestions, sections, type Question } from "@/lib/sections";
 import {
   getSectionSphereCircleColors,
   getSectionSphereCircleOpacities,
@@ -91,13 +91,17 @@ function withThirtyPercentOpacity(hexColor: string) {
   return `${hexColor}4D`;
 }
 
+function getSectionColor(theme: string) {
+  return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.becoming;
+}
+
 function getHighestUnlockedSection(answeredQuestions: number[]) {
   let highestUnlockedSection = 1;
 
   for (const item of sections) {
     if (item.id >= TOTAL_SECTIONS) break;
 
-    const answeredCount = item.questions.filter((question) =>
+    const answeredCount = getSectionQuestions(item).filter((question) =>
       answeredQuestions.includes(question.id)
     ).length;
 
@@ -113,8 +117,11 @@ function getAnsweredCountForSection(sectionId: number, answeredQuestions: number
   const targetSection = sections.find((item) => item.id === sectionId);
 
   return (
-    targetSection?.questions.filter((question) => answeredQuestions.includes(question.id)).length ??
-    0
+    targetSection
+      ? getSectionQuestions(targetSection).filter((question) =>
+          answeredQuestions.includes(question.id)
+        ).length
+      : 0
   );
 }
 
@@ -123,35 +130,32 @@ export default function Board() {
   const t = useTranslations("journey.board");
   const logBoardViewed = useLogEventOnce(EVENTS.BOARD_VIEWED);
   const section = sections.find((item) => item.id === state.currentSection) ?? sections[0];
+  const sectionId = section.id;
   const [isSectionSpeaking, setIsSectionSpeaking] = useState(false);
   const [isSectionIntroVisible, setIsSectionIntroVisible] = useState(false);
   const [voiceoverSectionId, setVoiceoverSectionId] = useState<number | null>(null);
   const sectionVoiceoversPlayedRef = useRef(state.sectionVoiceoversPlayed);
   const [visibleIntroWordCount, setVisibleIntroWordCount] = useState(0);
-  const sectionColor = categoryColors[section.theme];
+  const sectionColor = getSectionColor(section.theme);
+  const sectionQuestions = getSectionQuestions(section);
   const completedCardColor = withThirtyPercentOpacity(sectionColor);
   const sphereCircleColors = getSectionSphereCircleColors(section.id);
   const sphereCircleOpacities = getSectionSphereCircleOpacities(section.id);
   const highestUnlockedSection = getHighestUnlockedSection(state.answeredQuestions);
-  const answeredInSection = section.questions.filter((question) =>
+  const answeredInSection = sectionQuestions.filter((question) =>
     state.answeredQuestions.includes(question.id)
   ).length;
   const canAdvance = answeredInSection >= 2;
-  const hasSectionIntro = section.id in SECTION_INTRO_SEGMENTS;
+  const hasSectionIntro = sectionId in SECTION_INTRO_SEGMENTS;
   const isSectionIntroActive = hasSectionIntro && isSectionIntroVisible;
-  const introSegments = useMemo<TimedIntroSegment[]>(
-    () =>
-      (SECTION_INTRO_SEGMENTS[section.id] ?? []).map((segment) => ({
-        ...segment,
-        text: t(`sectionIntros.${section.id}.${segment.key}`),
-      })),
-    [section.id, t]
+  const introSegments: TimedIntroSegment[] = (SECTION_INTRO_SEGMENTS[sectionId] ?? []).map(
+    (segment) => ({
+      ...segment,
+      text: t(`sectionIntros.${sectionId}.${segment.key}`),
+    })
   );
-  const timedIntroWords = useMemo(() => buildTimedWords(introSegments), [introSegments]);
-  const introText = useMemo(
-    () => introSegments.map((segment) => segment.text).join(" "),
-    [introSegments]
-  );
+  const timedIntroWords = buildTimedWords(introSegments);
+  const introText = introSegments.map((segment) => segment.text).join(" ");
   useAudio(`/audio/section-${voiceoverSectionId ?? section.id}.mp3`, {
     enabled: voiceoverSectionId !== null,
   });
@@ -235,7 +239,7 @@ export default function Board() {
     }
 
     const nextSection = section.id + 1;
-    dispatch({ type: "SET_CURRENT_SECTION", section: nextSection });
+    dispatch({ type: "SET_CURRENT_SECTION", sectionId: nextSection });
     void updateSession(state.sessionId, { current_section: nextSection });
   }
 
@@ -246,7 +250,7 @@ export default function Board() {
   function goToUnlockedSection(sectionId: number) {
     if (sectionId === section.id || sectionId > highestUnlockedSection) return;
 
-    dispatch({ type: "SET_CURRENT_SECTION", section: sectionId });
+    dispatch({ type: "SET_CURRENT_SECTION", sectionId });
     void updateSession(state.sessionId, { current_section: sectionId });
   }
 
@@ -373,7 +377,7 @@ export default function Board() {
                 hasSectionIntro && SECTION_REVEAL_CLASS
               )}
             >
-              {section.questions.map((question) => {
+              {sectionQuestions.map((question) => {
                 const isAnswered = state.answeredQuestions.includes(question.id);
 
                 return (

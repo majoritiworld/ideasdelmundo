@@ -813,13 +813,25 @@
     "sendAnother": "Enviar otro mensaje"
   },
   "journey": {
+    "login": {
+      "title": "Welcome back.",
+      "subtitle": "Sign in to save your progress and pick up where you left off.",
+      "googleCta": "Continue with Google",
+      "emailLabel": "Or sign in with email",
+      "emailPlaceholder": "your@email.com",
+      "emailCta": "Send me a link",
+      "magicSent": "Check your inbox — we sent you a magic link.",
+      "skip": "Continue without signing in",
+      "error": "Something went wrong. Please try again."
+    },
     "welcome": {
       "title": "Your Purpose Blueprint",
       "subtitleLine1": "A guided experience to uncover your passions, strengths, and purpose.",
       "subtitleLine2": "Discover the opportunities that a new world is opening up for you.",
       "nameLabel": "Antes de empezar, ¿cómo te llamas?",
       "namePlaceholder": "Tu nombre",
-      "cta": "Meet your guide"
+      "cta": "Meet your guide",
+      "resumeCta": "Continue where you left off"
     },
     "meetGuide": {
       "stateLabel": "Speaking",
@@ -928,6 +940,7 @@
       "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
       "emailPlaceholder": "your@email.com",
       "notifyCta": "Notify me",
+      "notifyKnownEmail": "We'll send your Blueprint to {email}.",
       "notifySuccess": "You're all set. Check your inbox.",
       "notifyError": "Something went wrong. Please try again.",
       "downloadCta": "Download my transcript",

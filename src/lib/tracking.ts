@@ -36,11 +36,17 @@ async function postTracking<T>(body: Record<string, unknown>): Promise<T | null>
   return data;
 }
 
-export async function createSession(fields: SessionInsert = {}): Promise<string | null> {
+export async function createSession(
+  fields: SessionInsert = {},
+  userId: string | null = null
+): Promise<string | null> {
   try {
     const data = await postTracking<{ id: string }>({
       action: "createSession",
-      fields,
+      fields: {
+        ...fields,
+        user_id: userId ?? null,
+      },
     });
 
     return data?.id ?? null;

@@ -7,23 +7,52 @@ import { Input } from "@/components/ui/input";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
-import { logEvent, updateSession } from "@/lib/tracking";
+import { createSession, logEvent, updateSession } from "@/lib/tracking";
 
 export default function Welcome() {
   const { state, dispatch } = useJourney();
   const t = useTranslations("journey.welcome");
   const [name, setName] = useState("");
+  const [isStarting, setIsStarting] = useState(false);
   const nameReady = name.trim().length > 0;
 
   useEffect(() => {
     void updateSession(state.sessionId, { current_screen: "welcome" });
   }, [state.sessionId]);
 
-  function startJourney() {
-    if (!name.trim()) return;
-    void logEvent(state.sessionId, EVENTS.WELCOME_CTA_CLICKED);
+  async function ensureSession() {
+    if (state.sessionId) return state.sessionId;
+
+    const id = await createSession(
+      {
+        user_agent: navigator.userAgent,
+        referrer: document.referrer || null,
+      },
+      state.userId
+    );
+
+    if (id) {
+      dispatch({ type: "SET_SESSION_ID", id });
+      void logEvent(id, EVENTS.SESSION_STARTED);
+    }
+
+    return id;
+  }
+
+  async function startJourney() {
+    if (!name.trim() || isStarting) return;
+    setIsStarting(true);
+
+    const sessionId = await ensureSession();
+    void logEvent(sessionId, EVENTS.WELCOME_CTA_CLICKED);
     dispatch({ type: "SET_NAME", name: name.trim() });
     dispatch({ type: "GO_TO", screen: "meet_guide" });
+    setIsStarting(false);
+  }
+
+  function resumeJourney() {
+    if (!state.resumeSession) return;
+    dispatch({ type: "HYDRATE_RESUME", session: state.resumeSession });
   }
 
   return (
@@ -58,13 +87,23 @@ export default function Welcome() {
           />
           <Button
             type="button"
-            onClick={startJourney}
-            disabled={!nameReady}
+            onClick={() => void startJourney()}
+            disabled={!nameReady || isStarting}
             className="h-12 rounded-full bg-primary px-7 text-primary-foreground transition-all hover:-translate-y-px hover:bg-primary/90 active:scale-[0.98] disabled:cursor-not-allowed"
           >
             {t("cta")}
           </Button>
         </div>
+        {state.resumeSession ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={resumeJourney}
+            className="mt-4 h-12 rounded-full border-[#D5DCE6] bg-white px-7 text-[#5A6B82] transition-all hover:-translate-y-px hover:bg-white hover:text-[#0F1B2D] active:scale-[0.98]"
+          >
+            {t("resumeCta")}
+          </Button>
+        ) : null}
       </div>
     </section>
   );

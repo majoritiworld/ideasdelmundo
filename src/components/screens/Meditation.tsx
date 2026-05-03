@@ -141,16 +141,16 @@ function MeditationIntroSphere({
 
   useEffect(() => {
     if (!alignOnIntro) {
-      setHasStartedAlignment(false);
       return;
     }
 
     if (!isSpeaking) {
-      setHasStartedAlignment(true);
-      return;
-    }
+      const frame = window.requestAnimationFrame(() => {
+        setHasStartedAlignment(true);
+      });
 
-    setHasStartedAlignment(false);
+      return () => window.cancelAnimationFrame(frame);
+    }
 
     let secondFrame: number | null = null;
     const firstFrame = window.requestAnimationFrame(() => {
@@ -300,7 +300,6 @@ export default function Meditation() {
   }, [state.sessionId]);
 
   useEffect(() => {
-    setIsIntroSpeaking(true);
     const timeoutId = setTimeout(() => {
       setIsIntroSpeaking(false);
     }, INTRO_SPEAKING_MS);
@@ -341,7 +340,7 @@ export default function Meditation() {
 
   function skipMeditation() {
     void logEvent(state.sessionId, EVENTS.MEDITATION_SKIPPED);
-    dispatch({ type: "GO_TO", screen: "questions_intro" });
+    dispatch({ type: "GO_TO", screen: "section_intro" });
   }
 
   function finishMeditation() {

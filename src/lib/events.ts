@@ -3,6 +3,8 @@ export const EVENTS = {
   WELCOME_CTA_CLICKED: "welcome_cta_clicked",
   MEET_GUIDE_VIEWED: "meet_guide_viewed",
   BOARD_VIEWED: "board_viewed",
+  SECTION_INTRO_VIEWED: "section_intro_viewed",
+  OPTIONAL_BOARD_VIEWED: "optional_board_viewed",
   BREATHING_OFFERED: "breathing_offered",
   MEDITATION_STARTED: "meditation_started",
   MEDITATION_COMPLETED: "meditation_completed",

@@ -24,7 +24,6 @@ export default function BreathingOffer() {
   }, [logBreathingOffered, state.sessionId]);
 
   useEffect(() => {
-    setIsSpeaking(true);
     const timeoutId = setTimeout(() => {
       setIsSpeaking(false);
     }, SPEAKING_DURATION_MS);
@@ -38,7 +37,7 @@ export default function BreathingOffer() {
 
   function skipMeditation() {
     void logEvent(state.sessionId, EVENTS.MEDITATION_SKIPPED);
-    dispatch({ type: "GO_TO", screen: "questions_intro" });
+    dispatch({ type: "GO_TO", screen: "section_intro" });
   }
 
   return (
