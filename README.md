@@ -197,6 +197,7 @@ NEXT_PUBLIC_APP_NAME=My App
 NEXT_PUBLIC_APP_VERSION=1.0.0
 NEXT_PUBLIC_SERVER_URL=http://localhost:3005   # Your backend API base URL
 NEXT_PUBLIC_WEB_URL=http://localhost:3000      # Frontend origin
+NEXT_PUBLIC_SITE_URL=http://localhost:3000     # Canonical public site origin
 NEXT_PUBLIC_REGION=IL
 ```
 

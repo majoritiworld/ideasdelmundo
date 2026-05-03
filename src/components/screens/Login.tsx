@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import IkigaiFigure from "@/components/IkigaiFigure";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import WEB_ROUTES from "@/constants/web-routes.constants";
+import { CONFIG } from "@/lib/app-config";
 import { useJourney } from "@/lib/journey-context";
 import { supabase } from "@/lib/supabase/client";
 
@@ -44,10 +46,12 @@ export default function Login() {
 
   async function signInWithGoogle() {
     setError(null);
+    const callbackUrl = new URL(WEB_ROUTES.BLUEPRINT.AUTH_CALLBACK, CONFIG.siteUrl);
+
     const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
       },
     });
 
@@ -62,10 +66,12 @@ export default function Login() {
     setIsSubmitting(true);
     setError(null);
 
+    const callbackUrl = new URL(WEB_ROUTES.BLUEPRINT.AUTH_CALLBACK, CONFIG.siteUrl);
+
     const { error: signInError } = await supabase.auth.signInWithOtp({
       email: cleanEmail,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: callbackUrl.toString(),
       },
     });
 

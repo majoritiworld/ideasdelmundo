@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import WEB_ROUTES from "@/constants/web-routes.constants";
+import { CONFIG } from "@/lib/app-config";
 import { createClient } from "@/utils/supabase/client";
 
 export default function InternalLoginPage() {
@@ -19,8 +20,7 @@ export default function InternalLoginPage() {
     setMessage("");
 
     const supabase = createClient();
-    const origin = window.location.origin;
-    const callbackUrl = new URL(WEB_ROUTES.INTERNAL.AUTH_CALLBACK, origin);
+    const callbackUrl = new URL(WEB_ROUTES.INTERNAL.AUTH_CALLBACK, CONFIG.siteUrl);
     callbackUrl.searchParams.set("next", WEB_ROUTES.INTERNAL.SESSIONS);
 
     const { error } = await supabase.auth.signInWithOtp({

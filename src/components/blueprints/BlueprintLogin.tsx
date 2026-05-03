@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import WEB_ROUTES from "@/constants/web-routes.constants";
+import { CONFIG } from "@/lib/app-config";
 import { createClient } from "@/utils/supabase/client";
 
 export function BlueprintLogin({ slug }: { slug: string }) {
@@ -20,8 +21,7 @@ export function BlueprintLogin({ slug }: { slug: string }) {
     setMessage("");
 
     const supabase = createClient();
-    const origin = window.location.origin;
-    const callbackUrl = new URL(WEB_ROUTES.BLUEPRINT.AUTH_CALLBACK, origin);
+    const callbackUrl = new URL(WEB_ROUTES.BLUEPRINT.AUTH_CALLBACK, CONFIG.siteUrl);
     callbackUrl.searchParams.set("next", WEB_ROUTES.BLUEPRINT.BY_SLUG(slug));
 
     const { error } = await supabase.auth.signInWithOtp({
