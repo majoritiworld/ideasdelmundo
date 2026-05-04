@@ -24,7 +24,7 @@ import {
   getSectionSphereCircleOpacities,
 } from "@/lib/section-sphere";
 import type { Json } from "@/lib/supabase/types";
-import { logEvent, updateSession } from "@/lib/tracking";
+import { logEvent, logTranscriptMessage, updateSession } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
 function createMessage(role: ConversationMessage["role"], text: string): ConversationMessage {
@@ -33,6 +33,27 @@ function createMessage(role: ConversationMessage["role"], text: string): Convers
     text,
     timestamp: new Date().toISOString(),
   };
+}
+
+function logTranscriptMessages(
+  sessionId: string | null,
+  questionId: number,
+  messages: ConversationMessage[],
+  sequenceStart: number,
+  metadata: Record<string, Json | undefined> = {}
+) {
+  void Promise.all(
+    messages.map((message, index) =>
+      logTranscriptMessage(sessionId, {
+        card_id: questionId,
+        role: message.role,
+        content: message.text,
+        sequence: sequenceStart + index,
+        metadata,
+        created_at: message.timestamp,
+      })
+    )
+  );
 }
 
 function splitMessageWords(text: string): string[] {
@@ -147,12 +168,16 @@ export default function Conversation() {
   useEffect(() => {
     if (!question || initializedQuestionId.current === question.id || messages.length > 0) return;
     initializedQuestionId.current = question.id;
+    const openingMessage = createMessage("guide", question.openingMessage);
     dispatch({
       type: "ADD_MESSAGE",
       questionId: question.id,
-      message: createMessage("guide", question.openingMessage),
+      message: openingMessage,
     });
-  }, [dispatch, messages.length, question]);
+    logTranscriptMessages(state.sessionId, question.id, [openingMessage], 0, {
+      source: "question_opening",
+    });
+  }, [dispatch, messages.length, question, state.sessionId]);
 
   useEffect(() => {
     if (!isGuideSpeaking) return;
@@ -414,6 +439,16 @@ export default function Conversation() {
         questionId: activeQuestion.id,
         responseLength: response.length,
       });
+      logTranscriptMessages(
+        state.sessionId,
+        activeQuestion.id,
+        [userMessage, guideMessage],
+        currentMessages.length,
+        {
+          sectionId: activeSection.id,
+          isCore,
+        }
+      );
       void updateSession(state.sessionId, { conversations: nextConversations as unknown as Json });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("fallbackError"));
@@ -466,6 +501,17 @@ export default function Conversation() {
         questionId: activeQuestion.id,
         responseLength: response.length,
       });
+      logTranscriptMessages(
+        state.sessionId,
+        activeQuestion.id,
+        [userMessage, guideMessage],
+        currentMessages.length,
+        {
+          sectionId: activeSection.id,
+          isCore,
+          source: "done_with_question",
+        }
+      );
       void updateSession(state.sessionId, { conversations: nextConversations as unknown as Json });
     } catch (err) {
       pendingDoneAfterRevealKeyRef.current = null;

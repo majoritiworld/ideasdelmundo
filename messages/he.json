@@ -86,6 +86,14 @@
       "signoff": "צוות Majoriti"
     }
   },
+  "admin": {
+    "login": {
+      "title": "כניסת אדמין",
+      "description": "התחברו עם חשבון Google מאושר כדי לצפות בסשנים הפנימיים.",
+      "googleSubmit": "כניסה עם Google",
+      "redirecting": "מעבירים ל-Google..."
+    }
+  },
   "demo": {
     "pageTitle": "אפליקציית Skeleton",
     "pageSubtitle": "נקודת פתיחה מוכנה שעוזרת לך לבנות אתר טוב יותר עם AI — מהר יותר, מסודר יותר, ובצורה שמתכנת יכול להבין ולהמשיך ממנה.",

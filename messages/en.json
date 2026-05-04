@@ -86,6 +86,14 @@
       "signoff": "The Majoriti team"
     }
   },
+  "admin": {
+    "login": {
+      "title": "Admin login",
+      "description": "Sign in with an approved Google account to view internal sessions.",
+      "googleSubmit": "Sign in with Google",
+      "redirecting": "Redirecting to Google..."
+    }
+  },
   "demo": {
     "pageTitle": "Skeleton App",
     "pageSubtitle": "A ready-made starting point that helps you build a better website with AI — faster, more organized, and in a way that a developer can understand and continue from.",

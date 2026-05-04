@@ -155,7 +155,10 @@ function JourneyShell() {
 
       if (data) {
         dispatch({ type: "SET_RESUME_SESSION", session: toResumeSnapshot(data) });
+        return;
       }
+
+      dispatch({ type: "SET_RESUME_SESSION", session: null });
     })();
   }, [dispatch, state.authChecked, state.userId]);
 

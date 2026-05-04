@@ -1,32 +1,32 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import WEB_ROUTES from "@/constants/web-routes.constants";
-import { CONFIG } from "@/lib/app-config";
 import { createClient } from "@/utils/supabase/client";
 
 export default function InternalLoginPage() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const t = useTranslations("admin.login");
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
 
-  async function submitLogin(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function signInWithGoogle() {
     setStatus("loading");
-    setMessage("");
+    setMessage(t("redirecting"));
 
     const supabase = createClient();
-    const callbackUrl = new URL(WEB_ROUTES.INTERNAL.AUTH_CALLBACK, CONFIG.siteUrl);
-    callbackUrl.searchParams.set("next", WEB_ROUTES.INTERNAL.SESSIONS);
+    const callbackUrl = new URL(WEB_ROUTES.INTERNAL.AUTH_CALLBACK, window.location.origin);
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
       options: {
-        emailRedirectTo: callbackUrl.toString(),
+        redirectTo: callbackUrl.toString(),
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
 
@@ -35,41 +35,24 @@ export default function InternalLoginPage() {
       setMessage(error.message);
       return;
     }
-
-    setStatus("sent");
-    setMessage("Check your email for the admin sign-in link.");
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#FAFBFE] px-5 py-10">
       <Card className="w-full max-w-md border-[#D5DCE6] bg-white">
         <CardHeader>
-          <CardTitle>Admin login</CardTitle>
-          <CardDescription>
-            Sign in with an approved admin email to view internal sessions.
-          </CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={submitLogin} className="grid gap-4">
-            <label className="grid gap-2 text-sm font-medium text-[#0F1B2D]">
-              Email
-              <Input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                required
-                className="h-11 rounded-xl border-[#D5DCE6] bg-white"
-              />
-            </label>
-            <Button
-              type="submit"
-              loading={status === "loading"}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full"
-            >
-              Send magic link
-            </Button>
-          </form>
+          <Button
+            type="button"
+            loading={status === "loading"}
+            onClick={signInWithGoogle}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 w-full rounded-full"
+          >
+            {t("googleSubmit")}
+          </Button>
           {message && (
             <p className={`mt-4 text-sm ${status === "error" ? "text-red-600" : "text-[#5A6B82]"}`}>
               {message}

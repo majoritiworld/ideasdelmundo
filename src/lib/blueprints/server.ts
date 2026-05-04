@@ -7,7 +7,11 @@ import {
   type BlueprintContent,
 } from "@/lib/blueprints/types";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import type { BlueprintRow, Json, SessionRow, TranscriptMessageRow } from "@/lib/supabase/types";
+import type { BlueprintRow, Json, SessionRow } from "@/lib/supabase/types";
+import {
+  getTranscriptMessagesForSession,
+  type TranscriptMessageForDisplay,
+} from "@/lib/transcripts";
 
 type GenerateBlueprintResult = {
   blueprint: BlueprintRow;
@@ -86,7 +90,7 @@ async function loadTranscriptMessages(sessionId: string) {
   return data ?? [];
 }
 
-async function generateContent(session: SessionRow, messages: TranscriptMessageRow[]) {
+async function generateContent(session: SessionRow, messages: TranscriptMessageForDisplay[]) {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error("Anthropic API key is not configured");
   }
@@ -113,7 +117,7 @@ async function generateContent(session: SessionRow, messages: TranscriptMessageR
 export async function generateBlueprintDraft(sessionId: string): Promise<GenerateBlueprintResult> {
   const supabaseAdmin = getSupabaseAdmin();
   const session = await loadSession(sessionId);
-  const messages = await loadTranscriptMessages(sessionId);
+  const messages = getTranscriptMessagesForSession(session, await loadTranscriptMessages(sessionId));
   const content = await generateContent(session, messages);
 
   const { data: existingBlueprint, error: existingError } = await supabaseAdmin

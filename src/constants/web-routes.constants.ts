@@ -7,6 +7,7 @@ const WEB_ROUTES = {
   INTERNAL: {
     LOGIN: "/internal/login",
     SESSIONS: "/internal/sessions",
+    SESSION_TRANSCRIPT: (id: string) => `/internal/sessions/${id}/transcript`,
     BLUEPRINTS: "/internal/blueprints",
     BLUEPRINT_BY_ID: (id: string) => `/internal/blueprints/${id}`,
     AUTH_CALLBACK: "/internal/auth/callback",

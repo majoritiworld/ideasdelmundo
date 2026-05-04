@@ -1,5 +1,6 @@
 import type { SessionRow, TranscriptMessageRow } from "@/lib/supabase/types";
 import { BLUEPRINT_PROMPT_VERSION } from "@/lib/blueprints/types";
+import type { TranscriptMessageForDisplay } from "@/lib/transcripts";
 
 export function getBlueprintSystemPrompt() {
   return `You are creating a Majoriti Purpose Blueprint from a user's guided purpose transcript.
@@ -58,7 +59,7 @@ Rules:
 
 export function buildBlueprintUserPrompt(
   session: SessionRow,
-  transcriptMessages: TranscriptMessageRow[]
+  transcriptMessages: TranscriptMessageForDisplay[] | TranscriptMessageRow[]
 ) {
   const transcript = transcriptMessages
     .map((message) => {

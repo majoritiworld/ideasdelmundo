@@ -52,6 +52,7 @@ export interface JourneyState {
   sessionId: string | null;
   userId: string | null;
   authChecked: boolean;
+  resumeLookupChecked: boolean;
   resumeSession: ResumeJourneySnapshot | null;
   firedEvents: Set<EventType>;
   name: string;
@@ -91,6 +92,7 @@ const initialState: JourneyState = {
   sessionId: null,
   userId: null,
   authChecked: false,
+  resumeLookupChecked: false,
   resumeSession: null,
   firedEvents: new Set<EventType>(),
   name: "",
@@ -112,11 +114,12 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
     case "SET_SESSION_ID":
       return { ...state, sessionId: action.id };
     case "SET_USER":
-      return { ...state, userId: action.userId };
+      if (state.userId === action.userId) return state;
+      return { ...state, userId: action.userId, resumeLookupChecked: false, resumeSession: null };
     case "SET_AUTH_CHECKED":
       return { ...state, authChecked: action.checked };
     case "SET_RESUME_SESSION":
-      return { ...state, resumeSession: action.session };
+      return { ...state, resumeSession: action.session, resumeLookupChecked: true };
     case "HYDRATE_RESUME":
       return {
         ...state,

@@ -52,6 +52,7 @@ export default function Welcome() {
 
     const sessionId = await ensureSession();
     void logEvent(sessionId, EVENTS.WELCOME_CTA_CLICKED);
+    void updateSession(sessionId, { name: name.trim() });
     dispatch({ type: "SET_NAME", name: name.trim() });
     dispatch({ type: "GO_TO", screen: "meet_guide" });
     setIsStarting(false);

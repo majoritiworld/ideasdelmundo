@@ -14,7 +14,11 @@ import WEB_ROUTES from "@/constants/web-routes.constants";
 import { generateBlueprintAction } from "@/lib/blueprints/actions";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import type { BlueprintRow, SessionRow, TranscriptMessageRow } from "@/lib/supabase/types";
+import type { BlueprintRow, SessionRow } from "@/lib/supabase/types";
+import {
+  getTranscriptMessagesForSession,
+  type TranscriptMessageForDisplay,
+} from "@/lib/transcripts";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -41,8 +45,8 @@ function getStatusVariant(status: SessionRow["status"]) {
   return "secondary";
 }
 
-function groupMessages(messages: TranscriptMessageRow[]) {
-  return messages.reduce<Record<string, TranscriptMessageRow[]>>((acc, message) => {
+function groupMessages(messages: TranscriptMessageForDisplay[]) {
+  return messages.reduce<Record<string, TranscriptMessageForDisplay[]>>((acc, message) => {
     acc[message.session_id] = [...(acc[message.session_id] ?? []), message];
     return acc;
   }, {});
@@ -55,14 +59,19 @@ function groupBlueprints(blueprints: BlueprintRow[]) {
   }, {});
 }
 
-async function getRecentSessions() {
+async function getRecentSessions(completedOnly: boolean) {
   const supabaseAdmin = getSupabaseAdmin();
-
-  const { data: sessions, error: sessionsError } = await supabaseAdmin
+  let query = supabaseAdmin
     .from("sessions")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(50);
+
+  if (completedOnly) {
+    query = query.eq("status", "completed");
+  }
+
+  const { data: sessions, error: sessionsError } = await query;
 
   if (sessionsError) {
     throw new Error(sessionsError.message);
@@ -104,9 +113,15 @@ async function getRecentSessions() {
   };
 }
 
-export default async function InternalSessionsPage() {
+export default async function InternalSessionsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ completed?: string }>;
+}) {
   const user = await requireAdminUser();
-  const { sessions, messagesBySession, blueprintsBySession } = await getRecentSessions();
+  const completedOnly = (await searchParams)?.completed === "true";
+  const { sessions, messagesBySession, blueprintsBySession } =
+    await getRecentSessions(completedOnly);
 
   return (
     <PageContainer
@@ -123,10 +138,25 @@ export default async function InternalSessionsPage() {
     >
       <Card className="border-[#D5DCE6] bg-white">
         <CardHeader>
-          <CardTitle>Recent sessions</CardTitle>
-          <CardDescription>Showing the latest 50 sessions from Supabase.</CardDescription>
+          <CardTitle>{completedOnly ? "Completed sessions" : "Recent sessions"}</CardTitle>
+          <CardDescription>
+            Showing the latest 50 {completedOnly ? "completed " : ""}sessions from Supabase.
+          </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 flex justify-end">
+            <Button asChild variant={completedOnly ? "default" : "outline"} size="sm">
+              <Link
+                href={
+                  completedOnly
+                    ? WEB_ROUTES.INTERNAL.SESSIONS
+                    : `${WEB_ROUTES.INTERNAL.SESSIONS}?completed=true`
+                }
+              >
+                {completedOnly ? "Show all sessions" : "Show completed only"}
+              </Link>
+            </Button>
+          </div>
           <Table containerClassName="rounded-xl border border-[#E5EAF2]">
             <TableHeader>
               <TableRow>
@@ -144,12 +174,17 @@ export default async function InternalSessionsPage() {
               {sessions.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={8} className="py-10 text-center text-[#5A6B82]">
-                    No sessions captured yet.
+                    {completedOnly
+                      ? "No completed sessions captured yet."
+                      : "No sessions captured yet."}
                   </TableCell>
                 </TableRow>
               ) : (
                 sessions.map((session) => {
-                  const messages = messagesBySession[session.id] ?? [];
+                  const messages = getTranscriptMessagesForSession(
+                    session,
+                    messagesBySession[session.id] ?? []
+                  );
                   const blueprint = blueprintsBySession[session.id];
                   const preview = messages.slice(-2);
 
@@ -212,6 +247,11 @@ export default async function InternalSessionsPage() {
                             <span className="text-xs font-medium text-[#5A6B82]">
                               {messages.length} saved messages
                             </span>
+                            <Button asChild size="sm" variant="outline" className="w-fit">
+                              <Link href={WEB_ROUTES.INTERNAL.SESSION_TRANSCRIPT(session.id)}>
+                                Download transcript
+                              </Link>
+                            </Button>
                             {preview.map((message) => (
                               <p
                                 key={message.id}

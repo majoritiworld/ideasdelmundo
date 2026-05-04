@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import IkigaiFigure from "@/components/IkigaiFigure";
@@ -42,7 +42,13 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const emailReady = email.trim().length > 0;
-  const isSignedIn = state.authChecked && Boolean(state.userId);
+  const isCheckingResume = state.authChecked && Boolean(state.userId) && !state.resumeLookupChecked;
+  const hasResumeSession = state.authChecked && Boolean(state.resumeSession);
+
+  useEffect(() => {
+    if (!state.authChecked || !state.userId || !state.resumeLookupChecked || state.resumeSession) return;
+    dispatch({ type: "GO_TO", screen: "welcome" });
+  }, [dispatch, state.authChecked, state.resumeLookupChecked, state.resumeSession, state.userId]);
 
   async function signInWithGoogle() {
     setError(null);
@@ -98,7 +104,7 @@ export default function Login() {
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
       <IkigaiFigure size={160} />
       <h1 className="font-heading mt-10 text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
-        {isSignedIn ? (
+        {hasResumeSession ? (
           t("returningTitle")
         ) : (
           <>
@@ -109,10 +115,10 @@ export default function Login() {
         )}
       </h1>
       <p className="mt-4 max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
-        {t(isSignedIn ? "returningSubtitle" : "subtitle")}
+        {t(hasResumeSession ? "returningSubtitle" : "subtitle")}
       </p>
 
-      {isSignedIn ? (
+      {isCheckingResume ? null : hasResumeSession ? (
         <Button
           type="button"
           onClick={continueSession}
