@@ -968,6 +968,19 @@
       "answerRequirement": "Answer at least 2 questions to move on",
       "finish": "Finish"
     },
+    "optionalBoard": {
+      "title": "להעמיק",
+      "subtitle": "השאלות האלה אופציונליות. אפשר לבחור מה שמסקרן אותך.",
+      "questionLabel": "ש{id}",
+      "answeredAria": "נענתה",
+      "nextSection": "הסעיף הבא",
+      "done": "סיימתי",
+      "tour": {
+        "title": "הערה קצרה",
+        "description": "בכל סעיף יש 4 שאלות אקסטרה אופציונליות. מומלץ לענות לפחות על אחת. ככל שתענו יותר, ה-blueprint שלכם יהיה מפורט ורלוונטי יותר.",
+        "cta": "הבנתי"
+      }
+    },
     "conversation": {
       "back": "← Back to board",
       "guide": "Guide",

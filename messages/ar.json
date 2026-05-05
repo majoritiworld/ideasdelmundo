@@ -968,6 +968,19 @@
       "answerRequirement": "Answer at least 2 questions to move on",
       "finish": "Finish"
     },
+    "optionalBoard": {
+      "title": "تعمّق أكثر",
+      "subtitle": "هذه الأسئلة اختيارية. اختر ما يلفت انتباهك.",
+      "questionLabel": "س{id}",
+      "answeredAria": "تمت الإجابة",
+      "nextSection": "القسم التالي",
+      "done": "انتهيت",
+      "tour": {
+        "title": "ملاحظة سريعة",
+        "description": "في كل قسم 4 أسئلة إضافية اختيارية. نوصي بالإجابة عن سؤال واحد على الأقل. كلما أجبت أكثر، أصبح الـ blueprint أكثر تفصيلًا وملاءمة لك.",
+        "cta": "فهمت"
+      }
+    },
     "conversation": {
       "back": "← Back to board",
       "guide": "Guide",

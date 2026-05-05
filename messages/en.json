@@ -968,6 +968,19 @@
       "answerRequirement": "Answer at least 2 questions to move on",
       "finish": "Finish"
     },
+    "optionalBoard": {
+      "title": "Go deeper",
+      "subtitle": "These questions are optional. Explore what calls to you.",
+      "questionLabel": "Q{id}",
+      "answeredAria": "Answered",
+      "nextSection": "Next section",
+      "done": "I'm done",
+      "tour": {
+        "title": "A quick note",
+        "description": "Each section has 4 optional extra questions. We recommend answering at least one. The more you answer, the more detailed and relevant your blueprint will be.",
+        "cta": "Got it"
+      }
+    },
     "conversation": {
       "back": "← Back to board",
       "guide": "Guide",

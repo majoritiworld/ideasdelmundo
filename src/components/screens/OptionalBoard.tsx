@@ -1,9 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import IkigaiFigure from "@/components/IkigaiFigure";
 import Sphere from "@/components/Sphere";
+import { getStorage, setStorage } from "@/hooks/use-local-storage";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
 import { categoryColors, sections, type Question } from "@/lib/sections";
@@ -17,6 +27,7 @@ import { cn } from "@/lib/utils";
 const TOTAL_SECTIONS = 5;
 const ANSWERED_CARD_BACKGROUND = "#1B3DD41A";
 const ANSWERED_CHECK_COLOR = "#008925";
+const OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY = "journey-optional-questions-tour-completed";
 
 function getSectionColor(theme: string) {
   return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.becoming;
@@ -24,7 +35,9 @@ function getSectionColor(theme: string) {
 
 export default function OptionalBoard() {
   const { state, dispatch } = useJourney();
+  const t = useTranslations("journey.optionalBoard");
   const [mountedSectionId] = useState(() => state.currentSection);
+  const [pendingTourQuestion, setPendingTourQuestion] = useState<Question | null>(null);
   const section = sections.find((item) => item.id === mountedSectionId) ?? sections[0];
   const sectionColor = getSectionColor(section.theme);
   const isFinalSection = section.id === TOTAL_SECTIONS;
@@ -40,13 +53,32 @@ export default function OptionalBoard() {
     void logEvent(state.sessionId, EVENTS.OPTIONAL_BOARD_VIEWED, { sectionId: section.id });
   }, [section.id, state.answeredQuestions, state.sessionId]);
 
-  function openQuestion(question: Question) {
+  function goToQuestion(question: Question) {
     void logEvent(state.sessionId, EVENTS.QUESTION_OPENED, {
       questionId: question.id,
       sectionId: section.id,
     });
     dispatch({ type: "SET_ACTIVE_QUESTION", id: question.id });
     dispatch({ type: "GO_TO", screen: "conversation" });
+  }
+
+  function openQuestion(question: Question) {
+    if (getStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY) !== true) {
+      setPendingTourQuestion(question);
+      return;
+    }
+
+    goToQuestion(question);
+  }
+
+  function continueAfterTour() {
+    const question = pendingTourQuestion;
+    setStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY, true);
+    setPendingTourQuestion(null);
+
+    if (question) {
+      goToQuestion(question);
+    }
   }
 
   function continueJourney() {
@@ -84,10 +116,10 @@ export default function OptionalBoard() {
           )}
 
           <h2 className="font-heading mt-8 text-[28px] leading-tight font-medium text-[#0F1B2D]">
-            Go deeper
+            {t("title")}
           </h2>
           <p className="mt-3 text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[17px]">
-            These questions are optional. Explore what calls to you.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -111,13 +143,13 @@ export default function OptionalBoard() {
                     className="font-mono text-xs font-medium"
                     style={{ color: isAnswered ? sectionColor : "#7B8FA8" }}
                   >
-                    Q{question.id}
+                    {t("questionLabel", { id: question.id })}
                   </span>
                   {isAnswered ? (
                     <span
                       className="text-lg font-medium"
                       style={{ color: ANSWERED_CHECK_COLOR }}
-                      aria-label="Answered"
+                      aria-label={t("answeredAria")}
                     >
                       ✓
                     </span>
@@ -147,10 +179,40 @@ export default function OptionalBoard() {
             onClick={continueJourney}
             className="hover:border-primary h-12 rounded-full border border-[#D5DCE6] bg-white/70 px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
           >
-            {isFinalSection ? "I'm done" : "Next section"}
+            {isFinalSection ? t("done") : t("nextSection")}
           </Button>
         </div>
       </div>
+
+      <Dialog
+        open={pendingTourQuestion !== null}
+        onOpenChange={(open) => {
+          if (!open) continueAfterTour();
+        }}
+      >
+        <DialogContent
+          showCloseButton={false}
+          className="rounded-[24px] border-[#D5DCE6] bg-white p-6 text-center shadow-2xl sm:max-w-md sm:p-7"
+        >
+          <DialogHeader className="items-center text-center">
+            <DialogTitle className="font-heading text-[24px] leading-tight font-medium text-[#0F1B2D]">
+              {t("tour.title")}
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-[15px] leading-7 text-[#5A6B82]">
+              {t("tour.description")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-2 sm:justify-center">
+            <Button
+              type="button"
+              onClick={continueAfterTour}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full px-7"
+            >
+              {t("tour.cta")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
