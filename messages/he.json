@@ -900,7 +900,7 @@
       "ready": "ודאו שאתם בתנוחה נוחה.",
       "instruction": "ננשום יחד במשך דקה אחת",
       "countdown": "להתכונן",
-      "prepareToInhale": "התכוננו לשאיפה בעוד 3 שניות.",
+      "prepareToInhale": "עקבו אחרי המעגל הפנימי עם הנשימה.",
       "countdownInstruction": "התחילו לשאוף כשהספירה לאחור מסתיימת.",
       "followCircle": "עקבו אחרי המעגל עם הנשימה.",
       "complete": "הושלם",
@@ -979,7 +979,17 @@
       "micRecording": "עצירת קלט קולי",
       "listeningHint": "מאזינים... לחץ על רווח או על המיקרופון כשסיימת",
       "transcribingHint": "מתמלל...",
-      "doneWithQuestion": "סיימתי עם השאלה הזו"
+      "doneWithQuestion": "סיימתי עם השאלה הזו",
+      "tour": {
+        "stepLabel": "{current} מתוך {total}",
+        "input": "אפשר לכתוב את התשובה בשפה שנוחה לך.",
+        "mic": "או שאפשר לומר את התשובות בשפה שנוחה לך. לחצו על המיקרופון, ואז לחצו שוב כשסיימתם.",
+        "messages": "אשאל שאלות המשך כדי לעזור לך להעמיק, אבל תמיד אפשר לסיים את הסשן.",
+        "back": "כשסיימת לענות, לחצו על חזרה ללוח כדי לחזור ללוח שלך.",
+        "next": "הבא",
+        "done": "סיום",
+        "skip": "דלג על הסיור"
+      }
     },
     "closing": {
       "congratsTitle": "Congratulations, {name}.",
@@ -988,7 +998,7 @@
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
       "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Our team is reviewing your answers and crafting your personalized Purpose Blueprint. You'll receive it in the next 48 hours at your email.",
+      "nextBody": "You'll receive the blueprint in 24-48 hours in your email.",
       "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
       "emailPlaceholder": "your@email.com",
       "notifyCta": "Notify me",

@@ -900,7 +900,7 @@
       "ready": "تأكد من أنك في وضعية مريحة.",
       "instruction": "سنتنفس معًا لمدة دقيقة واحدة",
       "countdown": "استعد",
-      "prepareToInhale": "استعد للشهيق خلال 3 ثوانٍ.",
+      "prepareToInhale": "اتبع الدائرة الداخلية مع تنفسك.",
       "countdownInstruction": "ابدأ بالشهيق عند انتهاء العد التنازلي.",
       "followCircle": "اتبع الدائرة مع تنفسك.",
       "complete": "اكتمل",
@@ -979,7 +979,17 @@
       "micRecording": "إيقاف الإدخال الصوتي",
       "listeningHint": "جارٍ الاستماع... اضغط Space أو زر الميكروفون عند الانتهاء",
       "transcribingHint": "جارٍ التفريغ...",
-      "doneWithQuestion": "انتهيت من هذا السؤال"
+      "doneWithQuestion": "انتهيت من هذا السؤال",
+      "tour": {
+        "stepLabel": "{current} من {total}",
+        "input": "يمكنك كتابة إجابتك باللغة التي تفضلها.",
+        "mic": "أو يمكنك قول إجاباتك باللغة التي تفضلها. اضغط على الميكروفون، ثم اضغط مرة أخرى عند الانتهاء.",
+        "messages": "سأطرح عليك أسئلة متابعة لمساعدتك على التعمق أكثر، ويمكنك دائمًا إنهاء جلستك.",
+        "back": "عند الانتهاء من الإجابة، اضغط على الرجوع إلى اللوحة للعودة إلى لوحتك.",
+        "next": "التالي",
+        "done": "تم",
+        "skip": "تخطي الجولة"
+      }
     },
     "closing": {
       "congratsTitle": "Congratulations, {name}.",
@@ -988,7 +998,7 @@
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
       "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Our team is reviewing your answers and crafting your personalized Purpose Blueprint. You'll receive it in the next 48 hours at your email.",
+      "nextBody": "You'll receive the blueprint in 24-48 hours in your email.",
       "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
       "emailPlaceholder": "your@email.com",
       "notifyCta": "Notify me",

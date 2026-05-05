@@ -28,6 +28,7 @@ export interface Database {
           intake_completed_at: string | null;
           first_card_opened_at: string | null;
           completed_at: string | null;
+          completion_notified_at: string | null;
           report_status: ReportStatus;
           draft_report: string | null;
           report_generated_at: string | null;
@@ -54,6 +55,7 @@ export interface Database {
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
           completed_at?: string | null;
+          completion_notified_at?: string | null;
           report_status?: ReportStatus;
           draft_report?: string | null;
           report_generated_at?: string | null;
@@ -80,6 +82,7 @@ export interface Database {
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
           completed_at?: string | null;
+          completion_notified_at?: string | null;
           report_status?: ReportStatus;
           draft_report?: string | null;
           report_generated_at?: string | null;

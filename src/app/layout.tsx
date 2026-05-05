@@ -6,10 +6,10 @@ import { getMessages } from "next-intl/server";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Majoriti — Find your why",
+  title: "Majoriti - Purpose Blueprint Experience",
   description: "A guided purpose-discovery experience from majoriti.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.png",
   },
 };
 

@@ -900,7 +900,7 @@
       "ready": "Make sure you're in a comfortable position.",
       "instruction": "We'll be breathing together for 1 min",
       "countdown": "Get ready",
-      "prepareToInhale": "Prepare to inhale in 3 seconds.",
+      "prepareToInhale": "Follow the inner circle with your breath.",
       "countdownInstruction": "Start inhaling when the countdown ends.",
       "followCircle": "Follow the circle with your breath.",
       "complete": "Complete",
@@ -979,7 +979,17 @@
       "micRecording": "Stop voice input",
       "listeningHint": "Listening... press Space or tap the mic when done",
       "transcribingHint": "Transcribing...",
-      "doneWithQuestion": "I'm done with this question"
+      "doneWithQuestion": "I'm done with this question",
+      "tour": {
+        "stepLabel": "{current} of {total}",
+        "input": "You can type your answer in your preferred language.",
+        "mic": "Or you can speak your answers in your preferred language. Click the microphone, then click again when you're done.",
+        "messages": "I will ask follow-up questions to help you go deeper, but you can always finish your session.",
+        "back": "When you're done answering, click Back to board to return to your board.",
+        "next": "Next",
+        "done": "Done",
+        "skip": "Skip tour"
+      }
     },
     "closing": {
       "congratsTitle": "Congratulations, {name}.",
@@ -988,7 +998,7 @@
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
       "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Our team is reviewing your answers and crafting your personalized Purpose Blueprint. You'll receive it in the next 48 hours at your email.",
+      "nextBody": "You'll receive the blueprint in 24-48 hours in your email.",
       "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
       "emailPlaceholder": "your@email.com",
       "notifyCta": "Notify me",

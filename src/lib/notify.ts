@@ -3,9 +3,9 @@
 import API_ROUTES from "@/constants/api-routes.constants";
 
 export interface NotifyPayload {
-  name: string;
-  email: string;
   sessionId: string | null;
+  name?: string;
+  email?: string;
 }
 
 export async function sendNotifyEmail(payload: NotifyPayload): Promise<void> {

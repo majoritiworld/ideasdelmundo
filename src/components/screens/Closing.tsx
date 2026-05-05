@@ -1,23 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 import { useTranslations } from "next-intl";
 import Sphere from "@/components/Sphere";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Iconify from "@/components/ui/iconify";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce, type JourneyState } from "@/lib/journey-context";
 import { sendNotifyEmail } from "@/lib/notify";
 import { getSectionSphereCircleColors, getSectionSphereCircleOpacities } from "@/lib/section-sphere";
 import { getSectionQuestions, sections } from "@/lib/sections";
-import { supabase } from "@/lib/supabase/client";
 import { markCompleted, updateSession } from "@/lib/tracking";
 
 type ClosingStep = "congrats" | "next";
-type NotifyStatus = "idle" | "success" | "error";
 
 const WORD_REVEAL_DELAY_MS = 60;
 const SPEAKING_DURATION_MS = 9_000;
@@ -187,18 +184,13 @@ function capitalizeFirstLetter(value: string) {
 }
 
 export default function Closing() {
-  const { state, dispatch } = useJourney();
+  const { state } = useJourney();
   const t = useTranslations("journey.closing");
   const logSessionCompleted = useLogEventOnce(EVENTS.SESSION_COMPLETED);
   const [step, setStep] = useState<ClosingStep>("congrats");
   const [isSpeaking, setIsSpeaking] = useState(true);
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [emailValue, setEmailValue] = useState(state.email);
-  const [authEmail, setAuthEmail] = useState("");
-  const [notifyStatus, setNotifyStatus] = useState<NotifyStatus>("idle");
-  const [isNotifying, setIsNotifying] = useState(false);
-  const autoNotifyEmailRef = useRef<string | null>(null);
   const displayName = capitalizeFirstLetter(state.name);
 
   const congratsBodyLine1 = t("congratsBodyLine1");
@@ -219,14 +211,20 @@ export default function Closing() {
     () => congratsLines.reduce((total, line) => total + line.words.length, 0),
     [congratsLines]
   );
-  const emailReady = emailValue.trim().length > 0;
-  const knownEmail = state.email.trim() || authEmail.trim();
-
   useEffect(() => {
     void logSessionCompleted();
     void markCompleted(state.sessionId);
     void updateSession(state.sessionId, { current_screen: "closing" });
-  }, [logSessionCompleted, state.sessionId]);
+    if (state.sessionId) {
+      void sendNotifyEmail({
+        sessionId: state.sessionId,
+        name: displayName,
+        email: state.email,
+      }).catch((err) => {
+        console.warn("[closing] completion notification failed", err);
+      });
+    }
+  }, [displayName, logSessionCompleted, state.email, state.sessionId]);
 
   useEffect(() => {
     if (step !== "congrats") return;
@@ -248,28 +246,6 @@ export default function Closing() {
     return () => clearTimeout(timeoutId);
   }, [copied]);
 
-  useEffect(() => {
-    if (!state.email || emailValue) return;
-
-    setEmailValue(state.email);
-  }, [emailValue, state.email]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    void (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!cancelled) setAuthEmail(session?.user.email ?? "");
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const downloadTranscript = () => {
     createTranscriptPdf(displayName, state.conversations);
   };
@@ -283,43 +259,6 @@ export default function Closing() {
     await navigator.clipboard.writeText(window.location.origin);
     setCopied(true);
   };
-
-  const notifyEmail = useCallback(
-    async (email: string) => {
-      if (!email || isNotifying) return;
-
-      setIsNotifying(true);
-      setNotifyStatus("idle");
-
-      try {
-        await updateSession(state.sessionId, { email });
-        dispatch({ type: "SET_EMAIL", email });
-        await sendNotifyEmail({
-          name: displayName,
-          email,
-          sessionId: state.sessionId,
-        });
-        setNotifyStatus("success");
-      } catch {
-        setNotifyStatus("error");
-      } finally {
-        setIsNotifying(false);
-      }
-    },
-    [dispatch, displayName, isNotifying, state.sessionId]
-  );
-
-  const notifyMe = async () => {
-    await notifyEmail(emailValue.trim());
-  };
-
-  useEffect(() => {
-    if (step !== "next" || !knownEmail || notifyStatus === "success") return;
-    if (autoNotifyEmailRef.current === knownEmail) return;
-
-    autoNotifyEmailRef.current = knownEmail;
-    void notifyEmail(knownEmail);
-  }, [knownEmail, notifyEmail, notifyStatus, step]);
 
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
@@ -405,59 +344,6 @@ export default function Closing() {
               {t("nextBody")}
             </p>
             <div className="mt-10 flex w-full max-w-sm flex-col items-stretch gap-3">
-              {notifyStatus === "success" ? (
-                <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
-                  {t("notifySuccess")}
-                </p>
-              ) : knownEmail ? (
-                <div className="rounded-[28px] bg-white/70 px-5 py-4 text-sm text-[#5A6B82] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
-                  <p>{t("notifyKnownEmail", { email: knownEmail })}</p>
-                  {notifyStatus === "error" ? (
-                    <p className="mt-2 font-medium text-[#D85A30]">{t("notifyError")}</p>
-                  ) : null}
-                </div>
-              ) : (
-                <form
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    void notifyMe();
-                  }}
-                  className="flex flex-col gap-3 rounded-[28px] border border-[#D5DCE6] bg-white/70 p-3 shadow-[0_18px_55px_rgba(15,27,45,0.08)]"
-                >
-                  <label
-                    htmlFor="closing-email"
-                    className="px-2 text-sm leading-[1.6] text-[#5A6B82]"
-                  >
-                    {t("notifyLabel")}
-                  </label>
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <Input
-                      id="closing-email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      value={emailValue}
-                      onChange={(event) => {
-                        setEmailValue(event.target.value);
-                        if (notifyStatus === "error") setNotifyStatus("idle");
-                      }}
-                      placeholder={t("emailPlaceholder")}
-                      className="h-12 border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none sm:flex-1"
-                      aria-required
-                    />
-                    <Button
-                      type="submit"
-                      disabled={!emailReady || isNotifying}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
-                    >
-                      {t("notifyCta")}
-                    </Button>
-                  </div>
-                  {notifyStatus === "error" ? (
-                    <p className="px-2 text-sm font-medium text-[#D85A30]">{t("notifyError")}</p>
-                  ) : null}
-                </form>
-              )}
               <Button
                 type="button"
                 onClick={downloadTranscript}

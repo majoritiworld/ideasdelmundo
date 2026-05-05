@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import Iconify from "@/components/ui/iconify";
 import { Textarea } from "@/components/ui/textarea";
 import Sphere, { type SphereProps } from "@/components/Sphere";
+import { getStorage, setStorage } from "@/hooks/use-local-storage";
 import { sendChatMessage } from "@/lib/chat";
 import { EVENTS } from "@/lib/events";
 import { type ConversationMessage, useJourney } from "@/lib/journey-context";
@@ -64,6 +65,20 @@ function splitMessageWords(text: string): string[] {
 type GuideRevealState = { key: string; count: number };
 
 const EMPTY_MESSAGES: ConversationMessage[] = [];
+const CONVERSATION_TOUR_STORAGE_KEY = "journey-conversation-tour-completed";
+
+type ConversationTourTarget = "input" | "mic" | "messages" | "back";
+type ConversationTourMessageKey = "input" | "mic" | "messages" | "back";
+
+const CONVERSATION_TOUR_STEPS: Array<{
+  target: ConversationTourTarget;
+  messageKey: ConversationTourMessageKey;
+}> = [
+  { target: "input", messageKey: "input" },
+  { target: "mic", messageKey: "mic" },
+  { target: "messages", messageKey: "messages" },
+  { target: "back", messageKey: "back" },
+];
 
 export default function Conversation() {
   const { state, dispatch } = useJourney();
@@ -77,6 +92,8 @@ export default function Conversation() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [guideReveal, setGuideReveal] = useState<GuideRevealState | null>(null);
   const [doneWithQuestionFlowActive, setDoneWithQuestionFlowActive] = useState(false);
+  const [isTourVisible, setIsTourVisible] = useState(false);
+  const [tourStepIndex, setTourStepIndex] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -133,6 +150,21 @@ export default function Conversation() {
     !isThinking &&
     !isRecording &&
     userMessageCount >= 1;
+  const tourSteps = useMemo(
+    () =>
+      speechSupported
+        ? CONVERSATION_TOUR_STEPS
+        : CONVERSATION_TOUR_STEPS.filter((step) => step.target !== "mic"),
+    [speechSupported]
+  );
+  const activeTourStep = isTourVisible ? tourSteps[tourStepIndex] : null;
+  const tourCopy: Record<ConversationTourMessageKey, string> = {
+    input: t("tour.input"),
+    mic: t("tour.mic"),
+    messages: t("tour.messages"),
+    back: t("tour.back"),
+  };
+  const tourStepNumber = tourStepIndex + 1;
 
   micShortcutGuardsRef.current = {
     speechSupported,
@@ -142,7 +174,9 @@ export default function Conversation() {
   };
 
   useEffect(() => {
-    setSpeechSupported(typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia);
+    const hasSpeechSupport = typeof window !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
+    setSpeechSupported(hasSpeechSupport);
+    setIsTourVisible(getStorage(CONVERSATION_TOUR_STORAGE_KEY) !== true);
   }, []);
 
   useEffect(() => {
@@ -578,17 +612,87 @@ export default function Conversation() {
     void submitMessage();
   }
 
+  function completeTour() {
+    setStorage(CONVERSATION_TOUR_STORAGE_KEY, true);
+    setIsTourVisible(false);
+    setTourStepIndex(0);
+    if (!composerLocked) {
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }
+
+  function goToNextTourStep() {
+    if (tourStepIndex >= tourSteps.length - 1) {
+      completeTour();
+      return;
+    }
+    setTourStepIndex((currentIndex) => currentIndex + 1);
+  }
+
+  function isTourTargetActive(target: ConversationTourTarget) {
+    return activeTourStep?.target === target;
+  }
+
+  function renderTourCallout(target: ConversationTourTarget, className: string) {
+    if (!activeTourStep || activeTourStep.target !== target) return null;
+
+    const isLastStep = tourStepIndex >= tourSteps.length - 1;
+
+    return (
+      <div
+        className={cn(
+          "pointer-events-auto absolute z-50 w-[min(20rem,calc(100vw-2.5rem))] rounded-2xl border border-[#D5DCE6] bg-white p-4 text-left shadow-2xl",
+          className
+        )}
+        role="dialog"
+        aria-live="polite"
+      >
+        <p className="mb-2 text-[11px] font-semibold tracking-[0.2em] text-[#7B8FA8] uppercase">
+          {t("tour.stepLabel", { current: tourStepNumber, total: tourSteps.length })}
+        </p>
+        <p className="text-sm leading-6 text-[#0F1B2D]">{tourCopy[activeTourStep.messageKey]}</p>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={completeTour}
+            className="font-sans text-[13px] text-[#7B8FA8] underline decoration-[#AAB6C5] underline-offset-4 hover:text-[#5A6B82]"
+          >
+            {t("tour.skip")}
+          </button>
+          <Button
+            type="button"
+            onClick={goToNextTourStep}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-full px-5 text-[13px]"
+          >
+            {isLastStep ? t("tour.done") : t("tour.next")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <section className="relative mx-auto flex h-screen min-h-screen w-full max-w-4xl flex-col px-5 text-center sm:px-8">
-      <div className="absolute top-5 left-1/2 w-full max-w-3xl -translate-x-1/2 text-left sm:top-8">
+      {isTourVisible ? (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-30 bg-[#0F1B2D]/45 backdrop-blur-[1px]"
+        />
+      ) : null}
+      <div className="absolute top-5 left-1/2 z-40 w-full max-w-3xl -translate-x-1/2 text-left sm:top-8">
         <Button
           type="button"
           variant="ghost"
           onClick={returnToBoard}
-          className="hover:border-primary hover:text-primary h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:bg-white"
+          className={cn(
+            "hover:border-primary hover:text-primary h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:bg-white",
+            isTourTargetActive("back") &&
+              "pointer-events-none relative bg-white ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+          )}
         >
           {t("back")}
         </Button>
+        {renderTourCallout("back", "top-full left-1/2 mt-4 -translate-x-1/2")}
       </div>
 
       <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col pt-20 pb-8">
@@ -611,7 +715,11 @@ export default function Conversation() {
           />
           <div
             ref={scrollRef}
-            className="h-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 px-5 pt-8 pb-6 text-left"
+            className={cn(
+              "h-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 px-5 pt-8 pb-6 text-left",
+              isTourTargetActive("messages") &&
+                "pointer-events-none relative z-40 bg-white ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+            )}
           >
             {messages.map((message, index) => (
               <div key={`${message.role}-${index}`}>
@@ -633,6 +741,7 @@ export default function Conversation() {
             ) : null}
             <div ref={messagesEndRef} aria-hidden="true" />
           </div>
+          {renderTourCallout("messages", "top-5 left-1/2 -translate-x-1/2")}
         </div>
 
         {error ? <p className="mt-4 max-w-md text-sm leading-6 text-[#D85A30]">{error}</p> : null}
@@ -640,40 +749,53 @@ export default function Conversation() {
         <div
           className={cn(
             "mt-5 shrink-0 text-left transition-opacity",
-            composerLocked && "pointer-events-none opacity-50"
+            composerLocked &&
+              !isTourTargetActive("input") &&
+              !isTourTargetActive("mic") &&
+              "pointer-events-none opacity-50"
           )}
         >
           <form onSubmit={submitMessage} className="flex flex-col gap-1">
             <div className="flex items-end gap-3">
-              <Textarea
-                ref={inputRef}
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                onKeyDown={onComposerKeyDown}
-                placeholder={t("placeholder")}
-                disabled={composerLocked}
-                rows={1}
-                className={cn(
-                  "max-h-[180px] min-h-12 resize-none overflow-y-auto rounded-[24px] border-[#D5DCE6] bg-white px-5 py-3 leading-6 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
-                  isRecording ? "text-[#7B8FA8] italic" : "text-[#0F1B2D] not-italic"
-                )}
-              />
-              {speechSupported ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={composerLocked || isTranscribing}
-                  onClick={onMicClick}
-                  aria-label={isRecording ? t("micRecording") : t("micStart")}
+              <div className="relative flex-1">
+                <Textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  onKeyDown={onComposerKeyDown}
+                  placeholder={t("placeholder")}
+                  disabled={composerLocked}
+                  rows={1}
                   className={cn(
-                    "h-12 w-12 shrink-0 rounded-full p-0 shadow-none",
-                    isRecording
-                      ? "animate-pulse border-transparent bg-[#EF4444] text-white hover:bg-[#EF4444] hover:text-white"
-                      : "hover:text-primary border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white"
+                    "max-h-[180px] min-h-12 resize-none overflow-y-auto rounded-[24px] border-[#D5DCE6] bg-white px-5 py-3 leading-6 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
+                    isRecording ? "text-[#7B8FA8] italic" : "text-[#0F1B2D] not-italic",
+                    isTourTargetActive("input") &&
+                      "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
                   )}
-                >
-                  <Iconify icon="lucide:mic" className="mx-auto size-5" />
-                </Button>
+                />
+                {renderTourCallout("input", "bottom-full left-0 mb-4")}
+              </div>
+              {speechSupported ? (
+                <div className="relative shrink-0">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={composerLocked || isTranscribing}
+                    onClick={onMicClick}
+                    aria-label={isRecording ? t("micRecording") : t("micStart")}
+                    className={cn(
+                      "h-12 w-12 shrink-0 rounded-full p-0 shadow-none",
+                      isRecording
+                        ? "animate-pulse border-transparent bg-[#EF4444] text-white hover:bg-[#EF4444] hover:text-white"
+                        : "hover:text-primary border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white",
+                      isTourTargetActive("mic") &&
+                        "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+                    )}
+                  >
+                    <Iconify icon="lucide:mic" className="mx-auto size-5" />
+                  </Button>
+                  {renderTourCallout("mic", "right-0 bottom-full mb-4")}
+                </div>
               ) : null}
               <Button
                 type="submit"

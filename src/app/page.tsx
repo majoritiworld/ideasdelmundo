@@ -145,7 +145,7 @@ function JourneyShell() {
       const { data } = await supabase
         .from("sessions")
         .select(
-          "id,status,current_screen,name,email,source,user_id,user_agent,referrer,visited_card_ids,cards_explored_count,conversations,current_section,answered_question_ids,meditation_completed,intake_completed_at,first_card_opened_at,completed_at,report_status,draft_report,report_generated_at,report_sent_at,created_at,updated_at"
+          "id,status,current_screen,name,email,source,user_id,user_agent,referrer,visited_card_ids,cards_explored_count,conversations,current_section,answered_question_ids,meditation_completed,intake_completed_at,first_card_opened_at,completed_at,completion_notified_at,report_status,draft_report,report_generated_at,report_sent_at,created_at,updated_at"
         )
         .eq("user_id", userId)
         .neq("status", "completed")

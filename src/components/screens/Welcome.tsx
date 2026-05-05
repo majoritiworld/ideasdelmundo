@@ -29,9 +29,14 @@ export default function Welcome() {
 
   async function ensureSession() {
     if (state.sessionId) return state.sessionId;
+    if (!state.userId) {
+      dispatch({ type: "GO_TO", screen: "login" });
+      return null;
+    }
 
     const id = await createSession(
       {
+        email: state.email || null,
         user_agent: navigator.userAgent,
         referrer: document.referrer || null,
       },
@@ -51,8 +56,13 @@ export default function Welcome() {
     setIsStarting(true);
 
     const sessionId = await ensureSession();
+    if (!sessionId) {
+      setIsStarting(false);
+      return;
+    }
+
     void logEvent(sessionId, EVENTS.WELCOME_CTA_CLICKED);
-    void updateSession(sessionId, { name: name.trim() });
+    void updateSession(sessionId, { name: name.trim(), email: state.email || null });
     dispatch({ type: "SET_NAME", name: name.trim() });
     dispatch({ type: "GO_TO", screen: "meet_guide" });
     setIsStarting(false);

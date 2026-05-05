@@ -201,6 +201,7 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
       if (cancelled) return;
 
       dispatch({ type: "SET_USER", userId: session?.user.id ?? null });
+      dispatch({ type: "SET_EMAIL", email: session?.user.email ?? "" });
       dispatch({ type: "SET_AUTH_CHECKED", checked: true });
     })();
 
@@ -208,6 +209,7 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       dispatch({ type: "SET_USER", userId: session?.user.id ?? null });
+      dispatch({ type: "SET_EMAIL", email: session?.user.email ?? "" });
       dispatch({ type: "SET_AUTH_CHECKED", checked: true });
     });
 

@@ -897,7 +897,7 @@
       "ready": "Asegúrate de estar en una posición cómoda.",
       "instruction": "Respiraremos juntos durante 1 min",
       "countdown": "Prepárate",
-      "prepareToInhale": "Prepárate para inhalar en 3 segundos.",
+      "prepareToInhale": "Sigue el círculo interior con tu respiración.",
       "countdownInstruction": "Empieza a inhalar cuando termine la cuenta regresiva.",
       "followCircle": "Sigue el círculo con tu respiración.",
       "complete": "Completado",
@@ -976,7 +976,17 @@
       "micRecording": "Detener entrada por voz",
       "listeningHint": "Escuchando... pulsa Espacio o toca el micrófono cuando termines",
       "transcribingHint": "Transcribiendo...",
-      "doneWithQuestion": "Terminé con esta pregunta"
+      "doneWithQuestion": "Terminé con esta pregunta",
+      "tour": {
+        "stepLabel": "{current} de {total}",
+        "input": "Puedes escribir tu respuesta en el idioma que prefieras.",
+        "mic": "O puedes decir tus respuestas en el idioma que prefieras. Haz clic en el micrófono y vuelve a hacer clic cuando termines.",
+        "messages": "Te haré preguntas de seguimiento para ayudarte a profundizar, pero siempre puedes terminar tu sesión.",
+        "back": "Cuando termines de responder, haz clic en Volver al tablero para regresar a tu tablero.",
+        "next": "Siguiente",
+        "done": "Listo",
+        "skip": "Omitir tour"
+      }
     },
     "closing": {
       "congratsTitle": "Congratulations, {name}.",
@@ -985,7 +995,7 @@
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
       "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Our team is reviewing your answers and crafting your personalized Purpose Blueprint. You'll receive it in the next 48 hours at your email.",
+      "nextBody": "You'll receive the blueprint in 24-48 hours in your email.",
       "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
       "emailPlaceholder": "your@email.com",
       "notifyCta": "Notify me",

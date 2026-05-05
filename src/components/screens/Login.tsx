@@ -172,14 +172,6 @@ export default function Login() {
           )}
 
           {error ? <p className="text-sm font-medium text-[#D85A30]">{error}</p> : null}
-
-          <button
-            type="button"
-            onClick={() => dispatch({ type: "GO_TO", screen: "welcome" })}
-            className="text-sm text-[#7B8FA8] underline underline-offset-4 transition-colors hover:text-[#5A6B82]"
-          >
-            {t("startWithoutSignIn")}
-          </button>
         </div>
       )}
     </section>
