@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Resend } from "resend";
 
+import { RESEND_FROM_EMAIL } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import {
   formatTranscriptText,
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
     const transcript = formatTranscriptText(lockedSession, messages);
 
     const ownerEmail = await resend.emails.send({
-      from: "Purpose Blueprint <onboarding@resend.dev>",
+      from: RESEND_FROM_EMAIL,
       to: notifyEmails,
       subject: `New Purpose Blueprint completed - ${publicName}`,
       html: `
@@ -135,7 +136,7 @@ export async function POST(req: NextRequest) {
     }
 
     const confirmationEmail = await resend.emails.send({
-      from: "Purpose Blueprint <onboarding@resend.dev>",
+      from: RESEND_FROM_EMAIL,
       to: recipientEmail,
       subject: "Your Purpose Blueprint is being prepared",
       html: `

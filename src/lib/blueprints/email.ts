@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 
+import { RESEND_FROM_EMAIL } from "@/lib/email";
+
 type SendBlueprintEmailPayload = {
   name: string;
   email: string;
@@ -25,7 +27,7 @@ export async function sendBlueprintEmail({ name, email, blueprintUrl }: SendBlue
   const safeBlueprintUrl = escapeHtml(blueprintUrl);
 
   const result = await resend.emails.send({
-    from: "Purpose Blueprint <onboarding@resend.dev>",
+    from: RESEND_FROM_EMAIL,
     to: email,
     subject: "Your Purpose Blueprint is ready",
     html: `

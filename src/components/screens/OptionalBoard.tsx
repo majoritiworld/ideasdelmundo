@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import IkigaiFigure from "@/components/IkigaiFigure";
 import Sphere from "@/components/Sphere";
@@ -24,7 +24,8 @@ function getSectionColor(theme: string) {
 
 export default function OptionalBoard() {
   const { state, dispatch } = useJourney();
-  const section = sections.find((item) => item.id === state.currentSection) ?? sections[0];
+  const [mountedSectionId] = useState(() => state.currentSection);
+  const section = sections.find((item) => item.id === mountedSectionId) ?? sections[0];
   const sectionColor = getSectionColor(section.theme);
   const isFinalSection = section.id === TOTAL_SECTIONS;
   const sphereCircleColors = getSectionSphereCircleColors(section.id);
