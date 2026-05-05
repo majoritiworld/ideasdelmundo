@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   type Dispatch,
@@ -12,11 +11,9 @@ import {
 } from "react";
 
 import type { EventType } from "@/lib/events";
-import { supabase } from "@/lib/supabase/client";
 import { logEvent } from "@/lib/tracking";
 
 export type Screen =
-  | "login"
   | "welcome"
   | "meet_guide"
   | "breathing_offer"
@@ -35,25 +32,9 @@ export interface ConversationMessage {
   timestamp: string;
 }
 
-export interface ResumeJourneySnapshot {
-  sessionId: string;
-  screen: Screen;
-  name: string;
-  email: string;
-  currentSection: number;
-  activeQuestionId: number | null;
-  answeredQuestions: number[];
-  conversations: Record<number, ConversationMessage[]>;
-  meditationCompleted: boolean;
-}
-
 export interface JourneyState {
   screen: Screen;
   sessionId: string | null;
-  userId: string | null;
-  authChecked: boolean;
-  resumeLookupChecked: boolean;
-  resumeSession: ResumeJourneySnapshot | null;
   firedEvents: Set<EventType>;
   name: string;
   email: string;
@@ -65,15 +46,12 @@ export interface JourneyState {
   activeQuestionId: number | null;
   conversations: Record<number, ConversationMessage[]>;
   meditationCompleted: boolean;
+  archetypeName: string | null;
 }
 
 type JourneyAction =
   | { type: "GO_TO"; screen: Screen }
   | { type: "SET_SESSION_ID"; id: string }
-  | { type: "SET_USER"; userId: string | null }
-  | { type: "SET_AUTH_CHECKED"; checked: boolean }
-  | { type: "SET_RESUME_SESSION"; session: ResumeJourneySnapshot | null }
-  | { type: "HYDRATE_RESUME"; session: ResumeJourneySnapshot }
   | { type: "MARK_EVENT_FIRED"; eventType: EventType }
   | { type: "SET_NAME"; name: string }
   | { type: "SET_EMAIL"; email: string }
@@ -85,15 +63,12 @@ type JourneyAction =
   | { type: "MARK_QUESTION_ANSWERED"; id: number }
   | { type: "ADD_MESSAGE"; questionId: number; message: ConversationMessage }
   | { type: "SET_MEDITATION_COMPLETED"; completed: boolean }
+  | { type: "SET_ARCHETYPE"; archetypeName: string }
   | { type: "RESET" };
 
 const initialState: JourneyState = {
-  screen: "login",
+  screen: "welcome",
   sessionId: null,
-  userId: null,
-  authChecked: false,
-  resumeLookupChecked: false,
-  resumeSession: null,
   firedEvents: new Set<EventType>(),
   name: "",
   email: "",
@@ -105,6 +80,7 @@ const initialState: JourneyState = {
   activeQuestionId: null,
   conversations: {},
   meditationCompleted: false,
+  archetypeName: null,
 };
 
 function journeyReducer(state: JourneyState, action: JourneyAction): JourneyState {
@@ -113,27 +89,6 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       return { ...state, screen: action.screen };
     case "SET_SESSION_ID":
       return { ...state, sessionId: action.id };
-    case "SET_USER":
-      if (state.userId === action.userId) return state;
-      return { ...state, userId: action.userId, resumeLookupChecked: false, resumeSession: null };
-    case "SET_AUTH_CHECKED":
-      return { ...state, authChecked: action.checked };
-    case "SET_RESUME_SESSION":
-      return { ...state, resumeSession: action.session, resumeLookupChecked: true };
-    case "HYDRATE_RESUME":
-      return {
-        ...state,
-        screen: action.session.screen,
-        sessionId: action.session.sessionId,
-        resumeSession: null,
-        name: action.session.name,
-        email: action.session.email,
-        currentSection: action.session.currentSection,
-        activeQuestionId: action.session.activeQuestionId,
-        answeredQuestions: action.session.answeredQuestions,
-        conversations: action.session.conversations,
-        meditationCompleted: action.session.meditationCompleted,
-      };
     case "MARK_EVENT_FIRED":
       return { ...state, firedEvents: new Set(state.firedEvents).add(action.eventType) };
     case "SET_NAME":
@@ -168,12 +123,10 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       };
     case "SET_MEDITATION_COMPLETED":
       return { ...state, meditationCompleted: action.completed };
+    case "SET_ARCHETYPE":
+      return { ...state, archetypeName: action.archetypeName };
     case "RESET":
-      return {
-        ...initialState,
-        userId: state.userId,
-        authChecked: state.authChecked,
-      };
+      return initialState;
     default:
       return state;
   }
@@ -189,35 +142,6 @@ const JourneyContext = createContext<JourneyContextValue | null>(null);
 export function JourneyProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(journeyReducer, initialState);
   const value = useMemo(() => ({ state, dispatch }), [state]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    void (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (cancelled) return;
-
-      dispatch({ type: "SET_USER", userId: session?.user.id ?? null });
-      dispatch({ type: "SET_EMAIL", email: session?.user.email ?? "" });
-      dispatch({ type: "SET_AUTH_CHECKED", checked: true });
-    })();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      dispatch({ type: "SET_USER", userId: session?.user.id ?? null });
-      dispatch({ type: "SET_EMAIL", email: session?.user.email ?? "" });
-      dispatch({ type: "SET_AUTH_CHECKED", checked: true });
-    });
-
-    return () => {
-      cancelled = true;
-      subscription.unsubscribe();
-    };
-  }, []);
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;
 }

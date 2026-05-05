@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import IkigaiFigure from "@/components/IkigaiFigure";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import WEB_ROUTES from "@/constants/web-routes.constants";
 import { CONFIG } from "@/lib/app-config";
-import { useJourney } from "@/lib/journey-context";
 import { supabase } from "@/lib/supabase/client";
 
 function GoogleIcon() {
@@ -35,20 +34,12 @@ function GoogleIcon() {
 }
 
 export default function Login() {
-  const { state, dispatch } = useJourney();
   const t = useTranslations("journey.login");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const emailReady = email.trim().length > 0;
-  const isCheckingResume = state.authChecked && Boolean(state.userId) && !state.resumeLookupChecked;
-  const hasResumeSession = state.authChecked && Boolean(state.resumeSession);
-
-  useEffect(() => {
-    if (!state.authChecked || !state.userId || !state.resumeLookupChecked || state.resumeSession) return;
-    dispatch({ type: "GO_TO", screen: "welcome" });
-  }, [dispatch, state.authChecked, state.resumeLookupChecked, state.resumeSession, state.userId]);
 
   async function signInWithGoogle() {
     setError(null);
@@ -91,89 +82,64 @@ export default function Login() {
     setSent(true);
   }
 
-  function continueSession() {
-    if (state.resumeSession) {
-      dispatch({ type: "HYDRATE_RESUME", session: state.resumeSession });
-      return;
-    }
-
-    dispatch({ type: "GO_TO", screen: "welcome" });
-  }
-
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
       <IkigaiFigure size={160} />
       <h1 className="font-heading mt-10 text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
-        {hasResumeSession ? (
-          t("returningTitle")
-        ) : (
-          <>
-            {t("titleLine1")}
-            <br />
-            {t("titleLine2")}
-          </>
-        )}
+        {t("titleLine1")}
+        <br />
+        {t("titleLine2")}
       </h1>
       <p className="mt-4 max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
-        {t(hasResumeSession ? "returningSubtitle" : "subtitle")}
+        {t("subtitle")}
       </p>
 
-      {isCheckingResume ? null : hasResumeSession ? (
+      <div className="mt-8 flex w-full max-w-sm flex-col items-stretch gap-4">
         <Button
           type="button"
-          onClick={continueSession}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+          variant="outline"
+          onClick={() => void signInWithGoogle()}
+          className="h-12 rounded-full border-[#D5DCE6] bg-white px-7 text-[#0F1B2D] shadow-none transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
         >
-          {t("continueSession")}
+          <GoogleIcon />
+          {t("googleCta")}
         </Button>
-      ) : (
-        <div className="mt-8 flex w-full max-w-sm flex-col items-stretch gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => void signInWithGoogle()}
-            className="h-12 rounded-full border-[#D5DCE6] bg-white px-7 text-[#0F1B2D] shadow-none transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
-          >
-            <GoogleIcon />
-            {t("googleCta")}
-          </Button>
 
-          {sent ? (
-            <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
-              {t("magicSent")}
-            </p>
-          ) : (
-            <form onSubmit={(event) => void sendMagicLink(event)} className="flex flex-col gap-3">
-              <label htmlFor="login-email" className="text-sm font-light text-[#5A6B82]">
-                {t("emailLabel")}
-              </label>
-              <Input
-                id="login-email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                  if (error) setError(null);
-                }}
-                placeholder={t("emailPlaceholder")}
-                className="h-12 border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
-                aria-required
-              />
-              <Button
-                type="submit"
-                disabled={!emailReady || isSubmitting}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
-              >
-                {t("emailCta")}
-              </Button>
-            </form>
-          )}
+        {sent ? (
+          <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
+            {t("magicSent")}
+          </p>
+        ) : (
+          <form onSubmit={(event) => void sendMagicLink(event)} className="flex flex-col gap-3">
+            <label htmlFor="login-email" className="text-sm font-light text-[#5A6B82]">
+              {t("emailLabel")}
+            </label>
+            <Input
+              id="login-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                if (error) setError(null);
+              }}
+              placeholder={t("emailPlaceholder")}
+              className="h-12 border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
+              aria-required
+            />
+            <Button
+              type="submit"
+              disabled={!emailReady || isSubmitting}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
+            >
+              {t("emailCta")}
+            </Button>
+          </form>
+        )}
 
-          {error ? <p className="text-sm font-medium text-[#D85A30]">{error}</p> : null}
-        </div>
-      )}
+        {error ? <p className="text-sm font-medium text-[#D85A30]">{error}</p> : null}
+      </div>
     </section>
   );
 }

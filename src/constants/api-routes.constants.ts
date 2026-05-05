@@ -13,6 +13,7 @@ const API_ROUTES = {
     WRITE: "/api/tracking",
   },
   CHAT: "/api/chat",
+  ARCHETYPE: "/api/archetype",
   NOTIFY: "/api/notify",
 } as const;
 

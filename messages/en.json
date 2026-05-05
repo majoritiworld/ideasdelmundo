@@ -877,13 +877,12 @@
       "error": "Something went wrong. Please try again."
     },
     "welcome": {
-      "title": "Discover your Professional Purpose Path",
-      "subtitleLine1": "A guided experience to uncover your passions, strengths, and purpose.",
-      "subtitleLine2": "Discover the opportunities that a new world is opening up for you.",
-      "nameLabel": "Before we begin, what's your first name?",
-      "namePlaceholder": "First name",
-      "cta": "Meet your guide",
-      "resumeCta": "Continue where you left off"
+      "title": "Your Purpose Blueprint",
+      "subtitleLine1": "A guided experience to discover the opportunities",
+      "subtitleLine2": "that a new world is opening up for you.",
+      "nameLabel": "Before we begin, what's your name?",
+      "namePlaceholder": "Your name",
+      "cta": "Meet your guide"
     },
     "meetGuide": {
       "stateLabel": "Speaking",
@@ -1011,20 +1010,25 @@
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
       "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "You'll receive the blueprint in 24-48 hours in your email.",
-      "notifyLabel": "Leave your email and we'll send your Purpose Blueprint when it's ready.",
+      "nextBody": "Leave your email and we'll send you your full curated Purpose Blueprint — reviewed by two humans and tailored specifically to you.",
       "emailPlaceholder": "your@email.com",
-      "notifyCta": "Notify me",
-      "notifyKnownEmail": "We'll send your Blueprint to {email}.",
+      "notifyCta": "Send it to me",
       "notifySuccess": "You're all set. Check your inbox.",
       "notifyError": "Something went wrong. Please try again.",
+      "invalidEmail": "Please enter a valid email.",
+      "archetypeIntro": "Based on everything you shared...",
+      "reflecting": "Your guide is reflecting...",
+      "archetypeReveal": "You are {archetypeName}.",
+      "downloadArchetypeCardCta": "Download your archetype card",
+      "humanReviewMessage": "This is just a taste. Your full Purpose Blueprint will be reviewed by two humans to make sure it is truly relevant and tailored to you. You will receive it in your inbox in the next 24 to 48 hours.",
+      "archetypeError": "Your guide could not complete the live archetype reveal right now, but your full Purpose Blueprint is still on its way.",
       "downloadCta": "Download my transcript",
       "shareCta": "Share this experience",
       "whatsappCta": "Share on WhatsApp",
       "copyLinkCta": "Copy link",
       "copiedCta": "Copied!",
       "shareMessage": "I just mapped my purpose with Your Purpose Blueprint. Try it here: {origin}",
-      "footer": "majoriti.world"
+      "footer": "@majoriti.world"
     }
   },
   "errorBoundary": {

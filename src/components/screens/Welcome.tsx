@@ -4,17 +4,10 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Sphere from "@/components/Sphere";
+import IkigaiFigure from "@/components/IkigaiFigure";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
-import {
-  getSectionSphereCircleColors,
-  getSectionSphereCircleOpacities,
-} from "@/lib/section-sphere";
 import { createSession, logEvent, updateSession } from "@/lib/tracking";
-
-const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
-const multicolorSphereCircleOpacities = getSectionSphereCircleOpacities(5);
 
 export default function Welcome() {
   const { state, dispatch } = useJourney();
@@ -29,18 +22,13 @@ export default function Welcome() {
 
   async function ensureSession() {
     if (state.sessionId) return state.sessionId;
-    if (!state.userId) {
-      dispatch({ type: "GO_TO", screen: "login" });
-      return null;
-    }
 
     const id = await createSession(
       {
-        email: state.email || null,
         user_agent: navigator.userAgent,
         referrer: document.referrer || null,
       },
-      state.userId
+      null
     );
 
     if (id) {
@@ -62,40 +50,32 @@ export default function Welcome() {
     }
 
     void logEvent(sessionId, EVENTS.WELCOME_CTA_CLICKED);
-    void updateSession(sessionId, { name: name.trim(), email: state.email || null });
+    void updateSession(sessionId, { name: name.trim() });
     dispatch({ type: "SET_NAME", name: name.trim() });
     dispatch({ type: "GO_TO", screen: "meet_guide" });
     setIsStarting(false);
   }
 
-  function resumeJourney() {
-    if (!state.resumeSession) return;
-    dispatch({ type: "HYDRATE_RESUME", session: state.resumeSession });
-  }
-
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
-      <Sphere
-        state="idle"
-        size={160}
-        circleColors={multicolorSphereCircleColors}
-        circleOpacities={multicolorSphereCircleOpacities}
-      />
-      <h1 className="font-heading mt-10 text-[32px] leading-tight font-medium text-[#0F1B2D] sm:text-[40px]">
+      <div className="welcome-ikigai-listening">
+        <IkigaiFigure size={160} />
+      </div>
+      <h1 className="mt-10 font-['ArizonaFlare'] text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
         {t("title")}
       </h1>
-      <p className="mt-4 max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
+      <p className="mt-4 max-w-2xl text-center text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
         {t("subtitleLine1")}
         <br />
         {t("subtitleLine2")}
       </p>
 
-      <div className="mt-8 w-full max-w-xl text-center">
-        <label htmlFor="welcome-name" className="text-base font-light text-[#5A6B82]">
+      <div className="mt-8 w-full max-w-sm text-center">
+        <label htmlFor="welcome-name" className="text-[14px] font-light text-[#5A6B82]">
           {t("nameLabel")}
         </label>
 
-        <div className="mt-3 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
+        <div className="mt-3 flex w-full flex-col items-stretch gap-3">
           <Input
             id="welcome-name"
             name="name"
@@ -105,29 +85,62 @@ export default function Welcome() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("namePlaceholder")}
-            className="h-auto border-[#D5DCE6] py-3 pr-5 pl-5 text-start text-[18px] text-[#0F1B2D] shadow-none sm:basis-[49%]"
+            className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-start text-[15px] text-[#0F1B2D] shadow-none"
             aria-required
           />
           <Button
             type="button"
             onClick={() => void startJourney()}
             disabled={!nameReady || isStarting}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
           >
             {t("cta")}
           </Button>
         </div>
-        {state.resumeSession ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={resumeJourney}
-            className="mt-4 h-12 rounded-full border-[#D5DCE6] bg-white px-7 text-[#5A6B82] transition-all hover:-translate-y-px hover:bg-white hover:text-[#0F1B2D] active:scale-[0.98]"
-          >
-            {t("resumeCta")}
-          </Button>
-        ) : null}
       </div>
+      <style jsx>{`
+        :global(.welcome-ikigai-listening) {
+          animation: welcome-ikigai-listening-pulse 1.9s ease-in-out infinite;
+          transform-origin: center;
+          will-change: transform;
+        }
+
+        :global(.welcome-ikigai-listening svg circle) {
+          animation: welcome-ikigai-listening-presence 1.9s ease-in-out infinite;
+        }
+
+        :global(.welcome-ikigai-listening svg circle:nth-of-type(2)) {
+          animation-delay: -0.18s;
+        }
+
+        :global(.welcome-ikigai-listening svg circle:nth-of-type(3)) {
+          animation-delay: -0.36s;
+        }
+
+        :global(.welcome-ikigai-listening svg circle:nth-of-type(4)) {
+          animation-delay: -0.54s;
+        }
+
+        @keyframes welcome-ikigai-listening-pulse {
+          0%,
+          100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.06);
+          }
+        }
+
+        @keyframes welcome-ikigai-listening-presence {
+          0%,
+          100% {
+            opacity: 0.28;
+          }
+          50% {
+            opacity: 0.42;
+          }
+        }
+      `}</style>
     </section>
   );
 }

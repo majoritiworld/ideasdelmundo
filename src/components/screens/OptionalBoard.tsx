@@ -37,7 +37,7 @@ export default function OptionalBoard() {
   const { state, dispatch } = useJourney();
   const t = useTranslations("journey.optionalBoard");
   const [mountedSectionId] = useState(() => state.currentSection);
-  const [pendingTourQuestion, setPendingTourQuestion] = useState<Question | null>(null);
+  const [isTourVisible, setIsTourVisible] = useState(false);
   const section = sections.find((item) => item.id === mountedSectionId) ?? sections[0];
   const sectionColor = getSectionColor(section.theme);
   const isFinalSection = section.id === TOTAL_SECTIONS;
@@ -53,6 +53,10 @@ export default function OptionalBoard() {
     void logEvent(state.sessionId, EVENTS.OPTIONAL_BOARD_VIEWED, { sectionId: section.id });
   }, [section.id, state.answeredQuestions, state.sessionId]);
 
+  useEffect(() => {
+    setIsTourVisible(getStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY) !== true);
+  }, []);
+
   function goToQuestion(question: Question) {
     void logEvent(state.sessionId, EVENTS.QUESTION_OPENED, {
       questionId: question.id,
@@ -63,22 +67,12 @@ export default function OptionalBoard() {
   }
 
   function openQuestion(question: Question) {
-    if (getStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY) !== true) {
-      setPendingTourQuestion(question);
-      return;
-    }
-
     goToQuestion(question);
   }
 
   function continueAfterTour() {
-    const question = pendingTourQuestion;
     setStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY, true);
-    setPendingTourQuestion(null);
-
-    if (question) {
-      goToQuestion(question);
-    }
+    setIsTourVisible(false);
   }
 
   function continueJourney() {
@@ -185,7 +179,7 @@ export default function OptionalBoard() {
       </div>
 
       <Dialog
-        open={pendingTourQuestion !== null}
+        open={isTourVisible}
         onOpenChange={(open) => {
           if (!open) continueAfterTour();
         }}

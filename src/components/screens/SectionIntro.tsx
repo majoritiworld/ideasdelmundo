@@ -100,9 +100,9 @@ export default function SectionIntro() {
           disableHoverEffect
         />
 
-        <div className="mt-8 w-full max-w-[592px] rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
+        <div className="mt-8 min-h-[188px] w-full max-w-[592px] rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
           <span className="sr-only">{revealText}</span>
-          <div className="space-y-5" aria-hidden="true">
+          <div className="space-y-2" aria-hidden="true">
             {revealLines.map((line, lineIndex) => (
               <p
                 key={line.text}
