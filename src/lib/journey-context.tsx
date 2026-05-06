@@ -12,6 +12,7 @@ import {
 
 import type { EventType } from "@/lib/events";
 import { logEvent } from "@/lib/tracking";
+import type { SessionRow } from "@/lib/supabase/types";
 
 export type Screen =
   | "welcome"
@@ -47,6 +48,7 @@ export interface JourneyState {
   conversations: Record<number, ConversationMessage[]>;
   meditationCompleted: boolean;
   archetypeName: string | null;
+  seenPauseHint: boolean;
 }
 
 type JourneyAction =
@@ -64,6 +66,8 @@ type JourneyAction =
   | { type: "ADD_MESSAGE"; questionId: number; message: ConversationMessage }
   | { type: "SET_MEDITATION_COMPLETED"; completed: boolean }
   | { type: "SET_ARCHETYPE"; archetypeName: string }
+  | { type: "MARK_PAUSE_HINT_SEEN" }
+  | { type: "REHYDRATE"; session: SessionRow }
   | { type: "RESET" };
 
 const initialState: JourneyState = {
@@ -81,7 +85,27 @@ const initialState: JourneyState = {
   conversations: {},
   meditationCompleted: false,
   archetypeName: null,
+  seenPauseHint: false,
 };
+
+function isScreen(value: string | null): value is Screen {
+  return Boolean(
+    value &&
+      [
+        "welcome",
+        "meet_guide",
+        "breathing_offer",
+        "meditation",
+        "post_meditation",
+        "questions_intro",
+        "section_intro",
+        "board",
+        "optional_board",
+        "conversation",
+        "closing",
+      ].includes(value)
+  );
+}
 
 function journeyReducer(state: JourneyState, action: JourneyAction): JourneyState {
   switch (action.type) {
@@ -125,6 +149,27 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       return { ...state, meditationCompleted: action.completed };
     case "SET_ARCHETYPE":
       return { ...state, archetypeName: action.archetypeName };
+    case "MARK_PAUSE_HINT_SEEN":
+      return { ...state, seenPauseHint: true };
+    case "REHYDRATE": {
+      const session = action.session;
+
+      return {
+        ...state,
+        sessionId: session.id,
+        name: session.name ?? "",
+        email: session.email ?? "",
+        source: session.source ?? "",
+        currentSection: session.current_section ?? 1,
+        answeredQuestions: session.answered_question_ids ?? [],
+        coreAnswered: session.core_answered ?? [],
+        conversations: (session.conversations ?? {}) as unknown as Record<number, ConversationMessage[]>,
+        meditationCompleted: session.meditation_completed ?? false,
+        seenPauseHint: session.seen_pause_hint ?? false,
+        screen: isScreen(session.current_screen) ? session.current_screen : "welcome",
+        activeQuestionId: null,
+      };
+    }
     case "RESET":
       return initialState;
     default:

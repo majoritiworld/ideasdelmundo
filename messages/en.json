@@ -978,7 +978,28 @@
         "title": "A quick note",
         "description": "Each section has 4 optional extra questions. We recommend answering at least one. The more you answer, the more detailed and relevant your blueprint will be.",
         "cta": "Got it"
+      },
+      "pauseHint": {
+        "text": "You can pause anytime from now on. We'll save your progress and email you a link to come back whenever you're ready.",
+        "dismiss": "Got it"
       }
+    },
+    "pause": {
+      "pause": "Pause for now",
+      "emailPrompt": "Where should we send your resume link?",
+      "emailPlaceholder": "your@email.com",
+      "sendLink": "Send link",
+      "saving": "Saving...",
+      "savedLabel": "Saved",
+      "sentMessage": "Check your inbox. We sent you a link to come back whenever you're ready.",
+      "error": "We couldn't send the link. Please try again."
+    },
+    "resume": {
+      "loading": "Picking up where you left off...",
+      "errorLabel": "Resume link",
+      "notFoundTitle": "We couldn't find that saved session.",
+      "notFoundBody": "The link may be incomplete or the session may no longer exist. You can start again whenever you're ready.",
+      "startOver": "Start again"
     },
     "conversation": {
       "back": "← Back to board",

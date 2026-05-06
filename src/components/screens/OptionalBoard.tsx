@@ -12,7 +12,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import IkigaiFigure from "@/components/IkigaiFigure";
+import PauseButton from "@/components/PauseButton";
 import Sphere from "@/components/Sphere";
+import Iconify from "@/components/ui/iconify";
 import { getStorage, setStorage } from "@/hooks/use-local-storage";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
@@ -43,6 +45,7 @@ export default function OptionalBoard() {
   const isFinalSection = section.id === TOTAL_SECTIONS;
   const sphereCircleColors = getSectionSphereCircleColors(section.id);
   const sphereCircleOpacities = getSectionSphereCircleOpacities(section.id);
+  const showPauseHint = !state.seenPauseHint && state.currentSection === 1;
 
   useEffect(() => {
     void updateSession(state.sessionId, {
@@ -54,7 +57,11 @@ export default function OptionalBoard() {
   }, [section.id, state.answeredQuestions, state.sessionId]);
 
   useEffect(() => {
-    setIsTourVisible(getStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY) !== true);
+    const timeoutId = window.setTimeout(() => {
+      setIsTourVisible(getStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY) !== true);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   function goToQuestion(question: Question) {
@@ -75,6 +82,11 @@ export default function OptionalBoard() {
     setIsTourVisible(false);
   }
 
+  function dismissPauseHint() {
+    dispatch({ type: "MARK_PAUSE_HINT_SEEN" });
+    void updateSession(state.sessionId, { seen_pause_hint: true });
+  }
+
   function continueJourney() {
     void logEvent(state.sessionId, EVENTS.SECTION_COMPLETED, { sectionId: section.id });
 
@@ -91,6 +103,7 @@ export default function OptionalBoard() {
 
   return (
     <section className="relative min-h-screen overflow-hidden px-4 py-8 sm:px-8">
+      <PauseButton />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(27,61,212,0.08),transparent_36%)]" />
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-64px)] max-w-4xl flex-col items-center">
@@ -116,6 +129,20 @@ export default function OptionalBoard() {
             {t("subtitle")}
           </p>
         </div>
+
+        {showPauseHint ? (
+          <div className="mt-6 flex w-full max-w-3xl items-start gap-3 rounded-2xl border border-[#B5C6F4] bg-[#EEF2FE] px-5 py-4 text-left">
+            <Iconify icon="lucide:clock-3" className="mt-0.5 size-5 shrink-0 text-[#1B3DD4]" />
+            <p className="flex-1 text-[14px] leading-[1.65] text-[#0F1B2D]">{t("pauseHint.text")}</p>
+            <button
+              type="button"
+              onClick={dismissPauseHint}
+              className="shrink-0 font-mono text-[11px] tracking-[0.08em] text-[#1B3DD4] underline underline-offset-4"
+            >
+              {t("pauseHint.dismiss")}
+            </button>
+          </div>
+        ) : null}
 
         <div className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
           {section.optionalQuestions.map((question) => {

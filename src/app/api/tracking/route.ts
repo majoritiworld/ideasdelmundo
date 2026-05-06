@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
         conversations: {},
         current_section: 1,
         answered_question_ids: [],
+        core_answered: [],
+        seen_pause_hint: false,
         meditation_completed: false,
         ...payload.fields,
       });

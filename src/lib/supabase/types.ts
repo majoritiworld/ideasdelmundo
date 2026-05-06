@@ -24,6 +24,8 @@ export interface Database {
           conversations: Json | null;
           current_section: number | null;
           answered_question_ids: number[] | null;
+          core_answered: number[] | null;
+          seen_pause_hint: boolean | null;
           meditation_completed: boolean | null;
           intake_completed_at: string | null;
           first_card_opened_at: string | null;
@@ -51,6 +53,8 @@ export interface Database {
           conversations?: Json | null;
           current_section?: number | null;
           answered_question_ids?: number[] | null;
+          core_answered?: number[] | null;
+          seen_pause_hint?: boolean | null;
           meditation_completed?: boolean | null;
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
@@ -78,6 +82,8 @@ export interface Database {
           conversations?: Json | null;
           current_section?: number | null;
           answered_question_ids?: number[] | null;
+          core_answered?: number[] | null;
+          seen_pause_hint?: boolean | null;
           meditation_completed?: boolean | null;
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;

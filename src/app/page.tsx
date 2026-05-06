@@ -15,6 +15,10 @@ import Conversation from "@/components/screens/Conversation";
 import Meditation from "@/components/screens/Meditation";
 import Closing from "@/components/screens/Closing";
 import API_ROUTES from "@/constants/api-routes.constants";
+import { getStorage, removeStorage } from "@/hooks/use-local-storage";
+import type { SessionRow } from "@/lib/supabase/types";
+
+const RESUME_SESSION_STORAGE_KEY = "resumeSession";
 
 const screenComponents = {
   welcome: Welcome,
@@ -37,6 +41,14 @@ function isPreviewScreen(value: string | null): value is Screen {
 function JourneyShell() {
   const { state, dispatch } = useJourney();
   const Screen = screenComponents[state.screen];
+
+  useEffect(() => {
+    const saved = getStorage(RESUME_SESSION_STORAGE_KEY) as SessionRow | null;
+    if (!saved) return;
+
+    dispatch({ type: "REHYDRATE", session: saved });
+    removeStorage(RESUME_SESSION_STORAGE_KEY);
+  }, [dispatch]);
 
   useEffect(() => {
     if (window.location.hostname !== "localhost") return;

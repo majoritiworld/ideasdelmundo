@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import PauseButton from "@/components/PauseButton";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
@@ -91,6 +92,7 @@ export default function SectionIntro() {
 
   return (
     <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 text-center sm:px-8">
+      <PauseButton />
       <div className="m-auto flex flex-col items-center">
         <Sphere
           state={introComplete ? "idle" : "speaking"}

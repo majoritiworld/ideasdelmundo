@@ -975,7 +975,28 @@
         "title": "Una nota rápida",
         "description": "Cada sección tiene 4 preguntas extra opcionales. Recomendamos responder al menos una. Cuanto más respondas, más detallado y relevante será tu blueprint.",
         "cta": "Entendido"
+      },
+      "pauseHint": {
+        "text": "Desde ahora puedes pausar cuando quieras. Guardaremos tu progreso y te enviaremos un enlace por email para volver cuando estés listo.",
+        "dismiss": "Entendido"
       }
+    },
+    "pause": {
+      "pause": "Pausar por ahora",
+      "emailPrompt": "¿Dónde deberíamos enviarte tu enlace para continuar?",
+      "emailPlaceholder": "tu@email.com",
+      "sendLink": "Enviar enlace",
+      "saving": "Guardando...",
+      "savedLabel": "Guardado",
+      "sentMessage": "Revisa tu inbox. Te enviamos un enlace para volver cuando estés listo.",
+      "error": "No pudimos enviar el enlace. Inténtalo de nuevo."
+    },
+    "resume": {
+      "loading": "Retomando donde lo dejaste...",
+      "errorLabel": "Enlace para continuar",
+      "notFoundTitle": "No pudimos encontrar esa sesión guardada.",
+      "notFoundBody": "Puede que el enlace esté incompleto o que la sesión ya no exista. Puedes empezar de nuevo cuando quieras.",
+      "startOver": "Empezar de nuevo"
     },
     "conversation": {
       "back": "← Back to board",

@@ -4,6 +4,9 @@ const WEB_ROUTES = {
     BY_SLUG: (slug: string) => `/blueprint/${slug}`,
     AUTH_CALLBACK: "/auth/callback",
   },
+  RESUME: {
+    BY_SESSION_ID: (sessionId: string) => `/resume/${sessionId}`,
+  },
   INTERNAL: {
     LOGIN: "/internal/login",
     SESSIONS: "/internal/sessions",

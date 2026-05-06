@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Iconify from "@/components/ui/iconify";
 import { Textarea } from "@/components/ui/textarea";
+import PauseButton from "@/components/PauseButton";
 import Sphere, { type SphereProps } from "@/components/Sphere";
 import { getStorage, setStorage } from "@/hooks/use-local-storage";
 import { sendChatMessage } from "@/lib/chat";
@@ -571,6 +572,8 @@ export default function Conversation() {
     const answeredQuestionIds = hasUserAnswer
       ? Array.from(new Set([...s.answeredQuestions, qId]))
       : s.answeredQuestions;
+    const coreAnsweredIds =
+      hasUserAnswer && isCoreQuestion ? Array.from(new Set([...s.coreAnswered, secId])) : s.coreAnswered;
 
     if (hasUserAnswer) {
       void logEvent(s.sessionId, EVENTS.QUESTION_ANSWERED, {
@@ -582,6 +585,7 @@ export default function Conversation() {
 
     void updateSession(s.sessionId, {
       answered_question_ids: answeredQuestionIds,
+      core_answered: coreAnsweredIds,
       conversations: s.conversations as unknown as Json,
     });
 
@@ -673,6 +677,7 @@ export default function Conversation() {
 
   return (
     <section className="relative mx-auto flex h-screen min-h-screen w-full max-w-4xl flex-col px-5 text-center sm:px-8">
+      <PauseButton />
       {isTourVisible ? (
         <div
           aria-hidden="true"

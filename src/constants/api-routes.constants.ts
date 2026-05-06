@@ -15,6 +15,10 @@ const API_ROUTES = {
   CHAT: "/api/chat",
   ARCHETYPE: "/api/archetype",
   NOTIFY: "/api/notify",
+  PAUSE: "/api/pause",
+  RESUME: {
+    BY_SESSION_ID: (sessionId: string) => `/api/resume/${sessionId}`,
+  },
 } as const;
 
 export default API_ROUTES;
