@@ -977,7 +977,10 @@
       "tour": {
         "title": "A quick note",
         "description": "Each section has 4 optional extra questions. We recommend answering at least one. The more you answer, the more detailed and relevant your blueprint will be.",
-        "cta": "Got it"
+        "next": "Next",
+        "done": "Got it",
+        "pauseTitle": "Pause anytime",
+        "pauseDescription": "Use this button to save your progress and email yourself a link to come back whenever you're ready."
       },
       "pauseHint": {
         "text": "You can pause anytime from now on. We'll save your progress and email you a link to come back whenever you're ready.",
@@ -992,6 +995,7 @@
       "saving": "Saving...",
       "savedLabel": "Saved",
       "sentMessage": "Check your inbox. We sent you a link to come back whenever you're ready.",
+      "close": "Close",
       "error": "We couldn't send the link. Please try again."
     },
     "resume": {

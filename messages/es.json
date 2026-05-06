@@ -974,7 +974,10 @@
       "tour": {
         "title": "Una nota rápida",
         "description": "Cada sección tiene 4 preguntas extra opcionales. Recomendamos responder al menos una. Cuanto más respondas, más detallado y relevante será tu blueprint.",
-        "cta": "Entendido"
+        "next": "Siguiente",
+        "done": "Entendido",
+        "pauseTitle": "Pausa cuando quieras",
+        "pauseDescription": "Usa este botón para guardar tu progreso y enviarte por email un enlace para volver cuando estés listo."
       },
       "pauseHint": {
         "text": "Desde ahora puedes pausar cuando quieras. Guardaremos tu progreso y te enviaremos un enlace por email para volver cuando estés listo.",
@@ -989,6 +992,7 @@
       "saving": "Guardando...",
       "savedLabel": "Guardado",
       "sentMessage": "Revisa tu inbox. Te enviamos un enlace para volver cuando estés listo.",
+      "close": "Cerrar",
       "error": "No pudimos enviar el enlace. Inténtalo de nuevo."
     },
     "resume": {

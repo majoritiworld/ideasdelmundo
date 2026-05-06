@@ -2,6 +2,14 @@ import { apiClient } from "@/lib/api-client";
 
 // ----------------------------------------------------------------------
 
+function getRequestConfig(url: string) {
+  if (url.startsWith("/api/")) {
+    return { baseURL: "" };
+  }
+
+  return {};
+}
+
 /**
  * Typed SWR fetcher using the shared apiClient (Axios).
  * Inherits base URL, credentials, and all interceptors automatically.
@@ -10,7 +18,7 @@ import { apiClient } from "@/lib/api-client";
  * const { data } = useSWR<User[]>("/users", fetcher);
  */
 export const fetcher = <T>(url: string): Promise<T> =>
-  apiClient.get<T>(url).then((res) => res.data);
+  apiClient.get<T>(url, getRequestConfig(url)).then((res) => res.data);
 
 /**
  * Mutation executor for useSWRMutation.
@@ -25,5 +33,5 @@ export const mutator = <TData, TArg extends { method?: string; data?: TData }>(
   { arg }: { arg: TArg }
 ): Promise<TData> => {
   const { method = "POST", data } = arg;
-  return apiClient.request<TData>({ url, method, data }).then((res) => res.data);
+  return apiClient.request<TData>({ url, method, data, ...getRequestConfig(url) }).then((res) => res.data);
 };

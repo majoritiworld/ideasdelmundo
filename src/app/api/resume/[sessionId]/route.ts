@@ -12,8 +12,11 @@ export async function GET(
 ) {
   try {
     const { sessionId } = await params;
+    console.log("[resume-api] querying session", { sessionId });
+
     const supabaseAdmin = getSupabaseAdmin();
     const { data, error } = await supabaseAdmin.from("sessions").select("*").eq("id", sessionId).maybeSingle();
+    console.log("[resume-api] Supabase response", { sessionId, data, error });
 
     if (error) return jsonError(500, error.message);
     if (!data) return jsonError(404, "Session not found");

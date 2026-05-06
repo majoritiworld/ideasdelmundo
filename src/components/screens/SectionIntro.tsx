@@ -14,7 +14,7 @@ import { sections } from "@/lib/sections";
 import { logEvent, updateSession } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
-const INTRO_ANIMATION_DURATION_MS = 4_000;
+const INTRO_ANIMATION_DURATION_MS = 5_000;
 const QUESTION_REVEAL_START_MS = 2_500;
 
 interface RevealLine {

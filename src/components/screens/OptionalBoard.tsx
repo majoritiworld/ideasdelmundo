@@ -30,6 +30,7 @@ const TOTAL_SECTIONS = 5;
 const ANSWERED_CARD_BACKGROUND = "#1B3DD41A";
 const ANSWERED_CHECK_COLOR = "#008925";
 const OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY = "journey-optional-questions-tour-completed";
+type OptionalBoardTourStep = "questions" | "pause";
 
 function getSectionColor(theme: string) {
   return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.becoming;
@@ -40,12 +41,14 @@ export default function OptionalBoard() {
   const t = useTranslations("journey.optionalBoard");
   const [mountedSectionId] = useState(() => state.currentSection);
   const [isTourVisible, setIsTourVisible] = useState(false);
+  const [tourStep, setTourStep] = useState<OptionalBoardTourStep>("questions");
   const section = sections.find((item) => item.id === mountedSectionId) ?? sections[0];
   const sectionColor = getSectionColor(section.theme);
   const isFinalSection = section.id === TOTAL_SECTIONS;
   const sphereCircleColors = getSectionSphereCircleColors(section.id);
   const sphereCircleOpacities = getSectionSphereCircleOpacities(section.id);
   const showPauseHint = !state.seenPauseHint && state.currentSection === 1;
+  const isPauseTourActive = isTourVisible && tourStep === "pause";
 
   useEffect(() => {
     void updateSession(state.sessionId, {
@@ -77,9 +80,14 @@ export default function OptionalBoard() {
     goToQuestion(question);
   }
 
-  function continueAfterTour() {
+  function showPauseTourStep() {
+    setTourStep("pause");
+  }
+
+  function completeTour() {
     setStorage(OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY, true);
     setIsTourVisible(false);
+    setTourStep("questions");
   }
 
   function dismissPauseHint() {
@@ -103,7 +111,6 @@ export default function OptionalBoard() {
 
   return (
     <section className="relative min-h-screen overflow-hidden px-4 py-8 sm:px-8">
-      <PauseButton />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(27,61,212,0.08),transparent_36%)]" />
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-64px)] max-w-4xl flex-col items-center">
@@ -133,7 +140,9 @@ export default function OptionalBoard() {
         {showPauseHint ? (
           <div className="mt-6 flex w-full max-w-3xl items-start gap-3 rounded-2xl border border-[#B5C6F4] bg-[#EEF2FE] px-5 py-4 text-left">
             <Iconify icon="lucide:clock-3" className="mt-0.5 size-5 shrink-0 text-[#1B3DD4]" />
-            <p className="flex-1 text-[14px] leading-[1.65] text-[#0F1B2D]">{t("pauseHint.text")}</p>
+            <p className="flex-1 text-[14px] leading-[1.65] text-[#0F1B2D]">
+              {t("pauseHint.text")}
+            </p>
             <button
               type="button"
               onClick={dismissPauseHint}
@@ -194,21 +203,57 @@ export default function OptionalBoard() {
         </div>
 
         <div className="sticky bottom-0 z-20 mt-10 flex w-full justify-center bg-[#FAFBFE]/80 py-4 backdrop-blur">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={continueJourney}
-            className="hover:border-primary h-12 rounded-full border border-[#D5DCE6] bg-white/70 px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
-          >
-            {isFinalSection ? t("done") : t("nextSection")}
-          </Button>
+          <div className="relative flex flex-wrap justify-center gap-3">
+            <div
+              className={cn(
+                "relative transition-transform duration-300",
+                isPauseTourActive &&
+                  "z-40 scale-110 rounded-full ring-4 ring-[#1B3DD4]/15 ring-offset-4 ring-offset-white"
+              )}
+            >
+              {isPauseTourActive ? (
+                <div className="absolute bottom-full left-1/2 z-50 mb-6 w-[min(360px,calc(100vw-2rem))] -translate-x-1/2 rounded-3xl border border-[#D5DCE6] bg-white px-5 py-4 text-center shadow-[0_18px_55px_rgba(15,27,45,0.16)]">
+                  <p className="font-heading text-[20px] leading-tight font-medium text-[#0F1B2D]">
+                    {t("tour.pauseTitle")}
+                  </p>
+                  <p className="mt-2 text-[14px] leading-6 text-[#5A6B82]">
+                    {t("tour.pauseDescription")}
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={completeTour}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 h-10 rounded-full px-6 text-[12px]"
+                  >
+                    {t("tour.done")}
+                  </Button>
+                </div>
+              ) : null}
+              <PauseButton
+                floating={false}
+                requireCoreAnswer={false}
+                className="w-[min(360px,calc(100vw-2rem))] max-w-none"
+                buttonClassName={cn(
+                  "h-12 border-[#E2E8F0] bg-[#F1F5F9] px-7 text-[#64748B] hover:border-[#CBD5E1] hover:bg-[#E2E8F0] hover:text-[#475569]",
+                  isPauseTourActive && "pointer-events-none"
+                )}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={continueJourney}
+              className="hover:border-primary h-12 rounded-full border border-[#D5DCE6] bg-white/70 px-7 text-[#0F1B2D] transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
+            >
+              {isFinalSection ? t("done") : t("nextSection")}
+            </Button>
+          </div>
         </div>
       </div>
 
       <Dialog
-        open={isTourVisible}
+        open={isTourVisible && tourStep === "questions"}
         onOpenChange={(open) => {
-          if (!open) continueAfterTour();
+          if (!open) completeTour();
         }}
       >
         <DialogContent
@@ -226,10 +271,10 @@ export default function OptionalBoard() {
           <DialogFooter className="mt-2 sm:justify-center">
             <Button
               type="button"
-              onClick={continueAfterTour}
+              onClick={showPauseTourStep}
               className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-full px-7"
             >
-              {t("tour.cta")}
+              {t("tour.next")}
             </Button>
           </DialogFooter>
         </DialogContent>

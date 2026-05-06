@@ -11,7 +11,7 @@ import { updateSession } from "@/lib/tracking";
 const WORD_REVEAL_INTERVAL_MS = 90;
 const PARAGRAPH_PAUSE_MS = 400;
 const BUTTON_REVEAL_DELAY_MS = 800;
-const SPEAKING_ANIMATION_EXTRA_MS = 1_000;
+const SPEAKING_ANIMATION_EXTRA_MS = 0;
 const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
 const multicolorSphereCircleOpacities = [0.3, 0.3, 0.3, 0.3] as const;
 

@@ -9,7 +9,7 @@ import { useJourney, useLogEventOnce } from "@/lib/journey-context";
 import { getSectionSphereCircleColors } from "@/lib/section-sphere";
 import { logEvent, updateSession } from "@/lib/tracking";
 
-const SPEAKING_DURATION_MS = 3_000;
+const SPEAKING_DURATION_MS = 4_000;
 const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
 const multicolorSphereCircleOpacities = [0.3, 0.3, 0.3, 0.3] as const;
 
