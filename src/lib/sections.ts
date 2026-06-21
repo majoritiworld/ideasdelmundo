@@ -181,9 +181,9 @@ export const sections: Section[] = [
     introMessage: "This final section brings it all together.",
     coreQuestion: {
       id: 21,
-      text: "What version of yourself are you done being?",
+      text: "What are you ready to grow into next?",
       openingMessage:
-        "As everything comes together, let's be honest about what is complete. What version of yourself are you done being?",
+        "As everything comes together, let's turn toward what's opening up. What are you ready to grow into next?",
     },
     optionalQuestions: [
       {

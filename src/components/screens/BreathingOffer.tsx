@@ -104,7 +104,7 @@ export default function BreathingOffer() {
           </p>
         </div>
       </JourneyHero>
-      <JourneyActions className="max-w-md">
+      <JourneyActions className="mt-8 max-w-md">
         <Button
           type="button"
           onClick={startMeditation}

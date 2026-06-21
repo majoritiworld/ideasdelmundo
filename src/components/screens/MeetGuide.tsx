@@ -139,7 +139,7 @@ export default function MeetGuide() {
       <JourneyScreenMain>
         <Sphere
           state={sphereState}
-          size={200}
+          size={140}
           circleColors={multicolorSphereCircleColors}
           circleOpacities={multicolorSphereCircleOpacities}
         />

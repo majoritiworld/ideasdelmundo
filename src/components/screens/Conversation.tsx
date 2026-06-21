@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Sphere, { type SphereProps } from "@/components/Sphere";
 import { getStorage, setStorage } from "@/hooks/use-local-storage";
 import { sendChatMessage } from "@/lib/chat";
+import { buildPriorContext } from "@/lib/prior-context";
 import { EVENTS } from "@/lib/events";
 import { type ConversationMessage, useJourney } from "@/lib/journey-context";
 import { getQuestionById } from "@/lib/sections";
@@ -65,6 +66,7 @@ function logTranscriptMessages(
 
 const EMPTY_MESSAGES: ConversationMessage[] = [];
 const CONVERSATION_TOUR_STORAGE_KEY = "journey-conversation-tour-completed";
+const HARD_MESSAGE_CAP = 6;
 
 type GuideRevealState = { key: string; count: number };
 
@@ -97,7 +99,6 @@ export default function Conversation() {
   const [tourStepIndex, setTourStepIndex] = useState(0);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initializedQuestionId = useRef<number | null>(null);
   const completedGuideRevealRef = useRef<Set<string>>(new Set());
@@ -132,6 +133,13 @@ export default function Conversation() {
     () => (question ? (state.conversations[question.id] ?? EMPTY_MESSAGES) : EMPTY_MESSAGES),
     [question, state.conversations]
   );
+  const userInitial = useMemo(() => {
+    const trimmedName = state.name.trim();
+    if (trimmedName) {
+      return trimmedName.charAt(0).toUpperCase();
+    }
+    return t("you").charAt(0).toUpperCase();
+  }, [state.name, t]);
   const isUserComposing = input.trim().length > 0 || isRecording;
   const sphereState: SphereProps["state"] = isThinking
     ? "thinking"
@@ -186,10 +194,17 @@ export default function Conversation() {
   }, [state.sessionId]);
 
   useLayoutEffect(() => {
+    const scrollEl = scrollRef.current;
     const inputEl = inputRef.current;
     if (!inputEl) return;
+
+    const previousScrollTop = scrollEl?.scrollTop ?? 0;
     inputEl.style.height = "auto";
     inputEl.style.height = `${Math.min(inputEl.scrollHeight, 180)}px`;
+
+    if (scrollEl) {
+      scrollEl.scrollTop = previousScrollTop;
+    }
   }, [input]);
 
   useLayoutEffect(() => {
@@ -197,9 +212,8 @@ export default function Conversation() {
       const scrollEl = scrollRef.current;
       if (!scrollEl) return;
       scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: "smooth" });
-      messagesEndRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
     });
-  }, [input, isThinking, messages.length, guideReveal?.count]);
+  }, [isThinking, messages.length, guideReveal?.count]);
 
   useEffect(() => {
     if (!question || initializedQuestionId.current === question.id || messages.length > 0) return;
@@ -463,6 +477,17 @@ export default function Conversation() {
     );
   }
 
+  function renderUserAvatar() {
+    return (
+      <div
+        aria-label={t("you")}
+        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#0F1B2D]/20 text-[11px] font-medium uppercase text-[#0F1B2D]/70"
+      >
+        {userInitial}
+      </div>
+    );
+  }
+
   async function submitMessage(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     const text = input.trim();
@@ -475,15 +500,25 @@ export default function Conversation() {
     )
       return;
 
+    const currentMessages = state.conversations[activeQuestion.id] ?? messages;
+    const outgoingUserMessageCount =
+      currentMessages.filter((message) => message.role === "user").length + 1;
+    if (outgoingUserMessageCount > HARD_MESSAGE_CAP) return;
+
     setError(null);
     setInput("");
     setIsThinking(true);
 
-    const currentMessages = state.conversations[activeQuestion.id] ?? messages;
     const userMessage = createMessage("user", text);
     dispatch({ type: "ADD_MESSAGE", questionId: activeQuestion.id, message: userMessage });
 
     try {
+      const priorContext = buildPriorContext(
+        state.conversations,
+        activeQuestion.id,
+        t("doneWithQuestion")
+      );
+
       const response = await sendChatMessage({
         questionId: activeQuestion.id,
         questionText: activeQuestion.text,
@@ -495,11 +530,17 @@ export default function Conversation() {
         })),
         userMessage: text,
         sessionId: state.sessionId,
+        userMessageCount: outgoingUserMessageCount,
+        priorContext,
       });
 
       const guideMessage = createMessage("guide", response);
       const nextConversation = [...currentMessages, userMessage, guideMessage];
       const nextConversations = { ...state.conversations, [activeQuestion.id]: nextConversation };
+      if (outgoingUserMessageCount >= HARD_MESSAGE_CAP) {
+        pendingDoneAfterRevealKeyRef.current = `${activeQuestion.id}-${guideMessage.timestamp}`;
+        setDoneWithQuestionFlowActive(true);
+      }
       dispatch({ type: "ADD_MESSAGE", questionId: activeQuestion.id, message: guideMessage });
       setIsGuideSpeaking(true);
       void logEvent(state.sessionId, EVENTS.AI_RESPONSE_RECEIVED, {
@@ -545,6 +586,15 @@ export default function Conversation() {
     dispatch({ type: "ADD_MESSAGE", questionId: activeQuestion.id, message: userMessage });
 
     try {
+      const doneUserMessageCount =
+        currentMessages.filter((message) => message.role === "user").length + 1;
+
+      const priorContext = buildPriorContext(
+        state.conversations,
+        activeQuestion.id,
+        doneText
+      );
+
       const response = await sendChatMessage({
         questionId: activeQuestion.id,
         questionText: activeQuestion.text,
@@ -556,6 +606,8 @@ export default function Conversation() {
         })),
         userMessage: doneText,
         sessionId: state.sessionId,
+        userMessageCount: doneUserMessageCount,
+        priorContext,
       });
 
       const guideMessage = createMessage("guide", response);
@@ -735,10 +787,11 @@ export default function Conversation() {
                     {renderGuideMessageText(message, index)}
                   </div>
                 ) : (
-                  <div key={`${message.role}-${index}`} className="flex justify-end">
+                  <div key={`${message.role}-${index}`} className="flex justify-end gap-3">
                     <p className="max-w-[85%] text-right text-[14px] leading-relaxed text-[#0F1B2D]/85">
                       {message.text}
                     </p>
+                    {renderUserAvatar()}
                   </div>
                 )
               )}
@@ -755,7 +808,7 @@ export default function Conversation() {
                   </p>
                 </div>
               ) : null}
-              <div ref={messagesEndRef} aria-hidden="true" className="h-2" />
+              <div aria-hidden="true" className="h-2" />
               {renderTourCallout("messages", "top-5 left-1/2 -translate-x-1/2")}
             </div>
           </JourneyChatColumn>

@@ -15,6 +15,8 @@ export interface SendChatMessagePayload {
   conversationHistory: ChatHistoryMessage[];
   userMessage: string;
   sessionId: string | null;
+  userMessageCount?: number;
+  priorContext?: string;
 }
 
 export async function sendChatMessage(payload: SendChatMessagePayload): Promise<string> {
