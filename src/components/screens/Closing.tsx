@@ -21,8 +21,6 @@ import {
 import { getSectionQuestions, sections } from "@/lib/sections";
 import { markCompleted, updateSession } from "@/lib/tracking";
 
-type ClosingStep = "congrats" | "next";
-
 const WORD_REVEAL_DELAY_MS = 60;
 const ARCHETYPE_WORD_REVEAL_DELAY_MS = 55;
 const INTRO_PAUSE_MS = 800;
@@ -345,7 +343,6 @@ export default function Closing() {
   const { state, dispatch } = useJourney();
   const t = useTranslations("journey.closing");
   const logSessionCompleted = useLogEventOnce(EVENTS.SESSION_COMPLETED);
-  const [step, setStep] = useState<ClosingStep>("congrats");
   const [isReflecting, setIsReflecting] = useState(false);
   const [archetype, setArchetype] = useState<ArchetypeResult | null>(null);
   const [archetypeError, setArchetypeError] = useState(false);
@@ -387,7 +384,6 @@ export default function Closing() {
   }, [logSessionCompleted, state.sessionId]);
 
   useEffect(() => {
-    if (step !== "congrats") return;
     if (archetypeRequestedRef.current) return;
 
     const timeoutId = setTimeout(
@@ -419,7 +415,7 @@ export default function Closing() {
     );
 
     return () => clearTimeout(timeoutId);
-  }, [dispatch, displayName, introWordCount, state.conversations, state.sessionId, step]);
+  }, [dispatch, displayName, introWordCount, state.conversations, state.sessionId]);
 
   useEffect(() => {
     if (!copied) return;
@@ -478,261 +474,245 @@ export default function Closing() {
     downloadArchetypeCard(displayName, archetype);
   }, [archetype, displayName]);
 
-  return (
-    <JourneyScreen>
-      <AnimatePresence mode="wait">
-        {step === "congrats" ? (
-          <motion.div
-            key="congrats"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={STEP_TRANSITION}
-            className="flex w-full flex-col items-center"
-          >
-            <Sphere
-              state={sphereState}
-              size={160}
-              circleColors={multicolorSphereCircleColors}
-              circleOpacities={multicolorSphereCircleOpacities}
+  const emailCaptureSection = (
+    <div className="mt-8 flex w-full max-w-[480px] flex-col items-center">
+      <h3 className="font-['ArizonaFlare'] text-[22px] leading-tight font-medium text-[#0F1B2D] sm:text-[24px]">
+        {t("emailSectionTitle")}
+      </h3>
+      <p className="mt-4 text-center text-[15px] leading-[1.7] text-[#5A6B82]">
+        {t("nextBody")}
+      </p>
+
+      {emailStatus === "success" ? (
+        <div className="mt-6 w-full rounded-[20px] border border-[#1D9E75]/25 bg-[#1D9E75]/8 px-6 py-5 text-center">
+          <p className="text-[15px] leading-[1.75] font-medium text-[#0F1B2D]">
+            {archetype
+              ? t("notifySuccess", { archetypeName: archetype.archetypeName })
+              : t("notifySuccessFallback")}
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
+            <Input
+              type="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                if (emailError) setEmailError(null);
+              }}
+              placeholder={t("emailPlaceholder")}
+              className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
+              aria-label={t("emailPlaceholder")}
             />
-            <p className="mt-10 text-[19px] leading-[1.75] text-[#5A6B82] sm:text-[22px]">
-              <TimedAnimatedWordReveal text={introText} wordDelayMs={WORD_REVEAL_DELAY_MS} />
-            </p>
+            <Button
+              type="button"
+              onClick={() => void sendBlueprintEmail()}
+              disabled={isSendingEmail}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 shrink-0 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
+            >
+              {t("notifyCta")}
+            </Button>
+          </div>
+          {emailError ? (
+            <p className="mt-3 text-center text-[14px] font-medium text-[#D85A30]">{emailError}</p>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
 
-            <AnimatePresence mode="wait">
-              {isReflecting ? (
-                <motion.p
-                  key="reflecting"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="mt-5 text-[13px] text-[#7B8FA8]"
-                >
-                  {t("reflecting")}
-                </motion.p>
-              ) : null}
-            </AnimatePresence>
+  const extrasSection = (
+    <>
+      <div className="mt-10 h-px w-full max-w-md bg-[#D5DCE6]" />
 
-            {archetype ? (
-              <div className="mt-8 flex w-full flex-col items-center">
-                <h2 className="max-w-3xl text-center font-['ArizonaFlare'] text-[clamp(28px,5vw,42px)] leading-tight font-medium text-[#0F1B2D]">
-                  <TimedAnimatedWordReveal
-                    text={nameRevealText}
-                    delayMs={nameRevealDelayMs}
-                    wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
-                  />
-                </h2>
-
-                <p className="mt-6 w-full max-w-3xl text-[16px] leading-[1.75] text-[#5A6B82] sm:text-[19px]">
-                  <TimedAnimatedWordReveal
-                    text={archetype.archetypeDescription}
-                    delayMs={descriptionRevealDelayMs}
-                    wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
-                  />
-                </p>
-
-                <p className="mt-6 w-full max-w-2xl font-['ArizonaFlare'] text-[24px] leading-tight font-medium text-[#5A6B82] italic sm:text-[30px]">
-                  <TimedAnimatedWordReveal
-                    text={archetype.purposeStatement}
-                    delayMs={purposeRevealDelayMs}
-                    wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
-                  />
-                </p>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{
-                    delay: referencesRevealDelayMs / 1000,
-                    duration: REFERENCE_FADE_DURATION_MS / 1000,
-                  }}
-                  className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2"
-                >
-                  {archetype.references.map((reference) => (
-                    <article
-                      key={reference.name}
-                      className="rounded-[20px] border border-[#D5DCE6] bg-white/55 p-6 text-left"
-                    >
-                      <h3 className="font-['ArizonaFlare'] text-[18px] leading-tight font-medium text-[#0F1B2D]">
-                        {reference.name}
-                      </h3>
-                      <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-[#5A6B82] uppercase">
-                        {reference.descriptor}
-                      </p>
-                      <p className="mt-4 text-[14px] leading-[1.65] text-[#5A6B82]">
-                        {reference.connection}
-                      </p>
-                    </article>
-                  ))}
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: ctaRevealDelayMs / 1000, duration: 0.5 }}
-                  className="mt-9 flex w-full flex-col items-center"
-                >
-                  <Button
-                    type="button"
-                    onClick={handleDownloadArchetypeCard}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 font-mono transition-all hover:-translate-y-px active:scale-[0.98]"
-                  >
-                    {t("downloadArchetypeCardCta")}
-                  </Button>
-
-                  <div className="mt-9 h-px w-full max-w-md bg-[#D5DCE6]" />
-                  <p className="mt-7 max-w-[480px] text-center text-[15px] leading-[1.7] text-[#5A6B82]">
-                    {t("humanReviewMessage")}
-                  </p>
-
-                  <Button
-                    type="button"
-                    onClick={() => setStep("next")}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
-                  >
-                    {t("continueCta")}
-                  </Button>
-                </motion.div>
-              </div>
-            ) : null}
-
-            {archetypeError ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-                className="mt-8 flex flex-col items-center"
-              >
-                <p className="max-w-md text-[15px] leading-[1.7] text-[#5A6B82]">
-                  {t("archetypeError")}
-                </p>
+      <div className="mt-8 flex w-full max-w-sm flex-col items-stretch gap-3">
+        <Button
+          type="button"
+          onClick={downloadTranscript}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+        >
+          {t("downloadCta")}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setShareOpen((isOpen) => !isOpen)}
+          className="h-12 rounded-full border-[#D5DCE6] text-[#5A6B82] transition-all hover:-translate-y-px hover:bg-white hover:text-[#0F1B2D] active:scale-[0.98]"
+        >
+          {t("shareCta")}
+        </Button>
+        <AnimatePresence>
+          {shareOpen ? (
+            <motion.div
+              key="share-panel"
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -6 }}
+              transition={STEP_TRANSITION}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-col gap-2 rounded-[28px] border border-[#D5DCE6] bg-white/70 p-2 shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
                 <Button
                   type="button"
-                  onClick={() => setStep("next")}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+                  variant="ghost"
+                  onClick={shareOnWhatsApp}
+                  className="h-11 justify-start rounded-full px-4 text-[#5A6B82] hover:bg-[#F3F6FA] hover:text-[#0F1B2D]"
                 >
-                  {t("continueCta")}
+                  <Iconify icon="logos:whatsapp-icon" className="size-4" />
+                  {t("whatsappCta")}
                 </Button>
-              </motion.div>
-            ) : null}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="next"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={STEP_TRANSITION}
-            className="flex w-full flex-col items-center"
-          >
-            <h2 className="font-['ArizonaFlare'] text-[28px] leading-tight font-medium text-[#0F1B2D]">
-              {t("nextTitle")}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => void copyLink()}
+                  className="h-11 justify-start rounded-full px-4 text-[#5A6B82] hover:bg-[#F3F6FA] hover:text-[#0F1B2D]"
+                >
+                  <Iconify icon="lucide:link" className="size-4" />
+                  {copied ? t("copiedCta") : t("copyLinkCta")}
+                </Button>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
+      <a
+        href="https://instagram.com/majoriti.world"
+        target="_blank"
+        rel="noreferrer"
+        className="mt-8 text-center font-mono text-[13px] text-[#7B8FA8] transition-colors hover:text-[#5A6B82]"
+      >
+        {t("footer")}
+      </a>
+    </>
+  );
+
+  return (
+    <JourneyScreen>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={STEP_TRANSITION}
+        className="flex w-full flex-col items-center"
+      >
+        <Sphere
+          state={sphereState}
+          size={160}
+          circleColors={multicolorSphereCircleColors}
+          circleOpacities={multicolorSphereCircleOpacities}
+        />
+        <p className="mt-10 text-[19px] leading-[1.75] text-[#5A6B82] sm:text-[22px]">
+          <TimedAnimatedWordReveal text={introText} wordDelayMs={WORD_REVEAL_DELAY_MS} />
+        </p>
+
+        <AnimatePresence mode="wait">
+          {isReflecting ? (
+            <motion.p
+              key="reflecting"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mt-5 text-[13px] text-[#7B8FA8]"
+            >
+              {t("reflecting")}
+            </motion.p>
+          ) : null}
+        </AnimatePresence>
+
+        {archetype ? (
+          <div className="mt-8 flex w-full flex-col items-center">
+            <h2 className="max-w-3xl text-center font-['ArizonaFlare'] text-[clamp(28px,5vw,42px)] leading-tight font-medium text-[#0F1B2D]">
+              <TimedAnimatedWordReveal
+                text={nameRevealText}
+                delayMs={nameRevealDelayMs}
+                wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
+              />
             </h2>
-            <p className="mt-5 w-full max-w-[480px] text-center text-[15px] leading-[1.7] text-[#5A6B82]">
-              {t("nextBody")}
+
+            <p className="mt-6 w-full max-w-3xl text-[16px] leading-[1.75] text-[#5A6B82] sm:text-[19px]">
+              <TimedAnimatedWordReveal
+                text={archetype.archetypeDescription}
+                delayMs={descriptionRevealDelayMs}
+                wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
+              />
             </p>
 
-            <div className="mt-8 flex w-full max-w-[480px] flex-col items-center">
-              {emailStatus === "success" ? (
-                <p className="text-center text-[15px] font-medium text-[#1D9E75]">
-                  {t("notifySuccess")}
-                </p>
-              ) : (
-                <div className="flex w-full flex-col gap-3 sm:flex-row">
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(event) => {
-                      setEmail(event.target.value);
-                      if (emailError) setEmailError(null);
-                    }}
-                    placeholder={t("emailPlaceholder")}
-                    className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
-                    aria-label={t("emailPlaceholder")}
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => void sendBlueprintEmail()}
-                    disabled={isSendingEmail}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 shrink-0 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
-                  >
-                    {t("notifyCta")}
-                  </Button>
-                </div>
-              )}
+            <p className="mt-6 w-full max-w-2xl font-['ArizonaFlare'] text-[24px] leading-tight font-medium text-[#5A6B82] italic sm:text-[30px]">
+              <TimedAnimatedWordReveal
+                text={archetype.purposeStatement}
+                delayMs={purposeRevealDelayMs}
+                wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
+              />
+            </p>
 
-              {emailError ? (
-                <p className="mt-3 text-center text-[14px] font-medium text-[#D85A30]">
-                  {emailError}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="mt-10 h-px w-full max-w-md bg-[#D5DCE6]" />
-
-            <div className="mt-8 flex w-full max-w-sm flex-col items-stretch gap-3">
-              <Button
-                type="button"
-                onClick={downloadTranscript}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
-              >
-                {t("downloadCta")}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShareOpen((isOpen) => !isOpen)}
-                className="h-12 rounded-full border-[#D5DCE6] text-[#5A6B82] transition-all hover:-translate-y-px hover:bg-white hover:text-[#0F1B2D] active:scale-[0.98]"
-              >
-                {t("shareCta")}
-              </Button>
-              <AnimatePresence>
-                {shareOpen ? (
-                  <motion.div
-                    key="share-panel"
-                    initial={{ opacity: 0, height: 0, y: -6 }}
-                    animate={{ opacity: 1, height: "auto", y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -6 }}
-                    transition={STEP_TRANSITION}
-                    className="overflow-hidden"
-                  >
-                    <div className="flex flex-col gap-2 rounded-[28px] border border-[#D5DCE6] bg-white/70 p-2 shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={shareOnWhatsApp}
-                        className="h-11 justify-start rounded-full px-4 text-[#5A6B82] hover:bg-[#F3F6FA] hover:text-[#0F1B2D]"
-                      >
-                        <Iconify icon="logos:whatsapp-icon" className="size-4" />
-                        {t("whatsappCta")}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => void copyLink()}
-                        className="h-11 justify-start rounded-full px-4 text-[#5A6B82] hover:bg-[#F3F6FA] hover:text-[#0F1B2D]"
-                      >
-                        <Iconify icon="lucide:link" className="size-4" />
-                        {copied ? t("copiedCta") : t("copyLinkCta")}
-                      </Button>
-                    </div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-            </div>
-            <a
-              href="https://instagram.com/majoriti.world"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 text-center font-mono text-[13px] text-[#7B8FA8] transition-colors hover:text-[#5A6B82]"
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{
+                delay: referencesRevealDelayMs / 1000,
+                duration: REFERENCE_FADE_DURATION_MS / 1000,
+              }}
+              className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2"
             >
-              {t("footer")}
-            </a>
+              {archetype.references.map((reference) => (
+                <article
+                  key={reference.name}
+                  className="rounded-[20px] border border-[#D5DCE6] bg-white/55 p-6 text-left"
+                >
+                  <h3 className="font-['ArizonaFlare'] text-[18px] leading-tight font-medium text-[#0F1B2D]">
+                    {reference.name}
+                  </h3>
+                  <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-[#5A6B82] uppercase">
+                    {reference.descriptor}
+                  </p>
+                  <p className="mt-4 text-[14px] leading-[1.65] text-[#5A6B82]">
+                    {reference.connection}
+                  </p>
+                </article>
+              ))}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: ctaRevealDelayMs / 1000, duration: 0.5 }}
+              className="mt-9 flex w-full flex-col items-center"
+            >
+              <Button
+                type="button"
+                onClick={handleDownloadArchetypeCard}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 font-mono transition-all hover:-translate-y-px active:scale-[0.98]"
+              >
+                {t("downloadArchetypeCardCta")}
+              </Button>
+
+              <div className="mt-9 h-px w-full max-w-md bg-[#D5DCE6]" />
+              <p className="mt-7 max-w-[480px] text-center text-[15px] leading-[1.7] text-[#5A6B82]">
+                {t("humanReviewMessage")}
+              </p>
+
+              {emailCaptureSection}
+              {extrasSection}
+            </motion.div>
+          </div>
+        ) : null}
+
+        {archetypeError ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="mt-8 flex w-full flex-col items-center"
+          >
+            <p className="max-w-md text-center text-[15px] leading-[1.7] text-[#5A6B82]">
+              {t("archetypeError")}
+            </p>
+            {emailCaptureSection}
+            {extrasSection}
           </motion.div>
-        )}
-      </AnimatePresence>
+        ) : null}
+      </motion.div>
     </JourneyScreen>
   );
 }
