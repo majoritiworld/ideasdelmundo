@@ -122,7 +122,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("/fonts/ArizonaSans/ABCArizonaSans-Regular-Trial.otf") format("opentype");
+  src: url("/fonts/ArizonaSans/ABCArizonaSans-Regular.otf") format("opentype");
 }
 
 @font-face {
@@ -541,6 +541,22 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+@keyframes conversation-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.conversation-page-in {
+  animation: conversation-page-in 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @layer base {

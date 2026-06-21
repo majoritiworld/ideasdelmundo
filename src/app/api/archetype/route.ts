@@ -110,7 +110,13 @@ export async function POST(request: NextRequest) {
       model: "claude-sonnet-4-5-20250929",
       max_tokens: 1000,
       temperature: 0.7,
-      system: systemPrompt,
+      system: [
+        {
+          type: "text" as const,
+          text: systemPrompt,
+          cache_control: { type: "ephemeral" as const },
+        },
+      ],
       messages: [
         {
           role: "user",

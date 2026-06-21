@@ -83,6 +83,12 @@
       "videosSub": "Úsalos como chispas, no como instrucciones.",
       "watchVideo": "Ver video",
       "archetypeEyebrow": "Arquetipo profesional",
+      "phrasesEyebrow": "Lenguaje",
+      "phrasesTitle": "Palabras que podrían encontrarte donde estás.",
+      "phrasesSub": "Líneas breves ancladas en cómo ya te hablas.",
+      "voicesEyebrow": "Voces afines",
+      "voicesTitle": "Voces que podrían sonarte familiares.",
+      "voicesSub": "Personas cuyo trabajo toca el territorio que ya exploras.",
       "signoff": "El equipo de Majoriti"
     }
   },
@@ -876,7 +882,7 @@
     "welcome": {
       "title": "Your Purpose Blueprint",
       "subtitleLine1": "A guided experience to discover the opportunities",
-      "subtitleLine2": "that a new world is opening up for you.",
+      "subtitleLine2": "that a new professional frontier is opening up for you.",
       "nameLabel": "Before we begin, what's your name?",
       "namePlaceholder": "Your name",
       "cta": "Meet your guide"
@@ -906,6 +912,7 @@
       "repeat": "Repetir",
       "skip": "Skip",
       "finishSession": "Terminar sesión",
+      "soundOn": "Activa el sonido",
       "cycle": "Cycle {current} of {total}",
       "cues": {
         "inhale": "Inhala",
@@ -1003,7 +1010,6 @@
       "startOver": "Empezar de nuevo"
     },
     "conversation": {
-      "back": "← Back to board",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1016,10 +1022,10 @@
       "doneWithQuestion": "Terminé con esta pregunta",
       "tour": {
         "stepLabel": "{current} de {total}",
-        "input": "Puedes escribir tu respuesta en el idioma que prefieras.",
-        "mic": "O puedes decir tus respuestas en el idioma que prefieras. Haz clic en el micrófono y vuelve a hacer clic cuando termines.",
-        "messages": "Te haré preguntas de seguimiento para ayudarte a profundizar, pero siempre puedes terminar tu sesión.",
-        "back": "Cuando termines de responder, haz clic en Volver al tablero para regresar a tu tablero.",
+        "input": "Escribe tu respuesta aquí en el chat.",
+        "mic": "O pulsa el micrófono para hablar tu respuesta.",
+        "doneStep": "Cuando termines, haz clic en Terminé con esta pregunta para volver a tu tablero.",
+        "messages": "Tu guía hará algunas preguntas de seguimiento y luego terminará la conversación cuando tenga todo lo que necesita.",
         "next": "Siguiente",
         "done": "Listo",
         "skip": "Omitir tour"

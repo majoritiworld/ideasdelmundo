@@ -30,6 +30,14 @@ function getMessageText(content: Anthropic.Messages.ContentBlock[]) {
     .trim();
 }
 
+function stripModelJsonWrapper(text: string) {
+  return text
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+}
+
 function slugify(value: string) {
   return value
     .trim()
@@ -108,7 +116,7 @@ async function generateContent(session: SessionRow, messages: TranscriptMessageF
     ],
   });
 
-  const text = getMessageText(response.content);
+  const text = stripModelJsonWrapper(getMessageText(response.content));
   if (!text) throw new Error("Anthropic returned an empty blueprint");
 
   return parseBlueprintContent(JSON.parse(text));

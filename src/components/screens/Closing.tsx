@@ -5,9 +5,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { jsPDF } from "jspdf";
 import { useTranslations } from "next-intl";
 import Sphere from "@/components/Sphere";
+import { JourneyScreen } from "@/components/journey/screen-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Iconify from "@/components/ui/iconify";
+import { TimedAnimatedWordReveal } from "@/components/ui/animations/animated-word-reveal";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce, type JourneyState } from "@/lib/journey-context";
 import { generateArchetype, type ArchetypeResult } from "@/lib/archetype";
@@ -205,37 +207,6 @@ function sanitizePngFileName(name: string) {
     .replace(/^-|-$/g, "");
 
   return `${safeName || "guest"}-archetype-card.png`;
-}
-
-function WordReveal({
-  text,
-  delayMs = 0,
-  wordDelayMs,
-}: {
-  text: string;
-  delayMs?: number;
-  wordDelayMs: number;
-}) {
-  const words = useMemo(() => text.split(" ").filter(Boolean), [text]);
-
-  return (
-    <>
-      {words.map((word, index) => (
-        <motion.span
-          key={`${word}-${index}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{
-            delay: (delayMs + index * wordDelayMs) / 1000,
-            duration: 0.3,
-          }}
-        >
-          {word}
-          {index < words.length - 1 ? " " : ""}
-        </motion.span>
-      ))}
-    </>
-  );
 }
 
 function serializeTranscript(name: string, conversations: JourneyState["conversations"]) {
@@ -508,7 +479,7 @@ export default function Closing() {
   }, [archetype, displayName]);
 
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
+    <JourneyScreen>
       <AnimatePresence mode="wait">
         {step === "congrats" ? (
           <motion.div
@@ -526,7 +497,7 @@ export default function Closing() {
               circleOpacities={multicolorSphereCircleOpacities}
             />
             <p className="mt-10 text-[19px] leading-[1.75] text-[#5A6B82] sm:text-[22px]">
-              <WordReveal text={introText} wordDelayMs={WORD_REVEAL_DELAY_MS} />
+              <TimedAnimatedWordReveal text={introText} wordDelayMs={WORD_REVEAL_DELAY_MS} />
             </p>
 
             <AnimatePresence mode="wait">
@@ -547,7 +518,7 @@ export default function Closing() {
             {archetype ? (
               <div className="mt-8 flex w-full flex-col items-center">
                 <h2 className="max-w-3xl text-center font-['ArizonaFlare'] text-[clamp(28px,5vw,42px)] leading-tight font-medium text-[#0F1B2D]">
-                  <WordReveal
+                  <TimedAnimatedWordReveal
                     text={nameRevealText}
                     delayMs={nameRevealDelayMs}
                     wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
@@ -555,7 +526,7 @@ export default function Closing() {
                 </h2>
 
                 <p className="mt-6 w-full max-w-3xl text-[16px] leading-[1.75] text-[#5A6B82] sm:text-[19px]">
-                  <WordReveal
+                  <TimedAnimatedWordReveal
                     text={archetype.archetypeDescription}
                     delayMs={descriptionRevealDelayMs}
                     wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
@@ -563,7 +534,7 @@ export default function Closing() {
                 </p>
 
                 <p className="mt-6 w-full max-w-2xl font-['ArizonaFlare'] text-[24px] leading-tight font-medium text-[#5A6B82] italic sm:text-[30px]">
-                  <WordReveal
+                  <TimedAnimatedWordReveal
                     text={archetype.purposeStatement}
                     delayMs={purposeRevealDelayMs}
                     wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
@@ -762,6 +733,6 @@ export default function Closing() {
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </JourneyScreen>
   );
 }

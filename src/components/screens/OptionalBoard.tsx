@@ -13,6 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import IkigaiFigure from "@/components/IkigaiFigure";
 import PauseButton from "@/components/PauseButton";
+import {
+  JourneyBoardBackdrop,
+  JourneyBoardCanvas,
+  JourneyHero,
+  JourneyScreen,
+  JourneyStickyFooter,
+  journeyTightGap,
+} from "@/components/journey/screen-layout";
 import Sphere from "@/components/Sphere";
 import Iconify from "@/components/ui/iconify";
 import { getStorage, setStorage } from "@/hooks/use-local-storage";
@@ -110,11 +118,11 @@ export default function OptionalBoard() {
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden px-4 py-8 sm:px-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(27,61,212,0.08),transparent_36%)]" />
+    <JourneyScreen variant="board">
+      <JourneyBoardBackdrop />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-64px)] max-w-4xl flex-col items-center">
-        <div className="flex flex-col items-center text-center">
+      <JourneyBoardCanvas>
+        <JourneyHero>
           {isFinalSection ? (
             <IkigaiFigure size={200} />
           ) : (
@@ -129,16 +137,16 @@ export default function OptionalBoard() {
             </div>
           )}
 
-          <h2 className="font-heading mt-8 text-[28px] leading-tight font-medium text-[#0F1B2D]">
-            {t("title")}
-          </h2>
-          <p className="mt-3 text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[17px]">
-            {t("subtitle")}
-          </p>
-        </div>
+          <div className="flex flex-col gap-3">
+            <h2 className="font-heading text-[28px] leading-tight font-medium text-[#0F1B2D]">
+              {t("title")}
+            </h2>
+            <p className="text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[17px]">{t("subtitle")}</p>
+          </div>
+        </JourneyHero>
 
         {showPauseHint ? (
-          <div className="mt-6 flex w-full max-w-3xl items-start gap-3 rounded-2xl border border-[#B5C6F4] bg-[#EEF2FE] px-5 py-4 text-left">
+          <div className="flex w-full items-start gap-3 rounded-2xl border border-[#B5C6F4] bg-[#EEF2FE] p-5 text-left">
             <Iconify icon="lucide:clock-3" className="mt-0.5 size-5 shrink-0 text-[#1B3DD4]" />
             <p className="flex-1 text-[14px] leading-[1.65] text-[#0F1B2D]">
               {t("pauseHint.text")}
@@ -153,7 +161,7 @@ export default function OptionalBoard() {
           </div>
         ) : null}
 
-        <div className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
           {section.optionalQuestions.map((question) => {
             const isAnswered = state.answeredQuestions.includes(question.id);
 
@@ -202,8 +210,8 @@ export default function OptionalBoard() {
           })}
         </div>
 
-        <div className="sticky bottom-0 z-20 mt-10 flex w-full justify-center bg-[#FAFBFE]/80 py-4 backdrop-blur">
-          <div className="relative flex flex-wrap justify-center gap-3">
+        <JourneyStickyFooter>
+          <div className={cn("relative flex flex-wrap justify-center", journeyTightGap)}>
             <div
               className={cn(
                 "relative transition-transform duration-300",
@@ -247,8 +255,8 @@ export default function OptionalBoard() {
               {isFinalSection ? t("done") : t("nextSection")}
             </Button>
           </div>
-        </div>
-      </div>
+        </JourneyStickyFooter>
+      </JourneyBoardCanvas>
 
       <Dialog
         open={isTourVisible && tourStep === "questions"}
@@ -279,6 +287,6 @@ export default function OptionalBoard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </section>
+    </JourneyScreen>
   );
 }

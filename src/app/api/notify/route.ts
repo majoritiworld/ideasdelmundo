@@ -1,6 +1,7 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
 import { Resend } from "resend";
 
+import { generateBlueprintDraft } from "@/lib/blueprints/server";
 import { RESEND_FROM_EMAIL } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import {
@@ -154,6 +155,15 @@ export async function POST(req: NextRequest) {
       console.error("[notify-api] Confirmation email failed", confirmationEmail.error);
       return jsonError(500, "Confirmation email failed");
     }
+
+    const sessionIdForBlueprint = lockedSession.id;
+    after(async () => {
+      try {
+        await generateBlueprintDraft(sessionIdForBlueprint);
+      } catch (blueprintErr) {
+        console.error("[notify-api] blueprint generation failed", blueprintErr);
+      }
+    });
 
     return NextResponse.json({ ok: true });
   } catch (err) {

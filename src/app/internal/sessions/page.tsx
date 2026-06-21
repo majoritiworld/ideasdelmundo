@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import WEB_ROUTES from "@/constants/web-routes.constants";
 import { requireAdminUser } from "@/lib/admin-auth";
+import { generateBlueprintAction } from "@/lib/blueprints/actions";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import type { SessionRow } from "@/lib/supabase/types";
 import {
@@ -76,6 +77,7 @@ async function getRecentSessions(completedOnly: boolean) {
     return {
       sessions: sessionRows,
       messagesBySession: {},
+      blueprintBySessionId: {} as Record<string, { id: string; status: string }>,
     };
   }
 
@@ -90,9 +92,26 @@ async function getRecentSessions(completedOnly: boolean) {
     throw new Error(messagesResult.error.message);
   }
 
+  const blueprintsResult = await supabaseAdmin
+    .from("blueprints")
+    .select("id, session_id, status")
+    .in("session_id", sessionIds);
+
+  if (blueprintsResult.error) {
+    throw new Error(blueprintsResult.error.message);
+  }
+
+  const blueprintBySessionId = (blueprintsResult.data ?? []).reduce<
+    Record<string, { id: string; status: string }>
+  >((acc, row) => {
+    acc[row.session_id] = { id: row.id, status: row.status };
+    return acc;
+  }, {});
+
   return {
     sessions: sessionRows,
     messagesBySession: groupMessages(messagesResult.data ?? []),
+    blueprintBySessionId,
   };
 }
 
@@ -103,7 +122,7 @@ export default async function InternalSessionsPage({
 }) {
   const user = await requireAdminUser();
   const completedOnly = (await searchParams)?.completed === "true";
-  const { sessions, messagesBySession } = await getRecentSessions(completedOnly);
+  const { sessions, messagesBySession, blueprintBySessionId } = await getRecentSessions(completedOnly);
 
   return (
     <PageContainer
@@ -153,12 +172,13 @@ export default async function InternalSessionsPage({
                 <TableHead>Source</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Transcript</TableHead>
+                <TableHead>Blueprint</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sessions.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-10 text-center text-[#5A6B82]">
+                  <TableCell colSpan={7} className="py-10 text-center text-[#5A6B82]">
                     {completedOnly
                       ? "No completed sessions captured yet."
                       : "No sessions captured yet."}
@@ -171,6 +191,10 @@ export default async function InternalSessionsPage({
                     messagesBySession[session.id] ?? []
                   );
                   const preview = messages.slice(-2);
+                  const blueprint = blueprintBySessionId[session.id];
+                  const canGenerateBlueprint = Boolean(
+                    session.email?.trim() && messages.length > 0
+                  );
 
                   return (
                     <TableRow key={session.id} className="align-top">
@@ -219,6 +243,34 @@ export default async function InternalSessionsPage({
                             ))}
                           </div>
                         )}
+                      </TableCell>
+                      <TableCell className="min-w-[180px] align-top">
+                        <div className="grid gap-2">
+                          {blueprint ? (
+                            <>
+                              <Badge variant="outline">{blueprint.status}</Badge>
+                              <Button asChild size="sm" variant="secondary" className="w-fit">
+                                <Link href={WEB_ROUTES.INTERNAL.BLUEPRINT_BY_ID(blueprint.id)}>
+                                  Open blueprint
+                                </Link>
+                              </Button>
+                            </>
+                          ) : (
+                            <span className="text-xs text-[#7B8FA8]">No blueprint yet</span>
+                          )}
+                          {canGenerateBlueprint ? (
+                            <form action={generateBlueprintAction}>
+                              <input type="hidden" name="sessionId" value={session.id} />
+                              <Button type="submit" size="sm" variant="outline" className="w-full">
+                                {blueprint ? "Regenerate" : "Generate"} blueprint
+                              </Button>
+                            </form>
+                          ) : (
+                            <span className="text-xs text-[#7B8FA8]">
+                              Needs email + transcript to generate
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

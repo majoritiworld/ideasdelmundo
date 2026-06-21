@@ -4,10 +4,19 @@ import { type FormEvent, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import IkigaiFigure from "@/components/IkigaiFigure";
+import {
+  JourneyHero,
+  JourneyScreen,
+  JourneyScreenMain,
+  journeyMaxForm,
+  journeyPrimaryButtonClassName,
+  journeyTightGap,
+} from "@/components/journey/screen-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import WEB_ROUTES from "@/constants/web-routes.constants";
 import { CONFIG } from "@/lib/app-config";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase/client";
 
 function GoogleIcon() {
@@ -83,63 +92,69 @@ export default function Login() {
   }
 
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
-      <IkigaiFigure size={160} />
-      <h1 className="font-heading mt-10 text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
-        {t("titleLine1")}
-        <br />
-        {t("titleLine2")}
-      </h1>
-      <p className="mt-4 max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
-        {t("subtitle")}
-      </p>
+    <JourneyScreen>
+      <JourneyScreenMain>
+        <JourneyHero>
+          <IkigaiFigure size={160} />
+          <div className="flex flex-col gap-4">
+            <h1 className="font-heading text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
+              {t("titleLine1")}
+              <br />
+              {t("titleLine2")}
+            </h1>
+            <p className="max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
+              {t("subtitle")}
+            </p>
+          </div>
+        </JourneyHero>
 
-      <div className="mt-8 flex w-full max-w-sm flex-col items-stretch gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => void signInWithGoogle()}
-          className="h-12 rounded-full border-[#D5DCE6] bg-white px-7 text-[#0F1B2D] shadow-none transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
-        >
-          <GoogleIcon />
-          {t("googleCta")}
-        </Button>
+        <div className={cn("flex w-full flex-col items-stretch", journeyMaxForm, journeyTightGap)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void signInWithGoogle()}
+            className="h-12 rounded-full border-[#D5DCE6] bg-white px-7 text-[#0F1B2D] shadow-none transition-all hover:-translate-y-px hover:bg-white active:scale-[0.98]"
+          >
+            <GoogleIcon />
+            {t("googleCta")}
+          </Button>
 
-        {sent ? (
-          <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
-            {t("magicSent")}
-          </p>
-        ) : (
-          <form onSubmit={(event) => void sendMagicLink(event)} className="flex flex-col gap-3">
-            <label htmlFor="login-email" className="text-sm font-light text-[#5A6B82]">
-              {t("emailLabel")}
-            </label>
-            <Input
-              id="login-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                if (error) setError(null);
-              }}
-              placeholder={t("emailPlaceholder")}
-              className="h-12 border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
-              aria-required
-            />
-            <Button
-              type="submit"
-              disabled={!emailReady || isSubmitting}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
-            >
-              {t("emailCta")}
-            </Button>
-          </form>
-        )}
+          {sent ? (
+            <p className="rounded-[28px] bg-white/70 px-5 py-4 text-sm font-medium text-[#1D9E75] shadow-[0_18px_55px_rgba(15,27,45,0.08)]">
+              {t("magicSent")}
+            </p>
+          ) : (
+            <form onSubmit={(event) => void sendMagicLink(event)} className={cn("flex flex-col", journeyTightGap)}>
+              <label htmlFor="login-email" className="text-sm font-light text-[#5A6B82]">
+                {t("emailLabel")}
+              </label>
+              <Input
+                id="login-email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (error) setError(null);
+                }}
+                placeholder={t("emailPlaceholder")}
+                className="h-12 border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
+                aria-required
+              />
+              <Button
+                type="submit"
+                disabled={!emailReady || isSubmitting}
+                className={journeyPrimaryButtonClassName}
+              >
+                {t("emailCta")}
+              </Button>
+            </form>
+          )}
 
-        {error ? <p className="text-sm font-medium text-[#D85A30]">{error}</p> : null}
-      </div>
-    </section>
+          {error ? <p className="text-sm font-medium text-[#D85A30]">{error}</p> : null}
+        </div>
+      </JourneyScreenMain>
+    </JourneyScreen>
   );
 }

@@ -3,10 +3,19 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import Iconify from "@/components/ui/iconify";
+import {
+  JourneyHero,
+  JourneyScreen,
+  JourneyScreenMain,
+  journeyPrimaryButtonClassName,
+  journeyTightGap,
+} from "@/components/journey/screen-layout";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
 import { useAudio } from "@/lib/useAudio";
 import { logEvent, updateSession } from "@/lib/tracking";
+import { cn } from "@/lib/utils";
 
 const COUNTDOWN_MS = 3_000;
 const PREPARE_MS = 3_000;
@@ -293,6 +302,7 @@ export default function Meditation() {
   const opacityProgress = started
     ? Math.min(1, Math.max(0, exerciseElapsedMs / (CYCLE_MS * TOTAL_CYCLES)))
     : 0;
+  const showSoundAlert = !completed && (!started || elapsedMs < STARTUP_MS);
 
   useEffect(() => {
     void updateSession(state.sessionId, { current_screen: "meditation" });
@@ -360,41 +370,41 @@ export default function Meditation() {
   }
 
   return (
-    <section className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 text-center sm:px-8">
-      <div className="m-auto flex flex-col items-center pt-16">
-        {completed ? (
-          <MeditationIntroSphere isSpeaking={false} alignOnIntro={false} />
-        ) : started ? (
-          <BreathingCircle
-            phase={circlePhase}
-            gradientProgress={gradientProgress}
-            opacityProgress={opacityProgress}
-          />
-        ) : (
-          <MeditationIntroSphere isSpeaking={isIntroSpeaking} />
-        )}
-        <p className="mt-10 max-w-[520px] text-[26px] leading-[1.25] font-medium text-[#0F1B2D]">
-          {mainLabel}
-        </p>
-        <p className="mt-4 text-[20px] leading-[1.65] text-[#5A6B82]">
-          {completed
-            ? null
-            : started && !isPrepare && !isCountdown
-              ? t("cycle", {
-                  current: Math.min(breathingState.cycle, TOTAL_CYCLES),
-                  total: TOTAL_CYCLES,
-                })
-              : isPrepare || isCountdown
-                ? t("countdownInstruction")
-                : t("instruction")}
-        </p>
+    <JourneyScreen className="relative">
+      <JourneyScreenMain centered={false} className="flex-1 justify-center pt-8 sm:pt-12">
+        <JourneyHero>
+          {completed ? (
+            <MeditationIntroSphere isSpeaking={false} alignOnIntro={false} />
+          ) : started ? (
+            <BreathingCircle
+              phase={circlePhase}
+              gradientProgress={gradientProgress}
+              opacityProgress={opacityProgress}
+            />
+          ) : (
+            <MeditationIntroSphere isSpeaking={isIntroSpeaking} />
+          )}
+          <div className="flex flex-col gap-4">
+            <p className="max-w-[520px] text-[26px] leading-[1.25] font-medium text-[#0F1B2D]">
+              {mainLabel}
+            </p>
+            <p className="text-[20px] leading-[1.65] text-[#5A6B82]">
+              {completed
+                ? null
+                : started && !isPrepare && !isCountdown
+                  ? t("cycle", {
+                      current: Math.min(breathingState.cycle, TOTAL_CYCLES),
+                      total: TOTAL_CYCLES,
+                    })
+                  : isPrepare || isCountdown
+                    ? t("countdownInstruction")
+                    : t("instruction")}
+            </p>
+          </div>
+        </JourneyHero>
         {!started ? (
-          <div className="mt-10 flex items-center justify-center gap-3">
-            <Button
-              type="button"
-              onClick={startBreathing}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
-            >
+          <div className={cn("flex items-center justify-center", journeyTightGap)}>
+            <Button type="button" onClick={startBreathing} className={journeyPrimaryButtonClassName}>
               {t("start")}
             </Button>
             <Button
@@ -408,12 +418,8 @@ export default function Meditation() {
           </div>
         ) : null}
         {completed ? (
-          <div className="mt-10 flex items-center justify-center gap-3">
-            <Button
-              type="button"
-              onClick={goToPostMeditation}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
-            >
+          <div className={cn("flex items-center justify-center", journeyTightGap)}>
+            <Button type="button" onClick={goToPostMeditation} className={journeyPrimaryButtonClassName}>
               {t("done")}
             </Button>
             <Button
@@ -426,16 +432,27 @@ export default function Meditation() {
             </Button>
           </div>
         ) : null}
+      </JourneyScreenMain>
+      <div className="flex flex-col items-center gap-4 pb-6 sm:pb-8">
+        {showSoundAlert ? (
+          <div
+            role="status"
+            className="flex items-center gap-2 rounded-full border border-[#E4E9F1] bg-white/90 px-4 py-2 text-sm font-medium text-[#5A6B82] shadow-[0_8px_24px_rgba(15,27,45,0.06)]"
+          >
+            <Iconify icon="lucide:volume-2" className="size-4 text-[#9F77DD]" aria-hidden />
+            {t("soundOn")}
+          </div>
+        ) : null}
+        {started && !completed ? (
+          <button
+            type="button"
+            onClick={finishMeditation}
+            className="focus-visible:ring-ring cursor-pointer bg-transparent text-sm font-medium text-[#8A97A8] underline underline-offset-4 transition-colors hover:text-[#5A6B82] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            {t("finishSession")}
+          </button>
+        ) : null}
       </div>
-      {started && !completed ? (
-        <button
-          type="button"
-          onClick={finishMeditation}
-          className="focus-visible:ring-ring absolute bottom-5 left-1/2 -translate-x-1/2 cursor-pointer bg-transparent text-sm font-medium text-[#8A97A8] underline underline-offset-4 transition-colors hover:text-[#5A6B82] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none sm:bottom-8"
-        >
-          {t("finishSession")}
-        </button>
-      ) : null}
-    </section>
+    </JourneyScreen>
   );
 }

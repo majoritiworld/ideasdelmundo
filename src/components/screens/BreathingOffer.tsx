@@ -9,13 +9,18 @@ import { useJourney, useLogEventOnce } from "@/lib/journey-context";
 import { getSectionSphereCircleColors } from "@/lib/section-sphere";
 import { logEvent, updateSession } from "@/lib/tracking";
 
-const SPEAKING_DURATION_MS = 4_000;
+const SPEAKING_DURATION_MS = 3_000;
 const multicolorSphereCircleColors = getSectionSphereCircleColors(5);
 const multicolorSphereCircleOpacities = [0.3, 0.3, 0.3, 0.3] as const;
 
-function splitWords(text: string) {
-  return text.split(/\s+/).filter(Boolean);
-}
+import { AnimatedWordReveal } from "@/components/ui/animations/animated-word-reveal";
+import {
+  JourneyActions,
+  JourneyHero,
+  JourneyScreen,
+  journeyPrimaryButtonClassName,
+} from "@/components/journey/screen-layout";
+import { splitRevealWords } from "@/lib/text-reveal";
 
 function getRevealDelay(index: number, totalWords: number) {
   if (totalWords <= 1) return 0;
@@ -30,8 +35,8 @@ export default function BreathingOffer() {
   const [visibleWordCount, setVisibleWordCount] = useState(0);
   const title = t("title");
   const subtitle = t("subtitle");
-  const titleWords = useMemo(() => splitWords(title), [title]);
-  const subtitleWords = useMemo(() => splitWords(subtitle), [subtitle]);
+  const titleWords = useMemo(() => splitRevealWords(title), [title]);
+  const subtitleWords = useMemo(() => splitRevealWords(subtitle), [subtitle]);
   const totalWordCount = titleWords.length + subtitleWords.length;
 
   useEffect(() => {
@@ -72,61 +77,39 @@ export default function BreathingOffer() {
   }
 
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
-      <Sphere
-        state={isSpeaking ? "speaking" : "idle"}
-        size={140}
-        circleColors={multicolorSphereCircleColors}
-        circleOpacities={multicolorSphereCircleOpacities}
-      />
-      <h2
-        className="mt-10 text-2xl leading-tight font-medium text-[#0F1B2D] sm:text-[32px]"
-        aria-label={title}
-      >
-        {titleWords.map((word, index) => (
-          <span
-            key={`${word}-${index}`}
-            aria-hidden="true"
-            className={
-              index < visibleWordCount
-                ? "opacity-100 transition-opacity duration-300"
-                : "opacity-0 transition-opacity duration-300"
-            }
+    <JourneyScreen>
+      <JourneyHero>
+        <Sphere
+          state={isSpeaking ? "speaking" : "idle"}
+          size={140}
+          circleColors={multicolorSphereCircleColors}
+          circleOpacities={multicolorSphereCircleOpacities}
+        />
+        <div className="flex flex-col gap-4">
+          <h2
+            className="text-2xl leading-tight font-medium text-[#0F1B2D] sm:text-[32px]"
+            aria-label={title}
           >
-            {word}
-            {index < titleWords.length - 1 ? " " : ""}
-          </span>
-        ))}
-      </h2>
-      <p
-        className="mt-4 max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]"
-        aria-label={subtitle}
-      >
-        {subtitleWords.map((word, index) => {
-          const revealIndex = titleWords.length + index;
-
-          return (
-            <span
-              key={`${word}-${index}`}
-              aria-hidden="true"
-              className={
-                revealIndex < visibleWordCount
-                  ? "opacity-100 transition-opacity duration-300"
-                  : "opacity-0 transition-opacity duration-300"
-              }
-            >
-              {word}
-              {index < subtitleWords.length - 1 ? " " : ""}
-            </span>
-          );
-        })}
-      </p>
-      <div className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
+            <AnimatedWordReveal text={title} visibleWordCount={visibleWordCount} />
+          </h2>
+          <p
+            className="max-w-xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]"
+            aria-label={subtitle}
+          >
+            <AnimatedWordReveal
+              text={subtitle}
+              visibleWordCount={visibleWordCount}
+              wordIndexOffset={titleWords.length}
+            />
+          </p>
+        </div>
+      </JourneyHero>
+      <JourneyActions className="max-w-md">
         <Button
           type="button"
           onClick={startMeditation}
           disabled={isSpeaking}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed"
+          className={journeyPrimaryButtonClassName}
         >
           {t("yes")}
         </Button>
@@ -139,7 +122,7 @@ export default function BreathingOffer() {
         >
           {t("skip")}
         </Button>
-      </div>
-    </section>
+      </JourneyActions>
+    </JourneyScreen>
   );
 }

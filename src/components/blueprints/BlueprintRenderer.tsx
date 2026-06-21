@@ -82,6 +82,11 @@ export function BlueprintRenderer({ name, content }: { name: string; content: Bl
               <h3 className="mt-3 font-['ArizonaFlare'] text-3xl leading-tight font-medium">
                 {activeIkigaiContent.title}
               </h3>
+              {activeIkigaiContent.quote ? (
+                <p className="mt-4 font-['ArizonaFlare'] text-[17px] italic leading-8 text-[#0F1B2D]">
+                  {activeIkigaiContent.quote}
+                </p>
+              ) : null}
               <p className="mt-4 text-[15.5px] leading-7 text-[#5A6B82]">
                 {activeIkigaiContent.body}
               </p>
@@ -115,6 +120,18 @@ export function BlueprintRenderer({ name, content }: { name: string; content: Bl
           <p className="mt-8 rounded-[32px] border border-[#D5DCE6] bg-white p-8 text-[18px] leading-8 text-[#0F1B2D]">
             {content.shadowSide.body}
           </p>
+          {content.shadowSide.fearTitle || content.shadowSide.fearBody ? (
+            <div className="mt-6 rounded-[28px] border border-[#D5DCE6] bg-[#FAFBFE] p-7">
+              {content.shadowSide.fearTitle ? (
+                <h3 className="font-['ArizonaFlare'] text-2xl font-medium text-[#0F1B2D]">
+                  {content.shadowSide.fearTitle}
+                </h3>
+              ) : null}
+              {content.shadowSide.fearBody ? (
+                <p className="mt-4 text-[15.5px] leading-7 text-[#5A6B82]">{content.shadowSide.fearBody}</p>
+              ) : null}
+            </div>
+          ) : null}
         </BlueprintSection>
 
         <BlueprintSection
@@ -139,6 +156,45 @@ export function BlueprintRenderer({ name, content }: { name: string; content: Bl
             ))}
           </div>
         </BlueprintSection>
+
+        {content.resonantPhrases?.length ? (
+          <BlueprintSection
+            eyebrow={t("phrasesEyebrow")}
+            title={t("phrasesTitle")}
+            sub={t("phrasesSub")}
+          >
+            <ul className="mt-10 grid gap-4">
+              {content.resonantPhrases.map((phrase) => (
+                <li
+                  key={phrase}
+                  className="rounded-[24px] border border-[#D5DCE6] bg-white px-7 py-5 font-['ArizonaFlare'] text-[20px] leading-snug font-medium text-[#0F1B2D]"
+                >
+                  {phrase}
+                </li>
+              ))}
+            </ul>
+          </BlueprintSection>
+        ) : null}
+
+        {content.resonantVoices?.length ? (
+          <BlueprintSection
+            eyebrow={t("voicesEyebrow")}
+            title={t("voicesTitle")}
+            sub={t("voicesSub")}
+          >
+            <div className="mt-10 grid gap-5 sm:grid-cols-2">
+              {content.resonantVoices.map((voice) => (
+                <article
+                  key={voice.name}
+                  className="rounded-[24px] border border-[#D5DCE6] bg-white p-7"
+                >
+                  <h3 className="font-['ArizonaFlare'] text-2xl leading-tight font-medium">{voice.name}</h3>
+                  <p className="mt-3 text-[15px] leading-7 text-[#5A6B82]">{voice.note}</p>
+                </article>
+              ))}
+            </div>
+          </BlueprintSection>
+        ) : null}
 
         <section className="mt-28 rounded-[36px] bg-[#0F1B2D] px-7 py-12 text-center text-white sm:px-10">
           <p className="font-mono text-[11px] tracking-[0.18em] text-white/60 uppercase">

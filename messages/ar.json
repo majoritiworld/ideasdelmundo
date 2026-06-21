@@ -83,6 +83,12 @@
       "videosSub": "استخدمها كشرارات، لا كتعليمات.",
       "watchVideo": "مشاهدة الفيديو",
       "archetypeEyebrow": "النمط المهني",
+      "phrasesEyebrow": "اللغة",
+      "phrasesTitle": "كلمات قد تلاقيك حيث أنت.",
+      "phrasesSub": "جمل قصيرة مرتبطة بكيف تتحدث مع نفسك أصلاً.",
+      "voicesEyebrow": "أصوات قريبة",
+      "voicesTitle": "أصوات قد تبدو مألوفة.",
+      "voicesSub": "أشخاص عملهم يلامس المجال الذي تستكشفه.",
       "signoff": "فريق Majoriti"
     }
   },
@@ -879,7 +885,7 @@
     "welcome": {
       "title": "Your Purpose Blueprint",
       "subtitleLine1": "A guided experience to discover the opportunities",
-      "subtitleLine2": "that a new world is opening up for you.",
+      "subtitleLine2": "that a new professional frontier is opening up for you.",
       "nameLabel": "Before we begin, what's your name?",
       "namePlaceholder": "Your name",
       "cta": "Meet your guide"
@@ -909,6 +915,7 @@
       "repeat": "إعادة",
       "skip": "Skip",
       "finishSession": "إنهاء الجلسة",
+      "soundOn": "فعّل الصوت",
       "cycle": "Cycle {current} of {total}",
       "cues": {
         "inhale": "شهيق",
@@ -1006,7 +1013,6 @@
       "startOver": "ابدأ من جديد"
     },
     "conversation": {
-      "back": "← Back to board",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1019,10 +1025,10 @@
       "doneWithQuestion": "انتهيت من هذا السؤال",
       "tour": {
         "stepLabel": "{current} من {total}",
-        "input": "يمكنك كتابة إجابتك باللغة التي تفضلها.",
-        "mic": "أو يمكنك قول إجاباتك باللغة التي تفضلها. اضغط على الميكروفون، ثم اضغط مرة أخرى عند الانتهاء.",
-        "messages": "سأطرح عليك أسئلة متابعة لمساعدتك على التعمق أكثر، ويمكنك دائمًا إنهاء جلستك.",
-        "back": "عند الانتهاء من الإجابة، اضغط على الرجوع إلى اللوحة للعودة إلى لوحتك.",
+        "input": "اكتب إجابتك هنا في الدردشة.",
+        "mic": "أو اضغط على الميكروفون للتحدث بإجابتك.",
+        "doneStep": "عند الانتهاء، اضغط على انتهيت من هذا السؤال للعودة إلى لوحتك.",
+        "messages": "سيطرح دليلك بعض أسئلة المتابعة، ثم ينهي المحادثة بمجرد أن يحصل على كل ما يحتاجه.",
         "next": "التالي",
         "done": "تم",
         "skip": "تخطي الجولة"

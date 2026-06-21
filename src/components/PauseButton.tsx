@@ -78,7 +78,7 @@ export default function PauseButton({
       <div
         className={cn(
           "z-[100] max-w-[280px] rounded-2xl border border-[#D5DCE6] bg-white px-5 py-4 shadow-[0_8px_30px_rgba(15,27,45,0.08)]",
-          floating ? "fixed top-5 right-5" : "absolute right-0 bottom-full mb-3",
+          floating ? "fixed top-4 right-4 sm:top-6 sm:right-6" : "absolute right-0 bottom-full mb-3",
           className
         )}
       >
@@ -105,7 +105,7 @@ export default function PauseButton({
         aria-expanded={floating ? undefined : step !== "idle"}
         className={cn(
           "z-[100] h-auto rounded-full border border-[#D5DCE6] bg-transparent px-4 py-2 font-mono text-[11px] tracking-[0.1em] text-[#5A6B82] uppercase transition-all hover:border-[#0F1B2D] hover:bg-transparent hover:text-[#0F1B2D]",
-          floating && "fixed top-5 right-5",
+          floating && "fixed top-4 right-4 sm:top-6 sm:right-6",
           buttonClassName
         )}
       >

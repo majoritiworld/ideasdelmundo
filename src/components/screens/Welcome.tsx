@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import IkigaiFigure from "@/components/IkigaiFigure";
+import {
+  JourneyHero,
+  JourneyScreen,
+  JourneyScreenMain,
+  journeyMaxForm,
+  journeyPrimaryButtonClassName,
+  journeyTightGap,
+} from "@/components/journey/screen-layout";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
 import { createSession, logEvent, updateSession } from "@/lib/tracking";
+import { cn } from "@/lib/utils";
 
 export default function Welcome() {
   const { state, dispatch } = useJourney();
@@ -56,48 +65,61 @@ export default function Welcome() {
     setIsStarting(false);
   }
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void startJourney();
+  }
+
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-5 py-8 text-center sm:px-8">
-      <div className="welcome-ikigai-listening">
-        <IkigaiFigure size={160} />
-      </div>
-      <h1 className="mt-10 font-['ArizonaFlare'] text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
-        {t("title")}
-      </h1>
-      <p className="mt-4 max-w-2xl text-center text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
-        {t("subtitleLine1")}
-        <br />
-        {t("subtitleLine2")}
-      </p>
+    <JourneyScreen>
+      <JourneyScreenMain>
+        <JourneyHero>
+          <div className="welcome-ikigai-listening">
+            <IkigaiFigure size={160} />
+          </div>
+          <div className="flex flex-col gap-4">
+            <h1 className="font-['ArizonaFlare'] text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
+              {t("title")}
+            </h1>
+            <p className="max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
+              {t("subtitleLine1")}
+              <br />
+              {t("subtitleLine2")}
+            </p>
+          </div>
+        </JourneyHero>
 
-      <div className="mt-8 w-full max-w-sm text-center">
-        <label htmlFor="welcome-name" className="text-[14px] font-light text-[#5A6B82]">
-          {t("nameLabel")}
-        </label>
+        <div className={cn("w-full text-center", journeyMaxForm)}>
+          <label htmlFor="welcome-name" className="text-[14px] font-light text-[#5A6B82]">
+            {t("nameLabel")}
+          </label>
 
-        <div className="mt-3 flex w-full flex-col items-stretch gap-3">
-          <Input
-            id="welcome-name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t("namePlaceholder")}
-            className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-start text-[15px] text-[#0F1B2D] shadow-none"
-            aria-required
-          />
-          <Button
-            type="button"
-            onClick={() => void startJourney()}
-            disabled={!nameReady || isStarting}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
+          <form
+            onSubmit={handleSubmit}
+            className={cn("mt-4 flex w-full flex-col items-stretch", journeyTightGap)}
           >
-            {t("cta")}
-          </Button>
+            <Input
+              id="welcome-name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("namePlaceholder")}
+              className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-start text-[15px] text-[#0F1B2D] shadow-none"
+              aria-required
+            />
+            <Button
+              type="submit"
+              disabled={!nameReady || isStarting}
+              className={journeyPrimaryButtonClassName}
+            >
+              {t("cta")}
+            </Button>
+          </form>
         </div>
-      </div>
+      </JourneyScreenMain>
       <style jsx>{`
         :global(.welcome-ikigai-listening) {
           animation: welcome-ikigai-listening-pulse 1.9s ease-in-out infinite;
@@ -141,6 +163,6 @@ export default function Welcome() {
           }
         }
       `}</style>
-    </section>
+    </JourneyScreen>
   );
 }

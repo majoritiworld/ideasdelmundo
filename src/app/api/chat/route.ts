@@ -81,7 +81,13 @@ export async function POST(request: NextRequest) {
       model: "claude-sonnet-4-5-20250929",
       max_tokens: 220,
       temperature: 0.7,
-      system: getSystemPrompt(payload.sectionTheme, payload.questionText, payload.isCore),
+      system: [
+        {
+          type: "text" as const,
+          text: getSystemPrompt(payload.sectionTheme, payload.questionText, payload.isCore),
+          cache_control: { type: "ephemeral" as const },
+        },
+      ],
       messages: [
         ...payload.conversationHistory,
         {

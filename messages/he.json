@@ -83,6 +83,12 @@
       "videosSub": "השתמשו בהם כניצוצות, לא כהוראות.",
       "watchVideo": "צפייה בסרטון",
       "archetypeEyebrow": "ארכיטיפ מקצועי",
+      "phrasesEyebrow": "שפה",
+      "phrasesTitle": "מילים שאולי פוגשות אותך איפה שאתה.",
+      "phrasesSub": "שורות קצרות שמחוברות לאיך שאתה כבר מדבר לעצמך.",
+      "voicesEyebrow": "קולות דומים",
+      "voicesTitle": "קולות שאולי מרגישים מוכרים.",
+      "voicesSub": "אנשים שעבודתם נוגעת במה שכבר אתה חוקר.",
       "signoff": "צוות Majoriti"
     }
   },
@@ -879,7 +885,7 @@
     "welcome": {
       "title": "Your Purpose Blueprint",
       "subtitleLine1": "A guided experience to discover the opportunities",
-      "subtitleLine2": "that a new world is opening up for you.",
+      "subtitleLine2": "that a new professional frontier is opening up for you.",
       "nameLabel": "Before we begin, what's your name?",
       "namePlaceholder": "Your name",
       "cta": "Meet your guide"
@@ -909,6 +915,7 @@
       "repeat": "לחזור שוב",
       "skip": "Skip",
       "finishSession": "סיום הסשן",
+      "soundOn": "הפעילו את הקול",
       "cycle": "Cycle {current} of {total}",
       "cues": {
         "inhale": "שאיפה",
@@ -1006,7 +1013,6 @@
       "startOver": "להתחיל מחדש"
     },
     "conversation": {
-      "back": "← Back to board",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1019,10 +1025,10 @@
       "doneWithQuestion": "סיימתי עם השאלה הזו",
       "tour": {
         "stepLabel": "{current} מתוך {total}",
-        "input": "אפשר לכתוב את התשובה בשפה שנוחה לך.",
-        "mic": "או שאפשר לומר את התשובות בשפה שנוחה לך. לחצו על המיקרופון, ואז לחצו שוב כשסיימתם.",
-        "messages": "אשאל שאלות המשך כדי לעזור לך להעמיק, אבל תמיד אפשר לסיים את הסשן.",
-        "back": "כשסיימת לענות, לחצו על חזרה ללוח כדי לחזור ללוח שלך.",
+        "input": "הקלידו את התשובה כאן בצ'אט.",
+        "mic": "או לחצו על המיקרופון כדי לדבר את התשובה.",
+        "doneStep": "כשסיימתם, לחצו על סיימתי עם השאלה הזו כדי לחזור ללוח.",
+        "messages": "המדריך ישאל כמה שאלות המשך, ואז יסיים את השיחה ברגע שיהיו לו כל מה שצריך.",
         "next": "הבא",
         "done": "סיום",
         "skip": "דלג על הסיור"

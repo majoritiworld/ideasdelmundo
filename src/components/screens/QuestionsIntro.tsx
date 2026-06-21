@@ -4,6 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import Sphere from "@/components/Sphere";
 import { Button } from "@/components/ui/button";
+import { AnimatedWords } from "@/components/ui/animations/animated-word-reveal";
+import {
+  JourneyCard,
+  JourneyScreen,
+  JourneyScreenMain,
+  journeyPrimaryButtonClassName,
+} from "@/components/journey/screen-layout";
 import { useJourney } from "@/lib/journey-context";
 import { updateSession } from "@/lib/tracking";
 import { useAudio } from "@/lib/useAudio";
@@ -99,38 +106,29 @@ export default function QuestionsIntro() {
   const sphereState = isSpeaking ? "speaking" : "idle";
 
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 text-center sm:px-8">
-      <div className="m-auto flex flex-col items-center">
+    <JourneyScreen>
+      <JourneyScreenMain>
         <Sphere state={sphereState} size={200} />
-        <div className="mt-8 w-full max-w-2xl rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
+        <JourneyCard>
           <p
             className="text-[18px] leading-[1.7] font-normal text-[#0F1B2D] sm:text-[20px]"
             aria-label={introText}
           >
-            {timedWords.map((word, index) => (
-              <span key={`${word.word}-${index}`} aria-hidden="true">
-                <span
-                  className={
-                    index < visibleWordCount
-                      ? "inline-block translate-y-0 opacity-100 transition-all duration-300"
-                      : "inline-block translate-y-1 opacity-0 transition-all duration-300"
-                  }
-                >
-                  {word.word}
-                </span>
-                {index < timedWords.length - 1 ? " " : ""}
-              </span>
-            ))}
+            <AnimatedWords
+              words={timedWords.map((word) => word.word)}
+              visibleWordCount={visibleWordCount}
+              getWordKey={(word, index) => `${word}-${index}`}
+            />
           </p>
-        </div>
+        </JourneyCard>
         <Button
           type="button"
           onClick={() => dispatch({ type: "GO_TO", screen: "board" })}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-10 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+          className={journeyPrimaryButtonClassName}
         >
           {t("cta")}
         </Button>
-      </div>
-    </section>
+      </JourneyScreenMain>
+    </JourneyScreen>
   );
 }

@@ -83,6 +83,12 @@
       "videosSub": "Use these as sparks, not instructions.",
       "watchVideo": "Watch video",
       "archetypeEyebrow": "Career Archetype",
+      "phrasesEyebrow": "Language",
+      "phrasesTitle": "Words that might meet you where you are.",
+      "phrasesSub": "Short lines anchored in how you already speak to yourself.",
+      "voicesEyebrow": "Kindred voices",
+      "voicesTitle": "Voices that might feel familiar.",
+      "voicesSub": "People whose work touches territory you are already exploring.",
       "signoff": "The Majoriti team"
     }
   },
@@ -879,7 +885,7 @@
     "welcome": {
       "title": "Your Purpose Blueprint",
       "subtitleLine1": "A guided experience to discover the opportunities",
-      "subtitleLine2": "that a new world is opening up for you.",
+      "subtitleLine2": "that a new professional frontier is opening up for you.",
       "nameLabel": "Before we begin, what's your name?",
       "namePlaceholder": "Your name",
       "cta": "Meet your guide"
@@ -909,6 +915,7 @@
       "repeat": "Repeat",
       "skip": "Skip",
       "finishSession": "Finish session",
+      "soundOn": "Sound on",
       "cycle": "Cycle {current} of {total}",
       "cues": {
         "inhale": "Inhale",
@@ -1006,7 +1013,6 @@
       "startOver": "Start again"
     },
     "conversation": {
-      "back": "← Back to board",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1019,10 +1025,10 @@
       "doneWithQuestion": "I'm done with this question",
       "tour": {
         "stepLabel": "{current} of {total}",
-        "input": "You can type your answer in your preferred language.",
-        "mic": "Or you can speak your answers in your preferred language. Click the microphone, then click again when you're done.",
-        "messages": "I will ask follow-up questions to help you go deeper, but you can always finish your session.",
-        "back": "When you're done answering, click Back to board to return to your board.",
+        "input": "Type your answer here in the chat.",
+        "mic": "Or tap the microphone to speak your answer.",
+        "doneStep": "When you're finished, click I'm done with this question to return to your board.",
+        "messages": "Your guide will ask a few follow-up questions, then finish the conversation once it has everything it needs.",
         "next": "Next",
         "done": "Done",
         "skip": "Skip tour"

@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { AnimatedWord } from "@/components/ui/animations/animated-word-reveal";
 import PauseButton from "@/components/PauseButton";
+import {
+  JourneyCard,
+  JourneyScreen,
+  JourneyScreenMain,
+  journeyPrimaryButtonClassName,
+} from "@/components/journey/screen-layout";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
 import { useJourney } from "@/lib/journey-context";
@@ -14,8 +21,8 @@ import { sections } from "@/lib/sections";
 import { logEvent, updateSession } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
-const INTRO_ANIMATION_DURATION_MS = 5_000;
-const QUESTION_REVEAL_START_MS = 2_500;
+const INTRO_ANIMATION_DURATION_MS = 3_000;
+const QUESTION_REVEAL_START_MS = 1_500;
 
 interface RevealLine {
   text: string;
@@ -91,9 +98,9 @@ export default function SectionIntro() {
   }
 
   return (
-    <section className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 text-center sm:px-8">
+    <JourneyScreen>
       <PauseButton />
-      <div className="m-auto flex flex-col items-center">
+      <JourneyScreenMain>
         <Sphere
           state={introComplete ? "idle" : "speaking"}
           size={160}
@@ -102,7 +109,7 @@ export default function SectionIntro() {
           disableHoverEffect
         />
 
-        <div className="mt-8 min-h-[188px] w-full max-w-[592px] rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
+        <JourneyCard size="question">
           <span className="sr-only">{revealText}</span>
           <div className="space-y-2" aria-hidden="true">
             {revealLines.map((line, lineIndex) => (
@@ -120,16 +127,7 @@ export default function SectionIntro() {
 
                   return (
                     <span key={`${word}-${wordIndex}`}>
-                      <span
-                        className={cn(
-                          "inline-block transition-all duration-300",
-                          revealIndex < visibleWordCount
-                            ? "translate-y-0 opacity-100"
-                            : "translate-y-1 opacity-0"
-                        )}
-                      >
-                        {word}
-                      </span>
+                      <AnimatedWord visible={revealIndex < visibleWordCount}>{word}</AnimatedWord>
                       {wordIndex < line.words.length - 1 ? " " : ""}
                     </span>
                   );
@@ -137,21 +135,21 @@ export default function SectionIntro() {
               </p>
             ))}
           </div>
-
-        </div>
+        </JourneyCard>
 
         <Button
           type="button"
           onClick={answerCoreQuestion}
           disabled={!showButton}
           className={cn(
-            "bg-primary text-primary-foreground hover:bg-primary/90 mt-8 h-12 rounded-full px-7 transition-all duration-700 hover:-translate-y-px active:scale-[0.98] disabled:cursor-not-allowed",
+            journeyPrimaryButtonClassName,
+            "transition-all duration-700",
             showButton ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
           )}
         >
           Answer this question
         </Button>
-      </div>
-    </section>
+      </JourneyScreenMain>
+    </JourneyScreen>
   );
 }

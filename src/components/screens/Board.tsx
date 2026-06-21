@@ -3,6 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { AnimatedWords } from "@/components/ui/animations/animated-word-reveal";
+import {
+  JourneyBoardBackdrop,
+  JourneyBoardCanvas,
+  JourneyCard,
+  JourneyHero,
+  JourneyScreen,
+  journeyPrimaryButtonClassName,
+} from "@/components/journey/screen-layout";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Sphere from "@/components/Sphere";
 import { EVENTS } from "@/lib/events";
@@ -249,20 +258,15 @@ export default function Board() {
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden px-4 py-6 sm:px-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(27,61,212,0.08),transparent_38%)]" />
+    <JourneyScreen variant="board">
+      <JourneyBoardBackdrop />
 
-      <div
-        className={cn(
-          "relative z-10 mx-auto flex min-h-[calc(100vh-48px)] max-w-4xl flex-col items-center",
-          isSectionIntroActive && "justify-center"
-        )}
-      >
-        <div className="pt-2 text-center">
+      <JourneyBoardCanvas centered={isSectionIntroActive}>
+        <JourneyHero className={cn(!isSectionIntroActive && "pt-2")}>
           {!isSectionIntroActive ? (
             <div
               className={cn(
-                "mx-auto flex w-[min(560px,calc(100vw-48px))] items-center",
+                "mx-auto flex w-[min(560px,calc(100vw-3rem))] items-center",
                 hasSectionIntro && SECTION_REVEAL_CLASS
               )}
             >
@@ -306,70 +310,66 @@ export default function Board() {
               })}
             </div>
           ) : null}
-          <div className="mt-8 flex justify-center">
-            <Sphere
-              state={isSectionSpeaking ? "speaking" : "idle"}
-              size={100}
-              circleColors={sphereCircleColors}
-              circleOpacities={sphereCircleOpacities}
-              disableHoverEffect
-            />
-          </div>
-          <h2 className="mt-6 text-2xl leading-tight font-medium text-[#0F1B2D]">
-            {section.title}
-          </h2>
+          <Sphere
+            state={isSectionSpeaking ? "speaking" : "idle"}
+            size={100}
+            circleColors={sphereCircleColors}
+            circleOpacities={sphereCircleOpacities}
+            disableHoverEffect
+          />
+          <h2 className="text-2xl leading-tight font-medium text-[#0F1B2D]">{section.title}</h2>
           {isSectionIntroActive ? (
             <>
-              <div className="mt-8 w-full max-w-2xl rounded-3xl border border-[#E4E9F1] bg-white/70 px-5 py-6 shadow-[0_18px_55px_rgba(15,27,45,0.08)] sm:px-8">
+              <JourneyCard>
                 <p
                   className="text-[18px] leading-[1.7] font-normal text-[#0F1B2D] sm:text-[20px]"
                   aria-label={introText}
                 >
-                  {timedIntroWords.map((word, index) => (
-                    <span key={`${word.word}-${index}`} aria-hidden="true">
-                      {word.segmentIndex === 2 && word.wordIndex === 0 ? <br /> : null}
-                      <span
-                        className={
-                          index < visibleIntroWordCount
-                            ? "inline-block translate-y-0 opacity-100 transition-all duration-300"
-                            : "inline-block translate-y-1 opacity-0 transition-all duration-300"
-                        }
-                      >
-                        {word.word}
-                      </span>
-                      {index < timedIntroWords.length - 1 &&
-                      !(
-                        word.segmentIndex !== timedIntroWords[index + 1]?.segmentIndex &&
-                        timedIntroWords[index + 1]?.segmentIndex === 2
-                      )
-                        ? " "
-                        : ""}
-                    </span>
-                  ))}
+                  <AnimatedWords
+                    words={timedIntroWords.map((word) => word.word)}
+                    visibleWordCount={visibleIntroWordCount}
+                    getWordKey={(word, index) => `${word}-${index}`}
+                    renderBeforeWord={(index) =>
+                      timedIntroWords[index]?.segmentIndex === 2 &&
+                      timedIntroWords[index]?.wordIndex === 0 ? (
+                        <br />
+                      ) : null
+                    }
+                    shouldRenderSpaceAfter={(index) => {
+                      if (index >= timedIntroWords.length - 1) return false;
+
+                      const word = timedIntroWords[index];
+                      const nextWord = timedIntroWords[index + 1];
+
+                      return !(
+                        word.segmentIndex !== nextWord?.segmentIndex &&
+                        nextWord?.segmentIndex === 2
+                      );
+                    }}
+                  />
                 </p>
-              </div>
-              <div className="mt-10 flex h-12 justify-center">
-                <Button
-                  type="button"
-                  onClick={continueFromSectionIntro}
-                  disabled={isSectionSpeaking}
-                  className={cn(
-                    "bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all duration-500 hover:-translate-y-px active:scale-[0.98]",
-                    isSectionSpeaking && "pointer-events-none translate-y-1 opacity-0"
-                  )}
-                >
-                  {t("continue")}
-                </Button>
-              </div>
+              </JourneyCard>
+              <Button
+                type="button"
+                onClick={continueFromSectionIntro}
+                disabled={isSectionSpeaking}
+                className={cn(
+                  journeyPrimaryButtonClassName,
+                  "transition-all duration-500",
+                  isSectionSpeaking && "pointer-events-none translate-y-1 opacity-0"
+                )}
+              >
+                {t("continue")}
+              </Button>
             </>
           ) : null}
-        </div>
+        </JourneyHero>
 
         {!isSectionIntroActive ? (
           <>
             <div
               className={cn(
-                "mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2",
+                "grid w-full grid-cols-1 gap-4 sm:grid-cols-2",
                 hasSectionIntro && SECTION_REVEAL_CLASS
               )}
             >
@@ -459,7 +459,7 @@ export default function Board() {
             </div>
           </>
         ) : null}
-      </div>
+      </JourneyBoardCanvas>
       <style jsx global>{`
         @keyframes board-section-reveal {
           from {
@@ -472,6 +472,6 @@ export default function Board() {
           }
         }
       `}</style>
-    </section>
+    </JourneyScreen>
   );
 }

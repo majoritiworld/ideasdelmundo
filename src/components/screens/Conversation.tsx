@@ -14,7 +14,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Iconify from "@/components/ui/iconify";
 import { Textarea } from "@/components/ui/textarea";
-import PauseButton from "@/components/PauseButton";
 import Sphere, { type SphereProps } from "@/components/Sphere";
 import { getStorage, setStorage } from "@/hooks/use-local-storage";
 import { sendChatMessage } from "@/lib/chat";
@@ -27,6 +26,12 @@ import {
 } from "@/lib/section-sphere";
 import type { Json } from "@/lib/supabase/types";
 import { logEvent, logTranscriptMessage, updateSession } from "@/lib/tracking";
+import { AnimatedWords } from "@/components/ui/animations/animated-word-reveal";
+import {
+  JourneyChatColumn,
+  JourneyScreen,
+} from "@/components/journey/screen-layout";
+import { WORD_REVEAL_INTERVAL_MS, splitRevealWords } from "@/lib/text-reveal";
 import { cn } from "@/lib/utils";
 
 function createMessage(role: ConversationMessage["role"], text: string): ConversationMessage {
@@ -58,18 +63,13 @@ function logTranscriptMessages(
   );
 }
 
-function splitMessageWords(text: string): string[] {
-  const t = text.trim();
-  return t ? t.split(/\s+/g) : [];
-}
-
-type GuideRevealState = { key: string; count: number };
-
 const EMPTY_MESSAGES: ConversationMessage[] = [];
 const CONVERSATION_TOUR_STORAGE_KEY = "journey-conversation-tour-completed";
 
-type ConversationTourTarget = "input" | "mic" | "messages" | "back";
-type ConversationTourMessageKey = "input" | "mic" | "messages" | "back";
+type GuideRevealState = { key: string; count: number };
+
+type ConversationTourTarget = "input" | "mic" | "messages" | "done";
+type ConversationTourMessageKey = "input" | "mic" | "messages" | "doneStep";
 
 const CONVERSATION_TOUR_STEPS: Array<{
   target: ConversationTourTarget;
@@ -77,8 +77,8 @@ const CONVERSATION_TOUR_STEPS: Array<{
 }> = [
   { target: "input", messageKey: "input" },
   { target: "mic", messageKey: "mic" },
+  { target: "done", messageKey: "doneStep" },
   { target: "messages", messageKey: "messages" },
-  { target: "back", messageKey: "back" },
 ];
 
 export default function Conversation() {
@@ -145,12 +145,6 @@ export default function Conversation() {
   const composerLocked =
     isThinking || isInputLockedForReveal || doneWithQuestionFlowActive || isTranscribing;
   const userMessageCount = messages.filter((m) => m.role === "user").length;
-  const showDoneWithQuestionButton =
-    !doneWithQuestionFlowActive &&
-    !isInputLockedForReveal &&
-    !isThinking &&
-    !isRecording &&
-    userMessageCount >= 1;
   const tourSteps = useMemo(
     () =>
       speechSupported
@@ -159,11 +153,18 @@ export default function Conversation() {
     [speechSupported]
   );
   const activeTourStep = isTourVisible ? tourSteps[tourStepIndex] : null;
+  const isDoneTourStep = activeTourStep?.target === "done";
+  const showDoneWithQuestionButton =
+    !doneWithQuestionFlowActive &&
+    !isInputLockedForReveal &&
+    !isThinking &&
+    !isRecording &&
+    (userMessageCount >= 1 || isDoneTourStep);
   const tourCopy: Record<ConversationTourMessageKey, string> = {
     input: t("tour.input"),
     mic: t("tour.mic"),
     messages: t("tour.messages"),
-    back: t("tour.back"),
+    doneStep: t("tour.doneStep"),
   };
   const tourStepNumber = tourStepIndex + 1;
 
@@ -286,7 +287,7 @@ export default function Conversation() {
       };
     }
 
-    const wordList = splitMessageWords(last.text);
+    const wordList = splitRevealWords(last.text);
     if (wordList.length === 0) {
       completedGuideRevealRef.current.add(revealKey);
       setGuideReveal(null);
@@ -316,7 +317,7 @@ export default function Conversation() {
       } else {
         setGuideReveal({ key: revealKey, count: shown });
       }
-    }, 55);
+    }, WORD_REVEAL_INTERVAL_MS);
 
     return () => {
       cancelled = true;
@@ -419,16 +420,47 @@ export default function Conversation() {
   activeSectionIdRef.current = activeSection.id;
   activeIsCoreRef.current = isCore;
 
-  function guideDisplayText(message: ConversationMessage, index: number): string {
-    if (message.role !== "guide") return message.text;
+  function getGuideVisibleWordCount(message: ConversationMessage, index: number): number {
+    const words = splitRevealWords(message.text);
     const isLast = index === messages.length - 1;
-    if (!isLast) return message.text;
+    if (!isLast) return words.length;
+
     const revealKey = `${activeQuestion.id}-${message.timestamp}`;
-    if (guideReveal?.key === revealKey) {
-      const words = splitMessageWords(message.text);
-      return words.slice(0, guideReveal.count).join(" ");
-    }
-    return message.text;
+    if (guideReveal?.key === revealKey) return guideReveal.count;
+    return words.length;
+  }
+
+  function renderGuideMessageText(message: ConversationMessage, index: number) {
+    const words = splitRevealWords(message.text);
+    const visibleCount = getGuideVisibleWordCount(message, index);
+
+    return (
+      <p
+        className="text-[14px] leading-relaxed text-[#0F1B2D]/85"
+        aria-label={message.text}
+      >
+        <AnimatedWords words={words} visibleWordCount={visibleCount} />
+      </p>
+    );
+  }
+
+  function renderGuideAvatar(state: SphereProps["state"]) {
+    return (
+      <div
+        aria-hidden="true"
+        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full"
+      >
+        <div className="pointer-events-none scale-[0.38]">
+          <Sphere
+            state={state}
+            size={56}
+            circleColors={sphereCircleColors}
+            circleOpacities={sphereCircleOpacities}
+            disableHoverEffect
+          />
+        </div>
+      </div>
+    );
   }
 
   async function submitMessage(event?: FormEvent<HTMLFormElement>) {
@@ -676,160 +708,162 @@ export default function Conversation() {
   }
 
   return (
-    <section className="relative mx-auto flex h-screen min-h-screen w-full max-w-4xl flex-col px-5 text-center sm:px-8">
-      <PauseButton />
+    <JourneyScreen variant="chat">
       {isTourVisible ? (
         <div
           aria-hidden="true"
           className="fixed inset-0 z-30 bg-[#0F1B2D]/45 backdrop-blur-[1px]"
         />
       ) : null}
-      <div className="absolute top-5 left-1/2 z-40 w-full max-w-3xl -translate-x-1/2 text-left sm:top-8">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={returnToBoard}
-          className={cn(
-            "hover:border-primary hover:text-primary h-10 rounded-full border border-[#D5DCE6] bg-transparent px-4 text-[#5A6B82] hover:bg-white",
-            isTourTargetActive("back") &&
-              "pointer-events-none relative bg-white ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
-          )}
-        >
-          {t("back")}
-        </Button>
-        {renderTourCallout("back", "top-full left-1/2 mt-4 -translate-x-1/2")}
-      </div>
 
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col pt-20 pb-8">
-        <div className="flex shrink-0 flex-col items-center text-center">
-          <div className="scale-[0.7]">
-            <Sphere
-              state={sphereState}
-              size={100}
-              circleColors={sphereCircleColors}
-              circleOpacities={sphereCircleOpacities}
-              disableHoverEffect
-            />
-          </div>
-        </div>
+      <div ref={scrollRef} className="relative flex flex-1 flex-col overflow-y-auto">
+        <div className="conversation-page-in flex min-h-full flex-1 flex-col">
+          <JourneyChatColumn className="flex-1 pb-4 pt-[10dvh]">
+            <div
+              className={cn(
+                "relative flex flex-col gap-6",
+                isTourTargetActive("messages") &&
+                  "pointer-events-none relative z-40 rounded-2xl p-1 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+              )}
+            >
+              {messages.map((message, index) =>
+                message.role === "guide" ? (
+                  <div key={`${message.role}-${index}`} className="flex gap-3">
+                    {renderGuideAvatar(
+                      index === messages.length - 1 && isGuideSpeaking ? sphereState : "idle"
+                    )}
+                    {renderGuideMessageText(message, index)}
+                  </div>
+                ) : (
+                  <div key={`${message.role}-${index}`} className="flex justify-end">
+                    <p className="max-w-[85%] text-right text-[14px] leading-relaxed text-[#0F1B2D]/85">
+                      {message.text}
+                    </p>
+                  </div>
+                )
+              )}
+              {isThinking ? (
+                <div className="flex gap-3">
+                  {renderGuideAvatar("thinking")}
+                  <p className="text-[14px] leading-relaxed text-[#0F1B2D]/45">
+                    <span className="inline-flex gap-1" aria-hidden="true">
+                      <span className="animate-pulse">·</span>
+                      <span className="animate-pulse [animation-delay:120ms]">·</span>
+                      <span className="animate-pulse [animation-delay:240ms]">·</span>
+                    </span>
+                    <span className="sr-only">{t("guide")}</span>
+                  </p>
+                </div>
+              ) : null}
+              <div ref={messagesEndRef} aria-hidden="true" className="h-2" />
+              {renderTourCallout("messages", "top-5 left-1/2 -translate-x-1/2")}
+            </div>
+          </JourneyChatColumn>
 
-        <div className="relative mt-6 min-h-0 flex-1">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-px top-px z-10 h-12 rounded-t-2xl bg-gradient-to-b from-white/95 via-white/70 to-transparent"
-          />
-          <div
-            ref={scrollRef}
+          <JourneyChatColumn
             className={cn(
-              "h-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 px-5 pt-8 pb-6 text-left",
-              isTourTargetActive("messages") &&
-                "pointer-events-none relative z-40 bg-white ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+              "shrink-0 pb-6 pt-2 transition-opacity",
+              composerLocked &&
+                !isTourTargetActive("input") &&
+                !isTourTargetActive("mic") &&
+                !isTourTargetActive("done") &&
+                "pointer-events-none opacity-50"
             )}
           >
-            {messages.map((message, index) => (
-              <div key={`${message.role}-${index}`}>
-                <p
-                  className={`mb-1 text-[12px] font-medium ${message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"}`}
-                >
-                  {message.role === "user" ? t("you") : t("guide")}
-                </p>
-                <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">
-                  {guideDisplayText(message, index)}
-                </p>
-              </div>
-            ))}
-            {isThinking ? (
-              <div>
-                <p className="mb-1 text-[12px] font-medium text-[#7B8FA8]">{t("guide")}</p>
-                <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">...</p>
-              </div>
-            ) : null}
-            <div ref={messagesEndRef} aria-hidden="true" />
-          </div>
-          {renderTourCallout("messages", "top-5 left-1/2 -translate-x-1/2")}
-        </div>
-
-        {error ? <p className="mt-4 max-w-md text-sm leading-6 text-[#D85A30]">{error}</p> : null}
-
-        <div
-          className={cn(
-            "mt-5 shrink-0 text-left transition-opacity",
-            composerLocked &&
-              !isTourTargetActive("input") &&
-              !isTourTargetActive("mic") &&
-              "pointer-events-none opacity-50"
-          )}
-        >
-          <form onSubmit={submitMessage} className="flex flex-col gap-1">
-            <div className="flex items-end gap-3">
-              <div className="relative flex-1">
-                <Textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(event) => setInput(event.target.value)}
-                  onKeyDown={onComposerKeyDown}
-                  placeholder={t("placeholder")}
-                  disabled={composerLocked}
-                  rows={1}
+            {showDoneWithQuestionButton ? (
+              <div className="relative mb-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => void submitDoneWithQuestion()}
+                  disabled={isDoneTourStep}
                   className={cn(
-                    "max-h-[180px] min-h-12 resize-none overflow-y-auto rounded-[24px] border-[#D5DCE6] bg-white px-5 py-3 leading-6 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
-                    isRecording ? "text-[#7B8FA8] italic" : "text-[#0F1B2D] not-italic",
-                    isTourTargetActive("input") &&
+                    "font-sans rounded-lg border border-[#D5DCE6] bg-white px-4 py-2 text-[13px] font-medium normal-case text-[#0F1B2D] transition-colors hover:border-[#0F1B2D]/40",
+                    isTourTargetActive("done") &&
                       "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
                   )}
-                />
-                {renderTourCallout("input", "bottom-full left-0 mb-4")}
+                >
+                  {t("doneWithQuestion")}
+                </button>
+                {renderTourCallout("done", "bottom-full left-0 mb-4")}
               </div>
+            ) : null}
+
+            <form
+              onSubmit={submitMessage}
+              className={cn(
+                "relative flex items-center gap-2 rounded-full border border-[#D5DCE6] bg-white px-4 py-2 shadow-sm focus-within:border-[#0F1B2D]/40",
+                isTourTargetActive("input") &&
+                  "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+              )}
+            >
               {speechSupported ? (
                 <div className="relative shrink-0">
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
                     disabled={composerLocked || isTranscribing}
                     onClick={onMicClick}
                     aria-label={isRecording ? t("micRecording") : t("micStart")}
                     className={cn(
-                      "h-12 w-12 shrink-0 rounded-full p-0 shadow-none",
+                      "font-sans flex h-8 w-8 shrink-0 items-center justify-center rounded-full normal-case transition-colors",
                       isRecording
-                        ? "animate-pulse border-transparent bg-[#EF4444] text-white hover:bg-[#EF4444] hover:text-white"
-                        : "hover:text-primary border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white",
+                        ? "animate-pulse bg-[#EF4444] text-white"
+                        : "text-[#0F1B2D]/55 hover:bg-[#FAFBFE] hover:text-[#0F1B2D]",
                       isTourTargetActive("mic") &&
                         "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
                     )}
                   >
-                    <Iconify icon="lucide:mic" className="mx-auto size-5" />
-                  </Button>
+                    <Iconify icon="lucide:mic" className="size-[18px]" />
+                  </button>
                   {renderTourCallout("mic", "right-0 bottom-full mb-4")}
                 </div>
               ) : null}
-              <Button
+              <Textarea
+                ref={inputRef}
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                onKeyDown={onComposerKeyDown}
+                placeholder={t("placeholder")}
+                disabled={composerLocked}
+                rows={1}
+                className={cn(
+                  "max-h-[120px] min-h-0 flex-1 resize-none overflow-y-auto border-0 bg-transparent px-0 py-1 text-[15px] leading-6 shadow-none outline-none focus-visible:ring-0",
+                  isRecording
+                    ? "text-[#7B8FA8] italic"
+                    : "text-[#0F1B2D] not-italic placeholder:text-[#0F1B2D]/40"
+                )}
+              />
+              <button
                 type="submit"
                 disabled={!input.trim() || composerLocked}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+                aria-label={t("send")}
+                className="font-sans shrink-0 normal-case text-[#0F1B2D]/70 transition-colors hover:text-[#0F1B2D] disabled:text-[#0F1B2D]/25"
               >
-                {t("send")}
-              </Button>
-            </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M4 12L20 4l-4 16-4-7-8-1z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              {renderTourCallout("input", "bottom-full left-0 mb-4")}
+            </form>
+
             {isRecording ? (
-              <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">{t("listeningHint")}</p>
+              <p className="mt-2 ps-1 text-[12px] leading-snug text-[#5A6B82]">{t("listeningHint")}</p>
             ) : null}
             {isTranscribing ? (
-              <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">
+              <p className="mt-2 ps-1 text-[12px] leading-snug text-[#5A6B82]">
                 {t("transcribingHint")}
               </p>
             ) : null}
-          </form>
-          {showDoneWithQuestionButton ? (
-            <button
-              type="button"
-              onClick={() => void submitDoneWithQuestion()}
-              className="mx-auto mt-3 flex font-sans text-[13px] font-normal text-[#7B8FA8] normal-case underline decoration-[#AAB6C5] underline-offset-4 hover:text-[#5A6B82]"
-            >
-              {t("doneWithQuestion")}
-            </button>
-          ) : null}
+            {error ? (
+              <p className="mt-4 text-sm leading-6 text-[#D85A30]">{error}</p>
+            ) : null}
+          </JourneyChatColumn>
         </div>
       </div>
-    </section>
+    </JourneyScreen>
   );
 }
