@@ -45,6 +45,10 @@ function getStatusVariant(status: SessionRow["status"]) {
   return "secondary";
 }
 
+function getReachabilityVariant(hasEmail: boolean) {
+  return hasEmail ? "default" : "outline";
+}
+
 function groupMessages(messages: TranscriptMessageForDisplay[]) {
   return messages.reduce<Record<string, TranscriptMessageForDisplay[]>>((acc, message) => {
     acc[message.session_id] = [...(acc[message.session_id] ?? []), message];
@@ -195,6 +199,7 @@ export default async function InternalSessionsPage({
                   const canGenerateBlueprint = Boolean(
                     session.email?.trim() && messages.length > 0
                   );
+                  const hasEmail = Boolean(session.email?.trim());
 
                   return (
                     <TableRow key={session.id} className="align-top">
@@ -212,7 +217,21 @@ export default async function InternalSessionsPage({
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getStatusVariant(session.status)}>{session.status}</Badge>
+                        <div className="flex flex-wrap gap-1.5">
+                          <Badge variant={getStatusVariant(session.status)}>{session.status}</Badge>
+                          {session.status === "completed" ? (
+                            <Badge
+                              variant={getReachabilityVariant(hasEmail)}
+                              className={
+                                hasEmail
+                                  ? "border-[#1D9E75]/30 bg-[#1D9E75]/10 text-[#157A5C]"
+                                  : "border-[#D85A30]/30 bg-[#D85A30]/8 text-[#B84A28]"
+                              }
+                            >
+                              {hasEmail ? "Reachable" : "No email"}
+                            </Badge>
+                          ) : null}
+                        </div>
                       </TableCell>
                       <TableCell>{session.current_screen || "Unknown"}</TableCell>
                       <TableCell className="max-w-[180px] truncate">
