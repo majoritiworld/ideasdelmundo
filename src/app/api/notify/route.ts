@@ -112,6 +112,46 @@ export async function POST(req: NextRequest) {
     const messages = getTranscriptMessagesForSession(lockedSession, transcriptMessages ?? []);
     const transcript = formatTranscriptText(lockedSession, messages);
 
+    // Releases the notified lock so a failed run can be retried instead of being
+    // permanently stranded as "notified" without the user ever being emailed.
+    const releaseNotifiedLock = async () => {
+      const { error: rollbackError } = await supabaseAdmin
+        .from("sessions")
+        .update({ completion_notified_at: null })
+        .eq("id", lockedSession.id);
+      if (rollbackError) {
+        console.error("[notify-api] Failed to release notified lock", rollbackError);
+      }
+    };
+
+    // Send the user-facing confirmation FIRST — it's the promise we made on screen.
+    // If it fails, release the lock so the next attempt retries cleanly (and no
+    // owner email has gone out yet, so there's nothing to duplicate).
+    const confirmationEmail = await resend.emails.send({
+      from: RESEND_FROM_EMAIL,
+      to: recipientEmail,
+      subject: "Your Purpose Blueprint is being prepared",
+      html: `
+        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #0F1B2D;">
+          <h1 style="font-size: 24px; margin-bottom: 8px;">Thanks for completing Majoriti's Purpose Blueprint Experience!</h1>
+          <p style="color: #5A6B82; font-size: 16px; line-height: 1.6;">
+            You will receive your personalized blueprint in the next 24-48 hours.
+          </p>
+          <p style="margin-top: 40px; color: #7B8FA8; font-size: 13px;">@majoriti.world</p>
+        </div>
+      `,
+    });
+
+    if (confirmationEmail.error) {
+      console.error("[notify-api] Confirmation email failed", confirmationEmail.error);
+      await releaseNotifiedLock();
+      return jsonError(500, "Confirmation email failed");
+    }
+
+    // Owner alert is best-effort: the team's reliable source of truth is the
+    // sessions dashboard (status = completed) plus the auto-generated draft below.
+    // A failure here is logged but must NOT strand the user's confirmed state or
+    // trigger a retry that double-sends the confirmation above.
     const ownerEmail = await resend.emails.send({
       from: RESEND_FROM_EMAIL,
       to: notifyEmails,
@@ -132,28 +172,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (ownerEmail.error) {
-      console.error("[notify-api] Owner email failed", ownerEmail.error);
-      return jsonError(500, "Owner notification email failed");
-    }
-
-    const confirmationEmail = await resend.emails.send({
-      from: RESEND_FROM_EMAIL,
-      to: recipientEmail,
-      subject: "Your Purpose Blueprint is being prepared",
-      html: `
-        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #0F1B2D;">
-          <h1 style="font-size: 24px; margin-bottom: 8px;">Thanks for completing Majoriti's Purpose Blueprint Experience!</h1>
-          <p style="color: #5A6B82; font-size: 16px; line-height: 1.6;">
-            You will receive your personalized blueprint in the next 24-48 hours.
-          </p>
-          <p style="margin-top: 40px; color: #7B8FA8; font-size: 13px;">@sebastian_majoriti</p>
-        </div>
-      `,
-    });
-
-    if (confirmationEmail.error) {
-      console.error("[notify-api] Confirmation email failed", confirmationEmail.error);
-      return jsonError(500, "Confirmation email failed");
+      console.error("[notify-api] Owner email failed (non-fatal)", ownerEmail.error);
     }
 
     const sessionIdForBlueprint = lockedSession.id;

@@ -930,69 +930,30 @@
     },
     "questionsIntro": {
       "stateLabel": "מדבר",
-      "subtitle": "We're ready to begin. You'll now move through four sections of questions, each one exploring a different part of who you are. In each section, answer at least two questions to move forward. You can write your answers or use your voice, whatever feels most natural.",
+      "subtitle": "אנחנו מוכנים להתחיל. עכשיו תעברו בארבעה פרקים, ובכל אחד שאלה אחת שחוקרת חלק אחר ממי שאתם. ענו על כל שאלה כדי להתקדם. אפשר לכתוב את התשובות או להשתמש בקול, מה שמרגיש לכם הכי טבעי.",
       "subtitleSegments": {
-        "ready": "We're ready to begin.",
-        "sections": "You'll now move through four sections of questions, each one exploring a different part of who you are.",
-        "sectionsQuestions": "You'll now move through four sections of questions,",
-        "sectionsEach": "each one exploring a different part of who you are.",
-        "instructionsSection": "In each section,",
-        "instructionsAnswer": "answer at least two questions to move forward.",
-        "instructionsEndStart": "You can write your answers or use your voice,",
-        "instructionsEndFinish": "whatever feels most natural."
+        "ready": "אנחנו מוכנים להתחיל.",
+        "sections": "עכשיו תעברו בארבעה פרקים, ובכל אחד שאלה אחת שחוקרת חלק אחר ממי שאתם.",
+        "sectionsQuestions": "עכשיו תעברו בארבעה פרקים,",
+        "sectionsEach": "ובכל אחד שאלה אחת שחוקרת חלק אחר ממי שאתם.",
+        "instructionsSection": "ענו על כל שאלה",
+        "instructionsAnswer": "כדי להתקדם.",
+        "instructionsEndStart": "אפשר לכתוב את התשובות או להשתמש בקול,",
+        "instructionsEndFinish": "מה שמרגיש לכם הכי טבעי."
       },
       "cta": "I'm ready"
     },
-    "board": {
-      "sectionIndicator": "Section {current} of {total}",
-      "questionNumber": "Question {number}",
-      "answeredAria": "Answered",
-      "sectionIntros": {
-        "1": {
-          "alive": "This section is about what sets you alive.",
-          "time": "Take your time.",
-          "answers": "There are no wrong answers here."
-        },
-        "2": {
-          "gifts": "This section is about your natural gifts.",
-          "modest": "Don't be modest...",
-          "know": "you know more than you think."
-        },
-        "3": {
-          "place": "This section is about your place in the world.",
-          "moves": "Trust what moves you...",
-          "instincts": "your instincts matter."
-        },
-        "4": {
-          "value": "This section is about your value in the world.",
-          "honest": "Be honest...",
-          "between": "this is just between you and yourself."
-        }
-      },
-      "continue": "Continue",
-      "nextSection": "Next section",
-      "answerRequirement": "Answer at least 2 questions to move on",
-      "finish": "Finish"
+    "coreRun": {
+      "progress": "שאלה {current} מתוך {total}"
     },
-    "optionalBoard": {
-      "title": "להעמיק",
-      "subtitle": "השאלות האלה אופציונליות. אפשר לבחור מה שמסקרן אותך.",
+    "deepDive": {
+      "title": "ה-Blueprint שלך כמעט מוכן",
+      "subtitle": "שאלות הליבה נתנו לנו הבנה טובה של המסע שלך. השאלות העמוקות האלה הן המקום שבו אנשים נוטים לגלות את מה שלא ידעו שהם מחפשים. ענו על כל שאלה שקוראת לכם — הן לא חובה.",
+      "subtitleFootnote": "זכרו שאפשר לסיים בכל רגע על ידי גלילה לתחתית ולחיצה על \"סיימתי\" כדי לקבל את ה-blueprint שלכם.",
+      "progressLabel": "צלילה עמוקה",
       "questionLabel": "ש{id}",
       "answeredAria": "נענתה",
-      "nextSection": "הסעיף הבא",
-      "done": "סיימתי",
-      "tour": {
-        "title": "הערה קצרה",
-        "description": "בכל סעיף יש 4 שאלות אקסטרה אופציונליות. מומלץ לענות לפחות על אחת. ככל שתענו יותר, ה-blueprint שלכם יהיה מפורט ורלוונטי יותר.",
-        "next": "הבא",
-        "done": "הבנתי",
-        "pauseTitle": "אפשר לעצור בכל רגע",
-        "pauseDescription": "הכפתור הזה שומר את ההתקדמות ושולח לך במייל קישור לחזרה כשיהיה לך נוח."
-      },
-      "pauseHint": {
-        "text": "מעכשיו אפשר לעצור בכל רגע. נשמור את ההתקדמות ונשלח לך במייל קישור לחזרה כשיהיה לך נוח.",
-        "dismiss": "הבנתי"
-      }
+      "done": "סיימתי"
     },
     "pause": {
       "pause": "לעצור לעכשיו",
@@ -1013,6 +974,7 @@
       "startOver": "להתחיל מחדש"
     },
     "conversation": {
+      "back": "← חזרה ללוח",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1027,7 +989,8 @@
         "stepLabel": "{current} מתוך {total}",
         "input": "הקלידו את התשובה כאן בצ'אט.",
         "mic": "או לחצו על המיקרופון כדי לדבר את התשובה.",
-        "doneStep": "כשסיימתם, לחצו על סיימתי עם השאלה הזו כדי לחזור ללוח.",
+        "doneStep": "כשסיימתם, לחצו על סיימתי עם השאלה הזו כדי להמשיך.",
+        "doneStepDeepDive": "כשסיימתם, לחצו על סיימתי עם השאלה הזו כדי לחזור לצלילה העמוקה.",
         "messages": "המדריך ישאל כמה שאלות המשך, ואז יסיים את השיחה ברגע שיהיו לו כל מה שצריך.",
         "next": "הבא",
         "done": "סיום",
@@ -1040,21 +1003,27 @@
       "congratsBodyLine2": "Thank you for showing up with such honesty.",
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
-      "emailSectionTitle": "Get your full Blueprint",
-      "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Leave your email and we'll send you your full curated Purpose Blueprint — reviewed by two humans and tailored specifically to you.",
+      "emailSectionTitle": "לאן לשלוח את ה-Blueprint שלך?",
+      "nextTitle": "ה-Blueprint שלך בדרך.",
+      "nextBody": "השיחה שלך הסתיימה. השאיר/י את האימייל שלך ונשלח לך את ה-Purpose Blueprint המלא.",
       "emailPlaceholder": "your@email.com",
-      "notifyCta": "Send it to me",
-      "notifySuccess": "You're all set. What you just saw — {archetypeName} — is a sneak peek. Your full Purpose Blueprint is being prepared by our team and will arrive in your inbox within the next 48 hours.",
-      "notifySuccessFallback": "You're all set. Your full Purpose Blueprint is being prepared by our team and will arrive in your inbox within the next 48 hours.",
-      "notifyError": "Something went wrong. Please try again.",
-      "invalidEmail": "Please enter a valid email.",
-      "archetypeIntro": "Based on everything you shared...",
-      "reflecting": "Your guide is reflecting...",
-      "archetypeReveal": "You are {archetypeName}.",
-      "downloadArchetypeCardCta": "Download your archetype card",
-      "humanReviewMessage": "This is just a taste. Your full Purpose Blueprint will be reviewed by two humans to make sure it is truly relevant and tailored to you. You will receive it in your inbox in the next 24 to 48 hours.",
-      "archetypeError": "Your guide could not complete the live archetype reveal right now, but your full Purpose Blueprint is still on its way.",
+      "notifyCta": "שלחו לי",
+      "notifySuccess": "תודה! ה-Purpose Blueprint המלא שלך יעבור בדיקה על ידי שני אנשים כדי לוודא שהוא באמת רלוונטי ומותאם אליך. תקבל/י אותו בתיבת הדואר שלך בתוך 24–48 השעות הקרובות.",
+      "notifySuccessFallback": "תודה! ה-Purpose Blueprint המלא שלך יעבור בדיקה על ידי שני אנשים כדי לוודא שהוא באמת רלוונטי ומותאם אליך. תקבל/י אותו בתיבת הדואר שלך בתוך 24–48 השעות הקרובות.",
+      "notifyError": "משהו השתבש. אנא נסה/י שוב.",
+      "invalidEmail": "אנא הזן/י כתובת אימייל תקינה.",
+      "archetypeIntro": "בהתבסס על כל מה ששיתפת...",
+      "reflecting": "המדריך/ה שלך מהרהר/ת...",
+      "archetypeReveal": "את/ה {archetypeName}.",
+      "tasteTransition": "בינתיים, הנה טעימה —",
+      "downloadArchetypeCardCta": "הורד/י את כרטיס הארכיטיפ שלך",
+      "videosIntro": "בינתיים, על סמך מה ששיתפת, הנה שני דברים ששווה לצפות בהם —",
+      "videosLoading": "מחפשים עבורך שני דברים ששווה לצפות בהם...",
+      "videoTagTed": "הרצאת TED",
+      "videoTagYoutube": "YouTube",
+      "deepDiveCta": "לחקור שאלות עמוקות יותר",
+      "humanReviewMessage": "זו רק טעימה. ה-Purpose Blueprint המלא שלך יעבור בדיקה על ידי שני אנשים כדי לוודא שהוא באמת רלוונטי ומותאם אליך. תקבל/י אותו בתיבת הדואר שלך בתוך 24–48 השעות הקרובות.",
+      "archetypeError": "לא הצלחנו להכין את תצוגת הארכיטיפ החיה כרגע, אבל ה-Purpose Blueprint המלא שלך עדיין בדרך.",
       "downloadCta": "Download my transcript",
       "shareCta": "Share this experience",
       "whatsappCta": "Share on WhatsApp",

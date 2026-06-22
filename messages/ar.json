@@ -930,69 +930,30 @@
     },
     "questionsIntro": {
       "stateLabel": "يتحدث",
-      "subtitle": "We're ready to begin. You'll now move through four sections of questions, each one exploring a different part of who you are. In each section, answer at least two questions to move forward. You can write your answers or use your voice, whatever feels most natural.",
+      "subtitle": "نحن مستعدون للبدء. ستمر الآن بأربعة أقسام، وفي كل قسم سؤال واحد يستكشف جانبًا مختلفًا من هويتك. أجب عن كل سؤال للمتابعة. يمكنك كتابة إجاباتك أو استخدام صوتك، أيهما يبدو أكثر طبيعية.",
       "subtitleSegments": {
-        "ready": "We're ready to begin.",
-        "sections": "You'll now move through four sections of questions, each one exploring a different part of who you are.",
-        "sectionsQuestions": "You'll now move through four sections of questions,",
-        "sectionsEach": "each one exploring a different part of who you are.",
-        "instructionsSection": "In each section,",
-        "instructionsAnswer": "answer at least two questions to move forward.",
-        "instructionsEndStart": "You can write your answers or use your voice,",
-        "instructionsEndFinish": "whatever feels most natural."
+        "ready": "نحن مستعدون للبدء.",
+        "sections": "ستمر الآن بأربعة أقسام، وفي كل قسم سؤال واحد يستكشف جانبًا مختلفًا من هويتك.",
+        "sectionsQuestions": "ستمر الآن بأربعة أقسام،",
+        "sectionsEach": "وفي كل قسم سؤال واحد يستكشف جانبًا مختلفًا من هويتك.",
+        "instructionsSection": "أجب عن كل سؤال",
+        "instructionsAnswer": "للمتابعة.",
+        "instructionsEndStart": "يمكنك كتابة إجاباتك أو استخدام صوتك،",
+        "instructionsEndFinish": "أيهما يبدو أكثر طبيعية."
       },
       "cta": "I'm ready"
     },
-    "board": {
-      "sectionIndicator": "Section {current} of {total}",
-      "questionNumber": "Question {number}",
-      "answeredAria": "Answered",
-      "sectionIntros": {
-        "1": {
-          "alive": "This section is about what sets you alive.",
-          "time": "Take your time.",
-          "answers": "There are no wrong answers here."
-        },
-        "2": {
-          "gifts": "This section is about your natural gifts.",
-          "modest": "Don't be modest...",
-          "know": "you know more than you think."
-        },
-        "3": {
-          "place": "This section is about your place in the world.",
-          "moves": "Trust what moves you...",
-          "instincts": "your instincts matter."
-        },
-        "4": {
-          "value": "This section is about your value in the world.",
-          "honest": "Be honest...",
-          "between": "this is just between you and yourself."
-        }
-      },
-      "continue": "Continue",
-      "nextSection": "Next section",
-      "answerRequirement": "Answer at least 2 questions to move on",
-      "finish": "Finish"
+    "coreRun": {
+      "progress": "السؤال {current} من {total}"
     },
-    "optionalBoard": {
-      "title": "تعمّق أكثر",
-      "subtitle": "هذه الأسئلة اختيارية. اختر ما يلفت انتباهك.",
+    "deepDive": {
+      "title": "مخططك الأساسي على وشك الاكتمال",
+      "subtitle": "قدّمت لنا الأسئلة الأساسية فهمًا جيدًا لرحلتك. هذه الأسئلة الأعمق هي حيث يميل الناس إلى اكتشاف ما لم يكونوا يعلمون أنهم يبحثون عنه. أجب عن أي سؤال يناديك، فهي ليست إلزامية.",
+      "subtitleFootnote": "تذكّر أنه يمكنك الإنهاء في أي وقت بالتمرير إلى الأسفل والنقر على \"انتهيت\" للحصول على مخططك.",
+      "progressLabel": "تعمق",
       "questionLabel": "س{id}",
       "answeredAria": "تمت الإجابة",
-      "nextSection": "القسم التالي",
-      "done": "انتهيت",
-      "tour": {
-        "title": "ملاحظة سريعة",
-        "description": "في كل قسم 4 أسئلة إضافية اختيارية. نوصي بالإجابة عن سؤال واحد على الأقل. كلما أجبت أكثر، أصبح الـ blueprint أكثر تفصيلًا وملاءمة لك.",
-        "next": "التالي",
-        "done": "فهمت",
-        "pauseTitle": "يمكنك الإيقاف في أي وقت",
-        "pauseDescription": "استخدم هذا الزر لحفظ تقدمك وإرسال رابط إلى بريدك الإلكتروني للعودة عندما تكون مستعدًا."
-      },
-      "pauseHint": {
-        "text": "يمكنك الإيقاف المؤقت في أي وقت من الآن. سنحفظ تقدمك ونرسل لك رابطًا عبر البريد الإلكتروني للعودة عندما تكون مستعدًا.",
-        "dismiss": "فهمت"
-      }
+      "done": "انتهيت"
     },
     "pause": {
       "pause": "إيقاف مؤقت الآن",
@@ -1013,6 +974,7 @@
       "startOver": "ابدأ من جديد"
     },
     "conversation": {
+      "back": "← العودة إلى اللوحة",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1027,7 +989,8 @@
         "stepLabel": "{current} من {total}",
         "input": "اكتب إجابتك هنا في الدردشة.",
         "mic": "أو اضغط على الميكروفون للتحدث بإجابتك.",
-        "doneStep": "عند الانتهاء، اضغط على انتهيت من هذا السؤال للعودة إلى لوحتك.",
+        "doneStep": "عند الانتهاء، اضغط على انتهيت من هذا السؤال للمتابعة.",
+        "doneStepDeepDive": "عند الانتهاء، اضغط على انتهيت من هذا السؤال للعودة إلى التعمق.",
         "messages": "سيطرح دليلك بعض أسئلة المتابعة، ثم ينهي المحادثة بمجرد أن يحصل على كل ما يحتاجه.",
         "next": "التالي",
         "done": "تم",
@@ -1040,21 +1003,27 @@
       "congratsBodyLine2": "Thank you for showing up with such honesty.",
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
-      "emailSectionTitle": "Get your full Blueprint",
-      "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Leave your email and we'll send you your full curated Purpose Blueprint — reviewed by two humans and tailored specifically to you.",
+      "emailSectionTitle": "إلى أين نرسل الـ Blueprint الخاص بك؟",
+      "nextTitle": "الـ Blueprint الخاص بك في الطريق.",
+      "nextBody": "انتهت محادثتك. اترك بريدك الإلكتروني وسنرسل لك Purpose Blueprint الكامل.",
       "emailPlaceholder": "your@email.com",
-      "notifyCta": "Send it to me",
-      "notifySuccess": "You're all set. What you just saw — {archetypeName} — is a sneak peek. Your full Purpose Blueprint is being prepared by our team and will arrive in your inbox within the next 48 hours.",
-      "notifySuccessFallback": "You're all set. Your full Purpose Blueprint is being prepared by our team and will arrive in your inbox within the next 48 hours.",
-      "notifyError": "Something went wrong. Please try again.",
-      "invalidEmail": "Please enter a valid email.",
-      "archetypeIntro": "Based on everything you shared...",
-      "reflecting": "Your guide is reflecting...",
-      "archetypeReveal": "You are {archetypeName}.",
-      "downloadArchetypeCardCta": "Download your archetype card",
-      "humanReviewMessage": "This is just a taste. Your full Purpose Blueprint will be reviewed by two humans to make sure it is truly relevant and tailored to you. You will receive it in your inbox in the next 24 to 48 hours.",
-      "archetypeError": "Your guide could not complete the live archetype reveal right now, but your full Purpose Blueprint is still on its way.",
+      "notifyCta": "أرسلوه لي",
+      "notifySuccess": "شكرًا! سيتم مراجعة Purpose Blueprint الكامل الخاص بك من قبل شخصين للتأكد من أنه ذو صلة حقيقية ومصمم خصيصًا لك. ستصله إلى بريدك خلال 24–48 ساعة القادمة.",
+      "notifySuccessFallback": "شكرًا! سيتم مراجعة Purpose Blueprint الكامل الخاص بك من قبل شخصين للتأكد من أنه ذو صلة حقيقية ومصمم خصيصًا لك. ستصله إلى بريدك خلال 24–48 ساعة القادمة.",
+      "notifyError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صالح.",
+      "archetypeIntro": "بناءً على كل ما شاركته...",
+      "reflecting": "مرشدك يتأمل...",
+      "archetypeReveal": "أنت {archetypeName}.",
+      "tasteTransition": "في هذه الأثناء، إليك نكهة —",
+      "downloadArchetypeCardCta": "تنزيل بطاقة النمط الخاصة بك",
+      "videosIntro": "في هذه الأثناء، وبناءً على ما شاركته، إليك أمرين يستحقان المشاهدة —",
+      "videosLoading": "نبحث لك عن أمرين يستحقان المشاهدة...",
+      "videoTagTed": "محادثة TED",
+      "videoTagYoutube": "YouTube",
+      "deepDiveCta": "استكشاف أسئلة أعمق",
+      "humanReviewMessage": "هذه مجرد نكهة. سيتم مراجعة Purpose Blueprint الكامل الخاص بك من قبل شخصين للتأكد من أنه ذو صلة حقيقية ومصمم خصيصًا لك. ستصله إلى بريدك خلال 24–48 ساعة القادمة.",
+      "archetypeError": "لم نتمكن من إعداد معاينة النمط المباشرة الآن، لكن Purpose Blueprint الكامل الخاص بك لا يزال في الطريق.",
       "downloadCta": "Download my transcript",
       "shareCta": "Share this experience",
       "whatsappCta": "Share on WhatsApp",

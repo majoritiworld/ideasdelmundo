@@ -12,6 +12,7 @@ import {
 
 import type { EventType } from "@/lib/events";
 import { logEvent } from "@/lib/tracking";
+import { sections } from "@/lib/sections";
 import type { SessionRow } from "@/lib/supabase/types";
 
 export type Screen =
@@ -22,10 +23,9 @@ export type Screen =
   | "post_meditation"
   | "questions_intro"
   | "section_intro"
-  | "board"
-  | "optional_board"
   | "conversation"
-  | "closing";
+  | "closing"
+  | "deep_dive";
 
 export interface ConversationMessage {
   role: "guide" | "user";
@@ -48,7 +48,6 @@ export interface JourneyState {
   conversations: Record<number, ConversationMessage[]>;
   meditationCompleted: boolean;
   archetypeName: string | null;
-  seenPauseHint: boolean;
 }
 
 type JourneyAction =
@@ -66,7 +65,6 @@ type JourneyAction =
   | { type: "ADD_MESSAGE"; questionId: number; message: ConversationMessage }
   | { type: "SET_MEDITATION_COMPLETED"; completed: boolean }
   | { type: "SET_ARCHETYPE"; archetypeName: string }
-  | { type: "MARK_PAUSE_HINT_SEEN" }
   | { type: "REHYDRATE"; session: SessionRow }
   | { type: "RESET" };
 
@@ -85,7 +83,6 @@ const initialState: JourneyState = {
   conversations: {},
   meditationCompleted: false,
   archetypeName: null,
-  seenPauseHint: false,
 };
 
 function isScreen(value: string | null): value is Screen {
@@ -99,12 +96,22 @@ function isScreen(value: string | null): value is Screen {
         "post_meditation",
         "questions_intro",
         "section_intro",
-        "board",
-        "optional_board",
         "conversation",
         "closing",
+        "deep_dive",
       ].includes(value)
   );
+}
+
+const LEGACY_SCREEN_MAP: Record<string, Screen> = {
+  board: "section_intro",
+  optional_board: "deep_dive",
+};
+
+function resolveRehydratedScreen(value: string | null): Screen {
+  if (isScreen(value)) return value;
+  if (value && value in LEGACY_SCREEN_MAP) return LEGACY_SCREEN_MAP[value];
+  return "welcome";
 }
 
 function journeyReducer(state: JourneyState, action: JourneyAction): JourneyState {
@@ -122,7 +129,10 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
     case "SET_SOURCE":
       return { ...state, source: action.source };
     case "SET_CURRENT_SECTION":
-      return { ...state, currentSection: Math.max(1, Math.min(5, action.sectionId)) };
+      return {
+        ...state,
+        currentSection: Math.max(1, Math.min(sections.length, action.sectionId)),
+      };
     case "MARK_SECTION_VOICEOVER_PLAYED":
       if (state.sectionVoiceoversPlayed.includes(action.section)) return state;
       return {
@@ -149,8 +159,6 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       return { ...state, meditationCompleted: action.completed };
     case "SET_ARCHETYPE":
       return { ...state, archetypeName: action.archetypeName };
-    case "MARK_PAUSE_HINT_SEEN":
-      return { ...state, seenPauseHint: true };
     case "REHYDRATE": {
       const session = action.session;
 
@@ -165,8 +173,7 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
         coreAnswered: session.core_answered ?? [],
         conversations: (session.conversations ?? {}) as unknown as Record<number, ConversationMessage[]>,
         meditationCompleted: session.meditation_completed ?? false,
-        seenPauseHint: session.seen_pause_hint ?? false,
-        screen: isScreen(session.current_screen) ? session.current_screen : "welcome",
+        screen: resolveRehydratedScreen(session.current_screen),
         activeQuestionId: null,
       };
     }

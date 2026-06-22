@@ -18,7 +18,6 @@ export const categoryColors = {
   vocation: "#1A35CE",
   mission: "#CE1ABC",
   profession: "#008925",
-  becoming: "#C5D94A",
 } as const;
 
 export const sections: Section[] = [
@@ -171,44 +170,6 @@ export const sections: Section[] = [
         text: "What is the one thing standing between you and that version of your life right now?",
         openingMessage:
           "Let's name the real obstacle with honesty and care. What is the one thing standing between you and that version of your life right now?",
-      },
-    ],
-  },
-  {
-    id: 5,
-    theme: "becoming",
-    title: "Who you are becoming",
-    introMessage: "This final section brings it all together.",
-    coreQuestion: {
-      id: 21,
-      text: "What are you ready to grow into next?",
-      openingMessage:
-        "As everything comes together, let's turn toward what's opening up. What are you ready to grow into next?",
-    },
-    optionalQuestions: [
-      {
-        id: 22,
-        text: "What belief about yourself are you ready to leave behind?",
-        openingMessage:
-          "Some beliefs once protected us but now keep us small. What belief about yourself are you ready to leave behind?",
-      },
-      {
-        id: 23,
-        text: "What has your most important relationship taught you about who you really are?",
-        openingMessage:
-          "Relationships can become mirrors. What has your most important relationship taught you about who you really are?",
-      },
-      {
-        id: 24,
-        text: "What would you do differently if you stopped caring what people thought of you?",
-        openingMessage:
-          "Imagine the noise of other people's opinions getting quiet. What would you do differently if you stopped caring what people thought of you?",
-      },
-      {
-        id: 25,
-        text: "What does the most honest person in your life see in you that you struggle to see yourself?",
-        openingMessage:
-          "Borrow the eyes of someone who loves you and tells the truth. What do they see in you that you struggle to see yourself?",
       },
     ],
   },

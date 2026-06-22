@@ -9,7 +9,6 @@ import {
   JourneyHero,
   JourneyScreen,
   JourneyScreenMain,
-  journeyMaxForm,
   journeyPrimaryButtonClassName,
   journeyTightGap,
 } from "@/components/journey/screen-layout";
@@ -77,7 +76,7 @@ export default function Welcome() {
           <div className="welcome-ikigai-listening">
             <IkigaiFigure size={160} />
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center gap-4">
             <h1 className="font-['ArizonaFlare'] text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
               {t("title")}
             </h1>
@@ -89,7 +88,7 @@ export default function Welcome() {
           </div>
         </JourneyHero>
 
-        <div className={cn("w-full text-center", journeyMaxForm)}>
+        <div className="mx-auto w-full max-w-[21rem] text-center">
           <label htmlFor="welcome-name" className="text-[14px] font-light text-[#5A6B82]">
             {t("nameLabel")}
           </label>

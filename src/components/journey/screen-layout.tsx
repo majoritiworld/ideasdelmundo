@@ -55,28 +55,39 @@ export function JourneyScreen<T extends ElementType = "section">({
 }: JourneyScreenProps<T>) {
   const Component = as ?? "section";
 
+  const isCentered = variant === "centered";
+  const maxWidth =
+    width === "wide" && isCentered ? journeyMaxWide : isCentered ? journeyMaxContent : undefined;
+
   return (
     <Component
       className={cn(
-        "mx-auto flex w-full min-h-dvh flex-col",
-        variant === "centered" && [
-          journeyMaxContent,
-          journeyGutterX,
-          journeyGutterY,
-          "items-center justify-center text-center",
-        ],
+        "flex w-full min-h-dvh flex-col",
+        isCentered && [journeyGutterY, "items-center justify-center"],
         variant === "board" && [
           "relative overflow-hidden",
           journeyGutterX,
           journeyGutterYCompact,
         ],
         variant === "chat" && "relative bg-white",
-        width === "wide" && variant === "centered" && journeyMaxWide,
         className
       )}
       {...props}
     >
-      {children}
+      {isCentered ? (
+        <div
+          className={cn(
+            "mx-auto flex w-full flex-col",
+            maxWidth,
+            journeyGutterX,
+            "items-center text-center"
+          )}
+        >
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </Component>
   );
 }
@@ -130,7 +141,7 @@ export function JourneyCard({ className, children, size = "default" }: JourneyCa
     <div
       className={cn(
         journeyCardClassName,
-        size === "question" && "min-h-[11.75rem] max-w-[37rem]",
+        size === "question" && "min-h-[11.75rem] max-w-[37rem] p-[1.575rem] sm:p-[2.1rem]",
         className
       )}
     >

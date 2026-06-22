@@ -5,6 +5,7 @@ export const EVENTS = {
   BOARD_VIEWED: "board_viewed",
   SECTION_INTRO_VIEWED: "section_intro_viewed",
   OPTIONAL_BOARD_VIEWED: "optional_board_viewed",
+  DEEP_DIVE_VIEWED: "deep_dive_viewed",
   BREATHING_OFFERED: "breathing_offered",
   MEDITATION_STARTED: "meditation_started",
   MEDITATION_COMPLETED: "meditation_completed",

@@ -1,18 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { jsPDF } from "jspdf";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Sphere from "@/components/Sphere";
 import { JourneyScreen } from "@/components/journey/screen-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Iconify from "@/components/ui/iconify";
-import { TimedAnimatedWordReveal } from "@/components/ui/animations/animated-word-reveal";
 import { EVENTS } from "@/lib/events";
 import { useJourney, useLogEventOnce, type JourneyState } from "@/lib/journey-context";
 import { generateArchetype, type ArchetypeResult } from "@/lib/archetype";
+import { isClosingRewardPreview, PREVIEW_ARCHETYPE } from "@/lib/archetype-preview";
+import {
+  buildFallbackRecommendations,
+  generateRecommendations,
+  type VideoRecommendation,
+} from "@/lib/recommendations";
+import { getVideoEmbedSrc } from "@/lib/videos";
 import { sendNotifyEmail } from "@/lib/notify";
 import {
   getSectionSphereCircleColors,
@@ -21,12 +27,6 @@ import {
 import { getSectionQuestions, sections } from "@/lib/sections";
 import { markCompleted, updateSession } from "@/lib/tracking";
 
-const WORD_REVEAL_DELAY_MS = 60;
-const ARCHETYPE_WORD_REVEAL_DELAY_MS = 55;
-const INTRO_PAUSE_MS = 800;
-const NAME_PAUSE_MS = 600;
-const DESCRIPTION_PAUSE_MS = 400;
-const REFERENCE_FADE_DURATION_MS = 1_200;
 const COPY_RESET_DELAY_MS = 2_000;
 const STEP_TRANSITION = { duration: 0.6, ease: "easeOut" } as const;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -193,20 +193,6 @@ function capitalizeFirstLetter(value: string) {
   return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
 }
 
-function getWordCount(text: string) {
-  return text.trim().split(/\s+/).filter(Boolean).length;
-}
-
-function sanitizePngFileName(name: string) {
-  const safeName = name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  return `${safeName || "guest"}-archetype-card.png`;
-}
-
 function serializeTranscript(name: string, conversations: JourneyState["conversations"]) {
   const serializedConversations = sections.flatMap((section) =>
     getSectionQuestions(section)
@@ -229,193 +215,106 @@ function serializeTranscript(name: string, conversations: JourneyState["conversa
   );
 }
 
-function wrapCanvasText(
-  context: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number
-) {
-  const words = text.split(/\s+/).filter(Boolean);
-  let line = "";
-  let cursorY = y;
-
-  words.forEach((word) => {
-    const testLine = line ? `${line} ${word}` : word;
-    const metrics = context.measureText(testLine);
-
-    if (metrics.width > maxWidth && line) {
-      context.fillText(line, x, cursorY);
-      line = word;
-      cursorY += lineHeight;
-      return;
-    }
-
-    line = testLine;
-  });
-
-  if (line) {
-    context.fillText(line, x, cursorY);
-  }
-}
-
-function downloadArchetypeCard(name: string, archetype: ArchetypeResult) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1920;
-  canvas.height = 1080;
-
-  const context = canvas.getContext("2d");
-  if (!context) return;
-
-  context.fillStyle = "#0F1B2D";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  context.strokeStyle = "rgba(255,255,255,0.03)";
-  context.lineWidth = 1;
-  for (let x = 0; x <= canvas.width; x += 80) {
-    context.beginPath();
-    context.moveTo(x, 0);
-    context.lineTo(x, canvas.height);
-    context.stroke();
-  }
-  for (let y = 0; y <= canvas.height; y += 80) {
-    context.beginPath();
-    context.moveTo(0, y);
-    context.lineTo(canvas.width, y);
-    context.stroke();
-  }
-
-  [
-    { x: 1580, y: 500, color: "rgba(206,164,26,0.18)" },
-    { x: 1720, y: 500, color: "rgba(26,53,206,0.18)" },
-    { x: 1650, y: 420, color: "rgba(206,26,188,0.18)" },
-    { x: 1650, y: 560, color: "rgba(0,137,37,0.18)" },
-  ].forEach((circle) => {
-    context.beginPath();
-    context.fillStyle = circle.color;
-    context.arc(circle.x, circle.y, 130, 0, Math.PI * 2);
-    context.fill();
-  });
-
-  context.fillStyle = "#5A6B82";
-  context.font = '18px "Courier New", monospace';
-  context.fillText("YOUR ARCHETYPE · MAJORITI", 120, 155);
-
-  context.fillStyle = "#CEA41A";
-  context.fillRect(120, 180, 100, 4);
-
-  context.fillStyle = "#FAFBFE";
-  context.font = 'bold 110px Georgia, "Times New Roman", serif';
-  context.fillText(`${name.trim() || "You"}.`, 120, 340);
-
-  context.fillStyle = "#CEA41A";
-  context.font = 'italic bold 76px Georgia, "Times New Roman", serif';
-  context.fillText(archetype.archetypeName, 120, 460);
-
-  context.strokeStyle = "rgba(250,251,254,0.1)";
-  context.beginPath();
-  context.moveTo(0, 500);
-  context.lineTo(canvas.width, 500);
-  context.stroke();
-
-  context.fillStyle = "rgba(250,251,254,0.65)";
-  context.font = '30px Georgia, "Times New Roman", serif';
-  wrapCanvasText(context, archetype.archetypeDescription, 120, 580, 1500, 50);
-
-  context.strokeStyle = "rgba(250,251,254,0.1)";
-  context.beginPath();
-  context.moveTo(0, 980);
-  context.lineTo(canvas.width, 980);
-  context.stroke();
-
-  context.fillStyle = "#5A6B82";
-  context.font = '20px "Courier New", monospace';
-  context.fillText("@majoriti.world", 120, 1020);
-
-  const link = document.createElement("a");
-  link.href = canvas.toDataURL("image/png");
-  link.download = sanitizePngFileName(name);
-  link.click();
-}
-
 export default function Closing() {
   const { state, dispatch } = useJourney();
   const t = useTranslations("journey.closing");
+  const locale = useLocale();
   const logSessionCompleted = useLogEventOnce(EVENTS.SESSION_COMPLETED);
+  const rewardPreview = isClosingRewardPreview();
   const [isReflecting, setIsReflecting] = useState(false);
-  const [archetype, setArchetype] = useState<ArchetypeResult | null>(null);
+  const [archetype, setArchetype] = useState<ArchetypeResult | null>(() =>
+    rewardPreview ? PREVIEW_ARCHETYPE : null
+  );
   const [archetypeError, setArchetypeError] = useState(false);
+  const [recommendations, setRecommendations] = useState<VideoRecommendation[] | null>(() =>
+    rewardPreview ? buildFallbackRecommendations() : null
+  );
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [email, setEmail] = useState(state.email);
-  const [emailStatus, setEmailStatus] = useState<"idle" | "success">("idle");
+  const [email, setEmail] = useState(() =>
+    rewardPreview ? state.email || "preview@majoriti.world" : state.email
+  );
+  const [emailStatus, setEmailStatus] = useState<"idle" | "success">(() =>
+    rewardPreview ? "success" : "idle"
+  );
   const [emailError, setEmailError] = useState<string | null>(null);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const archetypeRequestedRef = useRef(false);
+  const recommendationsRequestedRef = useRef(false);
   const displayName = capitalizeFirstLetter(state.name);
 
-  const introText = t("archetypeIntro");
-  const introWordCount = useMemo(() => getWordCount(introText), [introText]);
-  const nameRevealText = archetype
-    ? t("archetypeReveal", { archetypeName: archetype.archetypeName })
-    : "";
-  const nameRevealDelayMs = 0;
-  const descriptionRevealDelayMs =
-    nameRevealDelayMs +
-    getWordCount(nameRevealText) * ARCHETYPE_WORD_REVEAL_DELAY_MS +
-    NAME_PAUSE_MS;
-  const purposeRevealDelayMs = archetype
-    ? descriptionRevealDelayMs +
-      getWordCount(archetype.archetypeDescription) * ARCHETYPE_WORD_REVEAL_DELAY_MS +
-      DESCRIPTION_PAUSE_MS
-    : 0;
-  const referencesRevealDelayMs = archetype
-    ? purposeRevealDelayMs +
-      getWordCount(archetype.purposeStatement) * ARCHETYPE_WORD_REVEAL_DELAY_MS
-    : 0;
-  const ctaRevealDelayMs = referencesRevealDelayMs + REFERENCE_FADE_DURATION_MS;
-  const sphereState = archetypeError ? "idle" : isReflecting ? "thinking" : "speaking";
+  const isEmailSubmitted = emailStatus === "success";
+  const sphereState = isEmailSubmitted
+    ? archetypeError
+      ? "idle"
+      : isReflecting
+        ? "thinking"
+        : archetype
+          ? "speaking"
+          : "idle"
+    : isReflecting
+      ? "thinking"
+      : "idle";
 
   useEffect(() => {
+    if (rewardPreview) return;
+
     void logSessionCompleted();
     void markCompleted(state.sessionId);
     void updateSession(state.sessionId, { current_screen: "closing" });
-  }, [logSessionCompleted, state.sessionId]);
+  }, [logSessionCompleted, rewardPreview, state.sessionId]);
 
   useEffect(() => {
+    if (rewardPreview) {
+      archetypeRequestedRef.current = true;
+      dispatch({ type: "SET_ARCHETYPE", archetypeName: PREVIEW_ARCHETYPE.archetypeName });
+      return;
+    }
+
     if (archetypeRequestedRef.current) return;
 
-    const timeoutId = setTimeout(
-      () => {
-        archetypeRequestedRef.current = true;
-        setIsReflecting(true);
-        setArchetypeError(false);
+    archetypeRequestedRef.current = true;
+    setIsReflecting(true);
+    setArchetypeError(false);
 
-        void generateArchetype({
-          name: displayName,
-          transcript: serializeTranscript(displayName, state.conversations),
-        })
-          .then((archetypeResult) => {
-            setArchetype(archetypeResult);
-            dispatch({ type: "SET_ARCHETYPE", archetypeName: archetypeResult.archetypeName });
-            void updateSession(state.sessionId, {
-              draft_report: JSON.stringify(archetypeResult),
-            });
-          })
-          .catch((err) => {
-            console.warn("[closing] archetype generation failed", err);
-            setArchetypeError(true);
-          })
-          .finally(() => {
-            setIsReflecting(false);
-          });
-      },
-      introWordCount * WORD_REVEAL_DELAY_MS + INTRO_PAUSE_MS
-    );
+    void generateArchetype({
+      name: displayName,
+      transcript: serializeTranscript(displayName, state.conversations),
+    })
+      .then((archetypeResult) => {
+        setArchetype(archetypeResult);
+        dispatch({ type: "SET_ARCHETYPE", archetypeName: archetypeResult.archetypeName });
+        void updateSession(state.sessionId, {
+          draft_report: JSON.stringify(archetypeResult),
+        });
+      })
+      .catch((err) => {
+        console.warn("[closing] archetype generation failed", err);
+        setArchetypeError(true);
+      })
+      .finally(() => {
+        setIsReflecting(false);
+      });
+  }, [dispatch, displayName, rewardPreview, state.conversations, state.sessionId]);
 
-    return () => clearTimeout(timeoutId);
-  }, [dispatch, displayName, introWordCount, state.conversations, state.sessionId]);
+  useEffect(() => {
+    if (rewardPreview) return;
+    if (recommendationsRequestedRef.current) return;
+
+    recommendationsRequestedRef.current = true;
+
+    void generateRecommendations({
+      transcript: serializeTranscript(displayName, state.conversations),
+      locale,
+    })
+      .then((result) => {
+        setRecommendations(result.recommendations);
+      })
+      .catch((err) => {
+        console.warn("[closing] recommendations failed", err);
+        setRecommendations(buildFallbackRecommendations());
+      });
+  }, [displayName, locale, rewardPreview, state.conversations]);
 
   useEffect(() => {
     if (!copied) return;
@@ -469,55 +368,106 @@ export default function Closing() {
     }
   };
 
-  const handleDownloadArchetypeCard = useCallback(() => {
-    if (!archetype) return;
-    downloadArchetypeCard(displayName, archetype);
-  }, [archetype, displayName]);
-
-  const emailCaptureSection = (
+  const emailGateSection = (
     <div className="mt-8 flex w-full max-w-[480px] flex-col items-center">
-      <h3 className="font-['ArizonaFlare'] text-[22px] leading-tight font-medium text-[#0F1B2D] sm:text-[24px]">
+      <h2 className="text-center font-['ArizonaFlare'] text-[clamp(26px,4.5vw,34px)] leading-tight font-medium text-[#0F1B2D]">
         {t("emailSectionTitle")}
-      </h3>
-      <p className="mt-4 text-center text-[15px] leading-[1.7] text-[#5A6B82]">
+      </h2>
+      <p className="mt-4 text-center text-[15px] leading-[1.7] text-[#5A6B82] sm:text-[17px]">
         {t("nextBody")}
       </p>
+      <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
+        <Input
+          type="email"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            if (emailError) setEmailError(null);
+          }}
+          placeholder={t("emailPlaceholder")}
+          className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
+          aria-label={t("emailPlaceholder")}
+        />
+        <Button
+          type="button"
+          onClick={() => void sendBlueprintEmail()}
+          disabled={isSendingEmail}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 shrink-0 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
+        >
+          {t("notifyCta")}
+        </Button>
+      </div>
+      {emailError ? (
+        <p className="mt-3 text-center text-[14px] font-medium text-[#D85A30]">{emailError}</p>
+      ) : null}
+    </div>
+  );
 
-      {emailStatus === "success" ? (
-        <div className="mt-6 w-full rounded-[20px] border border-[#1D9E75]/25 bg-[#1D9E75]/8 px-6 py-5 text-center">
-          <p className="text-[15px] leading-[1.75] font-medium text-[#0F1B2D]">
-            {archetype
-              ? t("notifySuccess", { archetypeName: archetype.archetypeName })
-              : t("notifySuccessFallback")}
-          </p>
-        </div>
+  const confirmationSection = (
+    <div className="mt-8 flex w-full max-w-[520px] flex-col items-center">
+      <div className="w-full rounded-[20px] border border-[#1D9E75]/25 bg-[#1D9E75]/8 px-6 py-5 text-center">
+        <p className="text-[15px] leading-[1.75] font-medium text-[#0F1B2D] sm:text-[16px]">
+          {archetypeError ? t("notifySuccessFallback") : t("notifySuccess")}
+        </p>
+      </div>
+    </div>
+  );
+
+  const recommendationsSection = (
+    <div className="mt-10 flex w-full flex-col items-center">
+      <p className="max-w-2xl text-center text-[15px] leading-[1.7] text-[#5A6B82] sm:text-[17px]">
+        {t("videosIntro")}
+      </p>
+
+      {recommendations ? (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={STEP_TRANSITION}
+          className="mt-8 grid w-full max-w-3xl grid-cols-1 gap-6"
+        >
+          {recommendations.flatMap((recommendation) => {
+            const embedSrc = getVideoEmbedSrc(recommendation.video);
+
+            // Never render a broken iframe: skip entries that resolve to no
+            // embeddable URL (the route already backfills DEFAULT_FALLBACK).
+            if (!embedSrc) return [];
+
+            return [
+              <article
+                key={recommendation.video.id}
+                className="overflow-hidden rounded-[20px] border border-[#D5DCE6] bg-white/55 text-start"
+              >
+                <div className="aspect-video w-full bg-[#0F1B2D]" dir="ltr">
+                  <iframe
+                    src={embedSrc}
+                    title={recommendation.video.title}
+                    loading="lazy"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="h-full w-full border-0"
+                  />
+                </div>
+                <div className="p-6">
+                  <p className="font-mono text-[10px] tracking-[0.16em] text-[#5A6B82] uppercase">
+                    {recommendation.video.type === "ted" ? t("videoTagTed") : t("videoTagYoutube")}
+                  </p>
+                  <h3 className="mt-3 font-['ArizonaFlare'] text-[18px] leading-tight font-medium text-[#0F1B2D]">
+                    {recommendation.video.title}
+                  </h3>
+                  <p className="mt-1 text-[13px] text-[#7B8FA8]">{recommendation.video.creator}</p>
+                  {recommendation.why ? (
+                    <p className="mt-4 text-[14px] leading-[1.65] text-[#5A6B82]">
+                      {recommendation.why}
+                    </p>
+                  ) : null}
+                </div>
+              </article>,
+            ];
+          })}
+        </motion.div>
       ) : (
-        <>
-          <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
-            <Input
-              type="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                if (emailError) setEmailError(null);
-              }}
-              placeholder={t("emailPlaceholder")}
-              className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-[15px] text-[#0F1B2D] shadow-none"
-              aria-label={t("emailPlaceholder")}
-            />
-            <Button
-              type="button"
-              onClick={() => void sendBlueprintEmail()}
-              disabled={isSendingEmail}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 shrink-0 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
-            >
-              {t("notifyCta")}
-            </Button>
-          </div>
-          {emailError ? (
-            <p className="mt-3 text-center text-[14px] font-medium text-[#D85A30]">{emailError}</p>
-          ) : null}
-        </>
+        <p className="mt-8 text-center text-[15px] text-[#7B8FA8]">{t("videosLoading")}</p>
       )}
     </div>
   );
@@ -601,117 +551,22 @@ export default function Closing() {
           circleColors={multicolorSphereCircleColors}
           circleOpacities={multicolorSphereCircleOpacities}
         />
-        <p className="mt-10 text-[19px] leading-[1.75] text-[#5A6B82] sm:text-[22px]">
-          <TimedAnimatedWordReveal text={introText} wordDelayMs={WORD_REVEAL_DELAY_MS} />
-        </p>
-
-        <AnimatePresence mode="wait">
-          {isReflecting ? (
-            <motion.p
-              key="reflecting"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mt-5 text-[13px] text-[#7B8FA8]"
-            >
-              {t("reflecting")}
-            </motion.p>
-          ) : null}
-        </AnimatePresence>
-
-        {archetype ? (
-          <div className="mt-8 flex w-full flex-col items-center">
-            <h2 className="max-w-3xl text-center font-['ArizonaFlare'] text-[clamp(28px,5vw,42px)] leading-tight font-medium text-[#0F1B2D]">
-              <TimedAnimatedWordReveal
-                text={nameRevealText}
-                delayMs={nameRevealDelayMs}
-                wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
-              />
-            </h2>
-
-            <p className="mt-6 w-full max-w-3xl text-[16px] leading-[1.75] text-[#5A6B82] sm:text-[19px]">
-              <TimedAnimatedWordReveal
-                text={archetype.archetypeDescription}
-                delayMs={descriptionRevealDelayMs}
-                wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
-              />
-            </p>
-
-            <p className="mt-6 w-full max-w-2xl font-['ArizonaFlare'] text-[24px] leading-tight font-medium text-[#5A6B82] italic sm:text-[30px]">
-              <TimedAnimatedWordReveal
-                text={archetype.purposeStatement}
-                delayMs={purposeRevealDelayMs}
-                wordDelayMs={ARCHETYPE_WORD_REVEAL_DELAY_MS}
-              />
-            </p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                delay: referencesRevealDelayMs / 1000,
-                duration: REFERENCE_FADE_DURATION_MS / 1000,
-              }}
-              className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2"
-            >
-              {archetype.references.map((reference) => (
-                <article
-                  key={reference.name}
-                  className="rounded-[20px] border border-[#D5DCE6] bg-white/55 p-6 text-left"
-                >
-                  <h3 className="font-['ArizonaFlare'] text-[18px] leading-tight font-medium text-[#0F1B2D]">
-                    {reference.name}
-                  </h3>
-                  <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-[#5A6B82] uppercase">
-                    {reference.descriptor}
-                  </p>
-                  <p className="mt-4 text-[14px] leading-[1.65] text-[#5A6B82]">
-                    {reference.connection}
-                  </p>
-                </article>
-              ))}
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: ctaRevealDelayMs / 1000, duration: 0.5 }}
-              className="mt-9 flex w-full flex-col items-center"
-            >
-              <Button
-                type="button"
-                onClick={handleDownloadArchetypeCard}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 font-mono transition-all hover:-translate-y-px active:scale-[0.98]"
-              >
-                {t("downloadArchetypeCardCta")}
-              </Button>
-
-              <div className="mt-9 h-px w-full max-w-md bg-[#D5DCE6]" />
-              <p className="mt-7 max-w-[480px] text-center text-[15px] leading-[1.7] text-[#5A6B82]">
-                {t("humanReviewMessage")}
-              </p>
-
-              {emailCaptureSection}
-              {extrasSection}
-            </motion.div>
-          </div>
-        ) : null}
-
-        {archetypeError ? (
+        {!isEmailSubmitted ? (
+          emailGateSection
+        ) : (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="mt-8 flex w-full flex-col items-center"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={STEP_TRANSITION}
+            className="flex w-full flex-col items-center"
           >
-            <p className="max-w-md text-center text-[15px] leading-[1.7] text-[#5A6B82]">
-              {t("archetypeError")}
-            </p>
-            {emailCaptureSection}
+            {confirmationSection}
+
+            {recommendationsSection}
+
             {extrasSection}
           </motion.div>
-        ) : null}
+        )}
       </motion.div>
     </JourneyScreen>
   );

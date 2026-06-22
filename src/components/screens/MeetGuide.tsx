@@ -15,8 +15,8 @@ import {
   JourneyScreenMain,
   journeyPrimaryButtonClassName,
 } from "@/components/journey/screen-layout";
-import { WORD_REVEAL_INTERVAL_MS } from "@/lib/text-reveal";
 import { cn } from "@/lib/utils";
+const MEET_GUIDE_WORD_REVEAL_INTERVAL_MS = 130;
 const PARAGRAPH_PAUSE_MS = 400;
 const BUTTON_REVEAL_DELAY_MS = 800;
 const SPEAKING_ANIMATION_EXTRA_MS = 0;
@@ -47,7 +47,7 @@ function buildTimedParagraphs(paragraphs: IntroParagraph[]): TimedIntroParagraph
     const timedWords = words.map((word, index) => ({
       word,
       index: nextWordIndex++,
-      revealAtMs: nextStartMs + WORD_REVEAL_INTERVAL_MS * index,
+      revealAtMs: nextStartMs + MEET_GUIDE_WORD_REVEAL_INTERVAL_MS * index,
     }));
     const lastWord = timedWords[timedWords.length - 1];
 
@@ -74,7 +74,7 @@ export default function MeetGuide() {
       {
         text: `Hi ${state.name}, I'll be your guide in this experience.`,
         className:
-          "font-['ArizonaFlare'] text-[26px] leading-tight font-medium text-[#0F1B2D] sm:text-[40px]",
+          "font-['ArizonaFlare'] text-[18px] leading-tight font-medium text-[#0F1B2D] sm:text-[32px]",
       },
       {
         text: "Over the next 20-30 minutes, you'll answer questions about what moves you, what you're good at, and what the world needs from you.",

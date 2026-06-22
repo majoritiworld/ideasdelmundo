@@ -20,7 +20,7 @@ import { sendChatMessage } from "@/lib/chat";
 import { buildPriorContext } from "@/lib/prior-context";
 import { EVENTS } from "@/lib/events";
 import { type ConversationMessage, useJourney } from "@/lib/journey-context";
-import { getQuestionById } from "@/lib/sections";
+import { getQuestionById, sections } from "@/lib/sections";
 import {
   getSectionSphereCircleColors,
   getSectionSphereCircleOpacities,
@@ -28,10 +28,7 @@ import {
 import type { Json } from "@/lib/supabase/types";
 import { logEvent, logTranscriptMessage, updateSession } from "@/lib/tracking";
 import { AnimatedWords } from "@/components/ui/animations/animated-word-reveal";
-import {
-  JourneyChatColumn,
-  JourneyScreen,
-} from "@/components/journey/screen-layout";
+import { JourneyScreen } from "@/components/journey/screen-layout";
 import { WORD_REVEAL_INTERVAL_MS, splitRevealWords } from "@/lib/text-reveal";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +64,7 @@ function logTranscriptMessages(
 const EMPTY_MESSAGES: ConversationMessage[] = [];
 const CONVERSATION_TOUR_STORAGE_KEY = "journey-conversation-tour-completed";
 const HARD_MESSAGE_CAP = 6;
+const TOTAL_SECTIONS = sections.length;
 
 type GuideRevealState = { key: string; count: number };
 
@@ -86,6 +84,8 @@ const CONVERSATION_TOUR_STEPS: Array<{
 export default function Conversation() {
   const { state, dispatch } = useJourney();
   const t = useTranslations("journey.conversation");
+  const tCoreRun = useTranslations("journey.coreRun");
+  const tDeepDive = useTranslations("journey.deepDive");
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [isGuideSpeaking, setIsGuideSpeaking] = useState(true);
@@ -111,7 +111,7 @@ export default function Conversation() {
   const activeIsCoreRef = useRef(false);
   const pendingDoneAfterRevealKeyRef = useRef<string | null>(null);
   const doneNavigateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const returnToBoardRef = useRef<() => void>(() => {});
+  const finishQuestionRef = useRef<() => void>(() => {});
   const micShortcutGuardsRef = useRef({
     speechSupported: false,
     isRecording: false,
@@ -133,13 +133,6 @@ export default function Conversation() {
     () => (question ? (state.conversations[question.id] ?? EMPTY_MESSAGES) : EMPTY_MESSAGES),
     [question, state.conversations]
   );
-  const userInitial = useMemo(() => {
-    const trimmedName = state.name.trim();
-    if (trimmedName) {
-      return trimmedName.charAt(0).toUpperCase();
-    }
-    return t("you").charAt(0).toUpperCase();
-  }, [state.name, t]);
   const isUserComposing = input.trim().length > 0 || isRecording;
   const sphereState: SphereProps["state"] = isThinking
     ? "thinking"
@@ -172,7 +165,7 @@ export default function Conversation() {
     input: t("tour.input"),
     mic: t("tour.mic"),
     messages: t("tour.messages"),
-    doneStep: t("tour.doneStep"),
+    doneStep: isCore ? t("tour.doneStep") : t("tour.doneStepDeepDive"),
   };
   const tourStepNumber = tourStepIndex + 1;
 
@@ -255,7 +248,7 @@ export default function Conversation() {
           if (doneNavigateTimeoutRef.current) clearTimeout(doneNavigateTimeoutRef.current);
           doneNavigateTimeoutRef.current = setTimeout(() => {
             doneNavigateTimeoutRef.current = null;
-            returnToBoardRef.current?.();
+            finishQuestionRef.current?.();
           }, 1_500);
           return;
         }
@@ -444,47 +437,20 @@ export default function Conversation() {
     return words.length;
   }
 
-  function renderGuideMessageText(message: ConversationMessage, index: number) {
+  function renderMessageContent(message: ConversationMessage, index: number) {
+    if (message.role === "user") {
+      return (
+        <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">{message.text}</p>
+      );
+    }
+
     const words = splitRevealWords(message.text);
     const visibleCount = getGuideVisibleWordCount(message, index);
 
     return (
-      <p
-        className="text-[14px] leading-relaxed text-[#0F1B2D]/85"
-        aria-label={message.text}
-      >
+      <p className="text-[16px] leading-[1.65] text-[#0F1B2D]" aria-label={message.text}>
         <AnimatedWords words={words} visibleWordCount={visibleCount} />
       </p>
-    );
-  }
-
-  function renderGuideAvatar(state: SphereProps["state"]) {
-    return (
-      <div
-        aria-hidden="true"
-        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full"
-      >
-        <div className="pointer-events-none scale-[0.38]">
-          <Sphere
-            state={state}
-            size={56}
-            circleColors={sphereCircleColors}
-            circleOpacities={sphereCircleOpacities}
-            disableHoverEffect
-          />
-        </div>
-      </div>
-    );
-  }
-
-  function renderUserAvatar() {
-    return (
-      <div
-        aria-label={t("you")}
-        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#0F1B2D]/20 text-[11px] font-medium uppercase text-[#0F1B2D]/70"
-      >
-        {userInitial}
-      </div>
     );
   }
 
@@ -635,13 +601,13 @@ export default function Conversation() {
     } catch (err) {
       pendingDoneAfterRevealKeyRef.current = null;
       console.warn("[Conversation] Done guide response failed:", err);
-      returnToBoard();
+      finishQuestion();
     } finally {
       setIsThinking(false);
     }
   }
 
-  function returnToBoard() {
+  function finishQuestion() {
     const s = stateRef.current;
     const qId = activeQuestionIdRef.current;
     const secId = activeSectionIdRef.current;
@@ -681,10 +647,26 @@ export default function Conversation() {
       }
     }
     dispatch({ type: "SET_ACTIVE_QUESTION", id: null });
-    dispatch({ type: "GO_TO", screen: "optional_board" });
+
+    if (!isCoreQuestion) {
+      dispatch({ type: "GO_TO", screen: "deep_dive" });
+      return;
+    }
+
+    if (secId < TOTAL_SECTIONS) {
+      void logEvent(s.sessionId, EVENTS.SECTION_COMPLETED, { sectionId: secId });
+      const nextSection = secId + 1;
+      dispatch({ type: "SET_CURRENT_SECTION", sectionId: nextSection });
+      void updateSession(s.sessionId, { current_section: nextSection });
+      dispatch({ type: "GO_TO", screen: "section_intro" });
+      return;
+    }
+
+    void logEvent(s.sessionId, EVENTS.SECTION_COMPLETED, { sectionId: secId });
+    dispatch({ type: "GO_TO", screen: "closing" });
   }
 
-  returnToBoardRef.current = returnToBoard;
+  finishQuestionRef.current = finishQuestion;
 
   function onMicClick() {
     if (isRecording) {
@@ -761,6 +743,14 @@ export default function Conversation() {
 
   return (
     <JourneyScreen variant="chat">
+      <div className="pointer-events-none fixed inset-x-0 top-4 z-10 flex justify-center">
+        <span className="font-mono text-[11px] tracking-[0.08em] text-[#7B8FA8]">
+          {isCore
+            ? tCoreRun("progress", { current: sectionId, total: TOTAL_SECTIONS })
+            : tDeepDive("progressLabel")}
+        </span>
+      </div>
+
       {isTourVisible ? (
         <div
           aria-hidden="true"
@@ -768,54 +758,67 @@ export default function Conversation() {
         />
       ) : null}
 
-      <div ref={scrollRef} className="relative flex flex-1 flex-col overflow-y-auto">
-        <div className="conversation-page-in flex min-h-full flex-1 flex-col">
-          <JourneyChatColumn className="flex-1 pb-4 pt-[10dvh]">
+      <section className="relative mx-auto flex h-dvh min-h-dvh w-full max-w-4xl flex-col px-5 text-center sm:px-8">
+        <div className="conversation-page-in mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col pt-20 pb-8">
+          <div className="flex shrink-0 flex-col items-center text-center">
+            <div className="scale-[0.7]">
+              <Sphere
+                state={sphereState}
+                size={100}
+                circleColors={sphereCircleColors}
+                circleOpacities={sphereCircleOpacities}
+                disableHoverEffect
+              />
+            </div>
+          </div>
+
+          <div className="relative mt-6 min-h-0 flex-1">
             <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-px top-px z-10 h-12 rounded-t-2xl bg-gradient-to-b from-white/95 via-white/70 to-transparent"
+            />
+            <div
+              ref={scrollRef}
               className={cn(
-                "relative flex flex-col gap-6",
+                "relative h-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 px-5 pt-8 pb-6 text-left",
                 isTourTargetActive("messages") &&
-                  "pointer-events-none relative z-40 rounded-2xl p-1 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+                  "pointer-events-none z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
               )}
             >
-              {messages.map((message, index) =>
-                message.role === "guide" ? (
-                  <div key={`${message.role}-${index}`} className="flex gap-3">
-                    {renderGuideAvatar(
-                      index === messages.length - 1 && isGuideSpeaking ? sphereState : "idle"
+              {messages.map((message, index) => (
+                <div key={`${message.role}-${index}`}>
+                  <p
+                    className={cn(
+                      "mb-1 text-[12px] font-medium",
+                      message.role === "user" ? "text-[#1B3DD4]" : "text-[#7B8FA8]"
                     )}
-                    {renderGuideMessageText(message, index)}
-                  </div>
-                ) : (
-                  <div key={`${message.role}-${index}`} className="flex justify-end gap-3">
-                    <p className="max-w-[85%] text-right text-[14px] leading-relaxed text-[#0F1B2D]/85">
-                      {message.text}
-                    </p>
-                    {renderUserAvatar()}
-                  </div>
-                )
-              )}
+                  >
+                    {message.role === "user" ? t("you") : t("guide")}
+                  </p>
+                  {renderMessageContent(message, index)}
+                </div>
+              ))}
               {isThinking ? (
-                <div className="flex gap-3">
-                  {renderGuideAvatar("thinking")}
-                  <p className="text-[14px] leading-relaxed text-[#0F1B2D]/45">
+                <div>
+                  <p className="mb-1 text-[12px] font-medium text-[#7B8FA8]">{t("guide")}</p>
+                  <p className="text-[16px] leading-[1.65] text-[#0F1B2D]/45">
                     <span className="inline-flex gap-1" aria-hidden="true">
                       <span className="animate-pulse">·</span>
                       <span className="animate-pulse [animation-delay:120ms]">·</span>
                       <span className="animate-pulse [animation-delay:240ms]">·</span>
                     </span>
-                    <span className="sr-only">{t("guide")}</span>
                   </p>
                 </div>
               ) : null}
-              <div aria-hidden="true" className="h-2" />
               {renderTourCallout("messages", "top-5 left-1/2 -translate-x-1/2")}
             </div>
-          </JourneyChatColumn>
+          </div>
 
-          <JourneyChatColumn
+          {error ? <p className="mt-4 max-w-md text-left text-sm leading-6 text-[#D85A30]">{error}</p> : null}
+
+          <div
             className={cn(
-              "shrink-0 pb-6 pt-2 transition-opacity",
+              "relative mt-5 shrink-0 text-left transition-opacity",
               composerLocked &&
                 !isTourTargetActive("input") &&
                 !isTourTargetActive("mic") &&
@@ -841,82 +844,70 @@ export default function Conversation() {
               </div>
             ) : null}
 
-            <form
-              onSubmit={submitMessage}
-              className={cn(
-                "relative flex items-center gap-2 rounded-full border border-[#D5DCE6] bg-white px-4 py-2 shadow-sm focus-within:border-[#0F1B2D]/40",
-                isTourTargetActive("input") &&
-                  "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
-              )}
-            >
-              {speechSupported ? (
-                <div className="relative shrink-0">
-                  <button
-                    type="button"
-                    disabled={composerLocked || isTranscribing}
-                    onClick={onMicClick}
-                    aria-label={isRecording ? t("micRecording") : t("micStart")}
-                    className={cn(
-                      "font-sans flex h-8 w-8 shrink-0 items-center justify-center rounded-full normal-case transition-colors",
-                      isRecording
-                        ? "animate-pulse bg-[#EF4444] text-white"
-                        : "text-[#0F1B2D]/55 hover:bg-[#FAFBFE] hover:text-[#0F1B2D]",
-                      isTourTargetActive("mic") &&
-                        "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
-                    )}
-                  >
-                    <Iconify icon="lucide:mic" className="size-[18px]" />
-                  </button>
-                  {renderTourCallout("mic", "right-0 bottom-full mb-4")}
-                </div>
-              ) : null}
-              <Textarea
-                ref={inputRef}
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                onKeyDown={onComposerKeyDown}
-                placeholder={t("placeholder")}
-                disabled={composerLocked}
-                rows={1}
+            <form onSubmit={submitMessage} className="relative flex flex-col gap-1">
+              <div
                 className={cn(
-                  "max-h-[120px] min-h-0 flex-1 resize-none overflow-y-auto border-0 bg-transparent px-0 py-1 text-[15px] leading-6 shadow-none outline-none focus-visible:ring-0",
-                  isRecording
-                    ? "text-[#7B8FA8] italic"
-                    : "text-[#0F1B2D] not-italic placeholder:text-[#0F1B2D]/40"
+                  "flex items-end gap-3",
+                  isTourTargetActive("input") &&
+                    "pointer-events-none relative z-40 rounded-[24px] ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
                 )}
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || composerLocked}
-                aria-label={t("send")}
-                className="font-sans shrink-0 normal-case text-[#0F1B2D]/70 transition-colors hover:text-[#0F1B2D] disabled:text-[#0F1B2D]/25"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M4 12L20 4l-4 16-4-7-8-1z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
+                <Textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(event) => setInput(event.target.value)}
+                  onKeyDown={onComposerKeyDown}
+                  placeholder={t("placeholder")}
+                  disabled={composerLocked}
+                  rows={1}
+                  className={cn(
+                    "max-h-[180px] min-h-12 resize-none overflow-y-auto rounded-[24px] border-[#D5DCE6] bg-white px-5 py-3 leading-6 shadow-none placeholder:text-[#7B8FA8] focus-visible:border-[#1B3DD4] focus-visible:ring-[#1B3DD4]/15",
+                    isRecording ? "text-[#7B8FA8] italic" : "text-[#0F1B2D] not-italic"
+                  )}
+                />
+                {speechSupported ? (
+                  <div className="relative shrink-0">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={composerLocked || isTranscribing}
+                      onClick={onMicClick}
+                      aria-label={isRecording ? t("micRecording") : t("micStart")}
+                      className={cn(
+                        "h-12 w-12 shrink-0 rounded-full p-0 shadow-none",
+                        isRecording
+                          ? "animate-pulse border-transparent bg-[#EF4444] text-white hover:bg-[#EF4444] hover:text-white"
+                          : "hover:text-primary border-[#D5DCE6] bg-white text-[#5A6B82] hover:bg-white",
+                        isTourTargetActive("mic") &&
+                          "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+                      )}
+                    >
+                      <Iconify icon="lucide:mic" className="mx-auto size-5" />
+                    </Button>
+                    {renderTourCallout("mic", "right-0 bottom-full mb-4")}
+                  </div>
+                ) : null}
+                <Button
+                  type="submit"
+                  disabled={!input.trim() || composerLocked}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-full px-7 transition-all hover:-translate-y-px active:scale-[0.98]"
+                >
+                  {t("send")}
+                </Button>
+              </div>
               {renderTourCallout("input", "bottom-full left-0 mb-4")}
+              {isRecording ? (
+                <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">{t("listeningHint")}</p>
+              ) : null}
+              {isTranscribing ? (
+                <p className="ps-5 text-[12px] leading-snug text-[#5A6B82]">
+                  {t("transcribingHint")}
+                </p>
+              ) : null}
             </form>
-
-            {isRecording ? (
-              <p className="mt-2 ps-1 text-[12px] leading-snug text-[#5A6B82]">{t("listeningHint")}</p>
-            ) : null}
-            {isTranscribing ? (
-              <p className="mt-2 ps-1 text-[12px] leading-snug text-[#5A6B82]">
-                {t("transcribingHint")}
-              </p>
-            ) : null}
-            {error ? (
-              <p className="mt-4 text-sm leading-6 text-[#D85A30]">{error}</p>
-            ) : null}
-          </JourneyChatColumn>
+          </div>
         </div>
-      </div>
+      </section>
     </JourneyScreen>
   );
 }

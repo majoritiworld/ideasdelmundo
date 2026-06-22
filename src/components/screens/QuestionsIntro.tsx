@@ -123,7 +123,7 @@ export default function QuestionsIntro() {
         </JourneyCard>
         <Button
           type="button"
-          onClick={() => dispatch({ type: "GO_TO", screen: "board" })}
+          onClick={() => dispatch({ type: "GO_TO", screen: "section_intro" })}
           className={journeyPrimaryButtonClassName}
         >
           {t("cta")}

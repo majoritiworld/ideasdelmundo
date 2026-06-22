@@ -3,7 +3,6 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import Iconify from "@/components/ui/iconify";
 import {
   JourneyHero,
   JourneyScreen,
@@ -302,7 +301,6 @@ export default function Meditation() {
   const opacityProgress = started
     ? Math.min(1, Math.max(0, exerciseElapsedMs / (CYCLE_MS * TOTAL_CYCLES)))
     : 0;
-  const showSoundAlert = !completed && (!started || elapsedMs < STARTUP_MS);
 
   useEffect(() => {
     void updateSession(state.sessionId, { current_screen: "meditation" });
@@ -433,17 +431,8 @@ export default function Meditation() {
           </div>
         ) : null}
       </JourneyScreenMain>
-      <div className="flex flex-col items-center gap-4 pb-6 sm:pb-8">
-        {showSoundAlert ? (
-          <div
-            role="status"
-            className="flex items-center gap-2 rounded-full border border-[#E4E9F1] bg-white/90 px-4 py-2 text-sm font-medium text-[#5A6B82] shadow-[0_8px_24px_rgba(15,27,45,0.06)]"
-          >
-            <Iconify icon="lucide:volume-2" className="size-4 text-[#9F77DD]" aria-hidden />
-            {t("soundOn")}
-          </div>
-        ) : null}
-        {started && !completed ? (
+      {started && !completed ? (
+        <div className="flex flex-col items-center gap-4 pt-6 pb-6 sm:pt-8 sm:pb-8">
           <button
             type="button"
             onClick={finishMeditation}
@@ -451,8 +440,8 @@ export default function Meditation() {
           >
             {t("finishSession")}
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </JourneyScreen>
   );
 }

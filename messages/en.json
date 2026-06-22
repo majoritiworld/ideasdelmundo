@@ -930,69 +930,30 @@
     },
     "questionsIntro": {
       "stateLabel": "Speaking",
-      "subtitle": "We're ready to begin. You'll now move through four sections of questions, each one exploring a different part of who you are. In each section, answer at least two questions to move forward. You can write your answers or use your voice, whatever feels most natural.",
+      "subtitle": "We're ready to begin. You'll now move through four sections, each with one question exploring a different part of who you are. Answer each question to move forward. You can write your answers or use your voice, whatever feels most natural.",
       "subtitleSegments": {
         "ready": "We're ready to begin.",
-        "sections": "You'll now move through four sections of questions, each one exploring a different part of who you are.",
-        "sectionsQuestions": "You'll now move through four sections of questions,",
-        "sectionsEach": "each one exploring a different part of who you are.",
-        "instructionsSection": "In each section,",
-        "instructionsAnswer": "answer at least two questions to move forward.",
+        "sections": "You'll now move through four sections, each with one question exploring a different part of who you are.",
+        "sectionsQuestions": "You'll now move through four sections,",
+        "sectionsEach": "each with one question exploring a different part of who you are.",
+        "instructionsSection": "Answer each question",
+        "instructionsAnswer": "to move forward.",
         "instructionsEndStart": "You can write your answers or use your voice,",
         "instructionsEndFinish": "whatever feels most natural."
       },
       "cta": "I'm ready"
     },
-    "board": {
-      "sectionIndicator": "Section {current} of {total}",
-      "questionNumber": "Question {number}",
-      "answeredAria": "Answered",
-      "sectionIntros": {
-        "1": {
-          "alive": "This section is about what sets you alive.",
-          "time": "Take your time.",
-          "answers": "There are no wrong answers here."
-        },
-        "2": {
-          "gifts": "This section is about your natural gifts.",
-          "modest": "Don't be modest...",
-          "know": "you know more than you think."
-        },
-        "3": {
-          "place": "This section is about your place in the world.",
-          "moves": "Trust what moves you...",
-          "instincts": "your instincts matter."
-        },
-        "4": {
-          "value": "This section is about your value in the world.",
-          "honest": "Be honest...",
-          "between": "this is just between you and yourself."
-        }
-      },
-      "continue": "Continue",
-      "nextSection": "Next section",
-      "answerRequirement": "Answer at least 2 questions to move on",
-      "finish": "Finish"
+    "coreRun": {
+      "progress": "Question {current} of {total}"
     },
-    "optionalBoard": {
-      "title": "Go deeper",
-      "subtitle": "These questions are optional. Explore what calls to you.",
+    "deepDive": {
+      "title": "Your Blueprint is almost complete",
+      "subtitle": "The core questions gave us a good insight into your journey. These deeper questions are where people tend to discover what they didn't know they were looking for. Answer any question that calls you, they're not mandatory.",
+      "subtitleFootnote": "Remember, you can finish at anytime by scrolling to the bottom and clicking \"I'm Done\" to get your blueprint.",
+      "progressLabel": "Deep dive",
       "questionLabel": "Q{id}",
       "answeredAria": "Answered",
-      "nextSection": "Next section",
-      "done": "I'm done",
-      "tour": {
-        "title": "A quick note",
-        "description": "Each section has 4 optional extra questions. We recommend answering at least one. The more you answer, the more detailed and relevant your blueprint will be.",
-        "next": "Next",
-        "done": "Got it",
-        "pauseTitle": "Pause anytime",
-        "pauseDescription": "Use this button to save your progress and email yourself a link to come back whenever you're ready."
-      },
-      "pauseHint": {
-        "text": "You can pause anytime from now on. We'll save your progress and email you a link to come back whenever you're ready.",
-        "dismiss": "Got it"
-      }
+      "done": "I'm done"
     },
     "pause": {
       "pause": "Pause for now",
@@ -1013,6 +974,7 @@
       "startOver": "Start again"
     },
     "conversation": {
+      "back": "← Back to board",
       "guide": "Guide",
       "you": "You",
       "placeholder": "Write your answer...",
@@ -1027,7 +989,8 @@
         "stepLabel": "{current} of {total}",
         "input": "Type your answer here in the chat.",
         "mic": "Or tap the microphone to speak your answer.",
-        "doneStep": "When you're finished, click I'm done with this question to return to your board.",
+        "doneStep": "When you're finished, click I'm done with this question to continue.",
+        "doneStepDeepDive": "When you're finished, click I'm done with this question to return to the deep dive.",
         "messages": "Your guide will ask a few follow-up questions, then finish the conversation once it has everything it needs.",
         "next": "Next",
         "done": "Done",
@@ -1040,21 +1003,27 @@
       "congratsBodyLine2": "Thank you for showing up with such honesty.",
       "congratsBodyLine3": "It takes courage to look inward like this.",
       "continueCta": "Continue",
-      "emailSectionTitle": "Get your full Blueprint",
+      "emailSectionTitle": "Where should we send your Blueprint?",
       "nextTitle": "Your Blueprint is on its way.",
-      "nextBody": "Leave your email and we'll send you your full curated Purpose Blueprint — reviewed by two humans and tailored specifically to you.",
+      "nextBody": "Your conversation's complete. Leave your email and we'll send you your full Purpose Blueprint.",
       "emailPlaceholder": "your@email.com",
       "notifyCta": "Send it to me",
-      "notifySuccess": "You're all set. What you just saw — {archetypeName} — is a sneak peek. Your full Purpose Blueprint is being prepared by our team and will arrive in your inbox within the next 48 hours.",
-      "notifySuccessFallback": "You're all set. Your full Purpose Blueprint is being prepared by our team and will arrive in your inbox within the next 48 hours.",
+      "notifySuccess": "Thanks! Your full Purpose Blueprint will be reviewed by two humans to make sure it's truly relevant and tailored to you. You'll receive it in your inbox within the next 24–48 hours.",
+      "notifySuccessFallback": "Thanks! Your full Purpose Blueprint will be reviewed by two humans to make sure it's truly relevant and tailored to you. You'll receive it in your inbox within the next 24–48 hours.",
       "notifyError": "Something went wrong. Please try again.",
       "invalidEmail": "Please enter a valid email.",
       "archetypeIntro": "Based on everything you shared...",
       "reflecting": "Your guide is reflecting...",
       "archetypeReveal": "You are {archetypeName}.",
+      "tasteTransition": "In the meantime, here's a taste —",
       "downloadArchetypeCardCta": "Download your archetype card",
-      "humanReviewMessage": "This is just a taste. Your full Purpose Blueprint will be reviewed by two humans to make sure it is truly relevant and tailored to you. You will receive it in your inbox in the next 24 to 48 hours.",
-      "archetypeError": "Your guide could not complete the live archetype reveal right now, but your full Purpose Blueprint is still on its way.",
+      "videosIntro": "In the meantime, based on what you shared, here are two things worth watching —",
+      "videosLoading": "Finding two things worth watching for you...",
+      "videoTagTed": "TED Talk",
+      "videoTagYoutube": "YouTube",
+      "deepDiveCta": "Explore deeper questions",
+      "humanReviewMessage": "This is just a taste. Your full Purpose Blueprint will be reviewed by two humans to make sure it is truly relevant and tailored to you. You will receive it in your inbox in the next 24–48 hours.",
+      "archetypeError": "We couldn't prepare your live archetype preview right now, but your full Purpose Blueprint is still on its way.",
       "downloadCta": "Download my transcript",
       "shareCta": "Share this experience",
       "whatsappCta": "Share on WhatsApp",

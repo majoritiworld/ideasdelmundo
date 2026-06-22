@@ -11,8 +11,8 @@ export function splitRevealWords(text: string): string[] {
 
 export function getAnimatedWordClassName(isVisible: boolean, className?: string) {
   return cn(
-    "inline transition-[opacity,filter] duration-300 ease-out",
-    isVisible ? "opacity-100 blur-0" : "opacity-0 blur-[3px]",
+    "inline transition-opacity duration-300 ease-out",
+    isVisible ? "opacity-100" : "opacity-0",
     className
   );
 }

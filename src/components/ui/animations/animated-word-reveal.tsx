@@ -92,8 +92,8 @@ export function TimedAnimatedWordReveal({
         <motion.span
           key={`${word}-${index}`}
           className="inline"
-          initial={{ opacity: 0, filter: "blur(3px)" }}
-          animate={{ opacity: 1, filter: "blur(0px)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{
             delay: (delayMs + index * wordDelayMs) / 1000,
             duration: transitionDuration,

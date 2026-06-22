@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { AnimatedWord } from "@/components/ui/animations/animated-word-reveal";
 import PauseButton from "@/components/PauseButton";
@@ -37,6 +38,7 @@ function getLineRevealDelay(index: number, totalWords: number, startMs: number, 
 
 export default function SectionIntro() {
   const { state, dispatch } = useJourney();
+  const tCoreRun = useTranslations("journey.coreRun");
   const section = sections.find((item) => item.id === state.currentSection) ?? sections[0];
   const revealLines = useMemo<RevealLine[]>(() => {
     let startIndex = 0;
@@ -101,6 +103,9 @@ export default function SectionIntro() {
     <JourneyScreen>
       <PauseButton />
       <JourneyScreenMain>
+        <span className="font-mono text-[11px] tracking-[0.08em] text-[#7B8FA8]">
+          {tCoreRun("progress", { current: section.id, total: sections.length })}
+        </span>
         <Sphere
           state={introComplete ? "idle" : "speaking"}
           size={160}

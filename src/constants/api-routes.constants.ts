@@ -14,6 +14,7 @@ const API_ROUTES = {
   },
   CHAT: "/api/chat",
   ARCHETYPE: "/api/archetype",
+  RECOMMENDATIONS: "/api/recommendations",
   NOTIFY: "/api/notify",
   PAUSE: "/api/pause",
   RESUME: {
