@@ -77,8 +77,8 @@ const CONVERSATION_TOUR_STEPS: Array<{
 }> = [
   { target: "input", messageKey: "input" },
   { target: "mic", messageKey: "mic" },
-  { target: "done", messageKey: "doneStep" },
   { target: "messages", messageKey: "messages" },
+  { target: "done", messageKey: "doneStep" },
 ];
 
 export default function Conversation() {
@@ -157,7 +157,7 @@ export default function Conversation() {
   const isDoneTourStep = activeTourStep?.target === "done";
   const showDoneWithQuestionButton =
     !doneWithQuestionFlowActive &&
-    !isInputLockedForReveal &&
+    (!isInputLockedForReveal || isDoneTourStep) &&
     !isThinking &&
     !isRecording &&
     (userMessageCount >= 1 || isDoneTourStep);
@@ -181,6 +181,24 @@ export default function Conversation() {
     setSpeechSupported(hasSpeechSupport);
     setIsTourVisible(getStorage(CONVERSATION_TOUR_STORAGE_KEY) !== true);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!isTourVisible || !activeTourStep) return;
+
+    const targetEl = document.querySelector(
+      `[data-conversation-tour-target="${activeTourStep.target}"]`
+    );
+    if (targetEl) return;
+
+    if (tourStepIndex >= tourSteps.length - 1) {
+      setStorage(CONVERSATION_TOUR_STORAGE_KEY, true);
+      setIsTourVisible(false);
+      setTourStepIndex(0);
+      return;
+    }
+
+    setTourStepIndex((currentIndex) => currentIndex + 1);
+  }, [activeTourStep, isTourVisible, tourStepIndex, tourSteps.length]);
 
   useEffect(() => {
     void updateSession(state.sessionId, { current_screen: "conversation" });
@@ -743,7 +761,12 @@ export default function Conversation() {
 
   return (
     <JourneyScreen variant="chat">
-      <div className="pointer-events-none fixed inset-x-0 top-4 z-10 flex justify-center">
+      <div
+        className={cn(
+          "pointer-events-none fixed inset-x-0 top-4 flex justify-center",
+          isTourVisible ? "z-50" : "z-10"
+        )}
+      >
         <span className="font-mono text-[11px] tracking-[0.08em] text-[#7B8FA8]">
           {isCore
             ? tCoreRun("progress", { current: sectionId, total: TOTAL_SECTIONS })
@@ -754,11 +777,16 @@ export default function Conversation() {
       {isTourVisible ? (
         <div
           aria-hidden="true"
-          className="fixed inset-0 z-30 bg-[#0F1B2D]/45 backdrop-blur-[1px]"
+          className="pointer-events-auto fixed inset-0 z-30 bg-[#0F1B2D]/45 backdrop-blur-[1px]"
         />
       ) : null}
 
-      <section className="relative mx-auto flex h-dvh min-h-dvh w-full max-w-4xl flex-col px-5 text-center sm:px-8">
+      <section
+        className={cn(
+          "relative mx-auto flex h-dvh min-h-dvh w-full max-w-4xl flex-col px-5 text-center sm:px-8",
+          isTourVisible && "pointer-events-none z-40"
+        )}
+      >
         <div className="conversation-page-in mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col pt-20 pb-8">
           <div className="flex shrink-0 flex-col items-center text-center">
             <div className="scale-[0.7]">
@@ -779,6 +807,7 @@ export default function Conversation() {
             />
             <div
               ref={scrollRef}
+              data-conversation-tour-target="messages"
               className={cn(
                 "relative h-full space-y-5 overflow-y-auto rounded-2xl border border-[#D5DCE6] bg-white/70 px-5 pt-8 pb-6 text-left",
                 isTourTargetActive("messages") &&
@@ -830,6 +859,7 @@ export default function Conversation() {
               <div className="relative mb-4 flex flex-wrap gap-2">
                 <button
                   type="button"
+                  data-conversation-tour-target="done"
                   onClick={() => void submitDoneWithQuestion()}
                   disabled={isDoneTourStep}
                   className={cn(
@@ -846,6 +876,7 @@ export default function Conversation() {
 
             <form onSubmit={submitMessage} className="relative flex flex-col gap-1">
               <div
+                data-conversation-tour-target="input"
                 className={cn(
                   "flex items-end gap-3",
                   isTourTargetActive("input") &&
@@ -870,6 +901,7 @@ export default function Conversation() {
                     <Button
                       type="button"
                       variant="outline"
+                      data-conversation-tour-target="mic"
                       disabled={composerLocked || isTranscribing}
                       onClick={onMicClick}
                       aria-label={isRecording ? t("micRecording") : t("micStart")}
