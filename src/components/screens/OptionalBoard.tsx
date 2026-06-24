@@ -33,7 +33,7 @@ const OPTIONAL_QUESTIONS_TOUR_STORAGE_KEY = "journey-optional-questions-tour-com
 type OptionalBoardTourStep = "questions" | "pause";
 
 function getSectionColor(theme: string) {
-  return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.becoming;
+  return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.passion;
 }
 
 export default function OptionalBoard() {

@@ -90,7 +90,7 @@ function withThirtyPercentOpacity(hexColor: string) {
 }
 
 function getSectionColor(theme: string) {
-  return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.becoming;
+  return categoryColors[theme as keyof typeof categoryColors] ?? categoryColors.passion;
 }
 
 function getHighestUnlockedSection(answeredQuestions: number[]) {

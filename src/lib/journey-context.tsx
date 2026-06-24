@@ -48,6 +48,7 @@ export interface JourneyState {
   conversations: Record<number, ConversationMessage[]>;
   meditationCompleted: boolean;
   archetypeName: string | null;
+  seenPauseHint: boolean;
 }
 
 type JourneyAction =
@@ -65,6 +66,7 @@ type JourneyAction =
   | { type: "ADD_MESSAGE"; questionId: number; message: ConversationMessage }
   | { type: "SET_MEDITATION_COMPLETED"; completed: boolean }
   | { type: "SET_ARCHETYPE"; archetypeName: string }
+  | { type: "MARK_PAUSE_HINT_SEEN" }
   | { type: "REHYDRATE"; session: SessionRow }
   | { type: "RESET" };
 
@@ -83,6 +85,7 @@ const initialState: JourneyState = {
   conversations: {},
   meditationCompleted: false,
   archetypeName: null,
+  seenPauseHint: false,
 };
 
 function isScreen(value: string | null): value is Screen {
@@ -159,6 +162,9 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
       return { ...state, meditationCompleted: action.completed };
     case "SET_ARCHETYPE":
       return { ...state, archetypeName: action.archetypeName };
+    case "MARK_PAUSE_HINT_SEEN":
+      if (state.seenPauseHint) return state;
+      return { ...state, seenPauseHint: true };
     case "REHYDRATE": {
       const session = action.session;
 
@@ -173,6 +179,7 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
         coreAnswered: session.core_answered ?? [],
         conversations: (session.conversations ?? {}) as unknown as Record<number, ConversationMessage[]>,
         meditationCompleted: session.meditation_completed ?? false,
+        seenPauseHint: session.seen_pause_hint ?? false,
         screen: resolveRehydratedScreen(session.current_screen),
         activeQuestionId: null,
       };
