@@ -199,6 +199,7 @@ NEXT_PUBLIC_SERVER_URL=http://localhost:3005   # Your backend API base URL
 NEXT_PUBLIC_WEB_URL=http://localhost:3000      # Frontend origin
 NEXT_PUBLIC_SITE_URL=http://localhost:3000     # Canonical public site origin
 NEXT_PUBLIC_REGION=IL
+NEXT_PUBLIC_WHATSAPP_NUMBER=972554427797       # WhatsApp number for the invite CTA (digits only, no +). Defaults to this value if unset.
 ```
 
 All variables are prefixed with `NEXT_PUBLIC_` and are safe to expose to the browser. There are no server-only secrets in the default setup — add them unprefixed if your app needs them.

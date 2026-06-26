@@ -1,6 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export type SessionStatus = "started" | "in_progress" | "completed" | "abandoned";
+export type SessionStatus = "started" | "in_progress" | "completed" | "abandoned" | "terminated";
 export type ReportStatus = "pending" | "drafted" | "reviewed" | "sent";
 export type BlueprintStatus = "draft" | "reviewed" | "published" | "sent";
 export type TranscriptRole = "guide" | "user";
@@ -27,6 +27,8 @@ export interface Database {
           core_answered: number[] | null;
           seen_pause_hint: boolean | null;
           meditation_completed: boolean | null;
+          moderation_strikes: number | null;
+          termination_reason: string | null;
           intake_completed_at: string | null;
           first_card_opened_at: string | null;
           completed_at: string | null;
@@ -56,6 +58,8 @@ export interface Database {
           core_answered?: number[] | null;
           seen_pause_hint?: boolean | null;
           meditation_completed?: boolean | null;
+          moderation_strikes?: number | null;
+          termination_reason?: string | null;
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
           completed_at?: string | null;
@@ -85,6 +89,8 @@ export interface Database {
           core_answered?: number[] | null;
           seen_pause_hint?: boolean | null;
           meditation_completed?: boolean | null;
+          moderation_strikes?: number | null;
+          termination_reason?: string | null;
           intake_completed_at?: string | null;
           first_card_opened_at?: string | null;
           completed_at?: string | null;
@@ -250,7 +256,12 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_session_strike: {
+        Args: { p_session_id: string };
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

@@ -17,6 +17,7 @@ import type { SessionRow } from "@/lib/supabase/types";
 
 export type Screen =
   | "welcome"
+  | "start"
   | "meet_guide"
   | "breathing_offer"
   | "meditation"
@@ -31,6 +32,14 @@ export interface ConversationMessage {
   role: "guide" | "user";
   text: string;
   timestamp: string;
+}
+
+export type ModerationStatus = "active" | "warned" | "terminated";
+
+export interface ModerationState {
+  strikes: number;
+  status: ModerationStatus;
+  terminationReason?: string;
 }
 
 export interface JourneyState {
@@ -49,6 +58,7 @@ export interface JourneyState {
   meditationCompleted: boolean;
   archetypeName: string | null;
   seenPauseHint: boolean;
+  moderation: ModerationState;
 }
 
 type JourneyAction =
@@ -67,6 +77,9 @@ type JourneyAction =
   | { type: "SET_MEDITATION_COMPLETED"; completed: boolean }
   | { type: "SET_ARCHETYPE"; archetypeName: string }
   | { type: "MARK_PAUSE_HINT_SEEN" }
+  | { type: "SYNC_MODERATION"; moderation: ModerationState }
+  | { type: "RECORD_STRIKE"; reason?: string }
+  | { type: "TERMINATE_SESSION"; reason?: string }
   | { type: "REHYDRATE"; session: SessionRow }
   | { type: "RESET" };
 
@@ -86,6 +99,7 @@ const initialState: JourneyState = {
   meditationCompleted: false,
   archetypeName: null,
   seenPauseHint: false,
+  moderation: { strikes: 0, status: "active" },
 };
 
 function isScreen(value: string | null): value is Screen {
@@ -93,6 +107,7 @@ function isScreen(value: string | null): value is Screen {
     value &&
       [
         "welcome",
+        "start",
         "meet_guide",
         "breathing_offer",
         "meditation",
@@ -165,8 +180,39 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
     case "MARK_PAUSE_HINT_SEEN":
       if (state.seenPauseHint) return state;
       return { ...state, seenPauseHint: true };
+    case "SYNC_MODERATION":
+      return { ...state, moderation: action.moderation };
+    case "RECORD_STRIKE": {
+      const strikes = state.moderation.strikes + 1;
+      const status: ModerationStatus = strikes >= 2 ? "terminated" : "warned";
+      return {
+        ...state,
+        moderation: {
+          strikes,
+          status,
+          terminationReason:
+            status === "terminated" ? (action.reason ?? state.moderation.terminationReason) : state.moderation.terminationReason,
+        },
+      };
+    }
+    case "TERMINATE_SESSION":
+      return {
+        ...state,
+        moderation: {
+          ...state.moderation,
+          status: "terminated",
+          terminationReason: action.reason ?? state.moderation.terminationReason,
+        },
+      };
     case "REHYDRATE": {
       const session = action.session;
+      const strikes = session.moderation_strikes ?? 0;
+      const moderationStatus: ModerationStatus =
+        session.status === "terminated" || strikes >= 2
+          ? "terminated"
+          : strikes === 1
+            ? "warned"
+            : "active";
 
       return {
         ...state,
@@ -182,6 +228,11 @@ function journeyReducer(state: JourneyState, action: JourneyAction): JourneyStat
         seenPauseHint: session.seen_pause_hint ?? false,
         screen: resolveRehydratedScreen(session.current_screen),
         activeQuestionId: null,
+        moderation: {
+          strikes,
+          status: moderationStatus,
+          terminationReason: session.termination_reason ?? undefined,
+        },
       };
     }
     case "RESET":
@@ -213,6 +264,10 @@ export function useJourney() {
   }
 
   return context;
+}
+
+export function isSessionTerminated(state: JourneyState) {
+  return state.moderation.status === "terminated";
 }
 
 export function useLogEventOnce(eventType: EventType) {

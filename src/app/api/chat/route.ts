@@ -1,6 +1,17 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  moderateMessage,
+  SHUTDOWN_MESSAGE,
+  WARNING_MESSAGE,
+} from "@/lib/moderation";
+import {
+  incrementStrike,
+  loadSessionForChat,
+  terminateSession,
+} from "@/lib/moderation/session";
+
 interface ChatRequest {
   questionId: number;
   questionText: string;
@@ -42,13 +53,19 @@ function getSystemPrompt(
   questionText: string,
   isCore: boolean,
   userMessageCount: number,
-  priorContext?: string
+  priorContext?: string,
+  distress?: boolean
 ) {
   const depthGuidance = isCore
     ? "This is the mandatory core question for the section. Follow up more thoroughly, help the user stay with the deeper layer of the answer, and invite specificity without pushing."
     : "This is an optional exploration question. Keep the tone slightly lighter while still being reflective and useful.";
 
   const messageCountGuidance = getMessageCountGuidance(userMessageCount);
+  const distressGuidance = distress
+    ? `
+
+This person may be in genuine distress — they expressed real pain, hopelessness, or vulnerability. Respond with extra warmth and care. Make space for what they're feeling before anything else, and never minimize it.`
+    : "";
   const trimmedPriorContext = priorContext?.trim();
   const priorJourneySection = trimmedPriorContext
     ? `
@@ -66,7 +83,7 @@ that helps people connect their purpose with their professional life.
 Your role in this specific conversation is to explore the theme of
 '${sectionTheme}' through the question: '${questionText}'.
 
-${depthGuidance}${priorJourneySection}
+${depthGuidance}${distressGuidance}${priorJourneySection}
 
 Guidelines:
 - The experience questions may be in English, but respond in the same language the user is using in the chat
@@ -111,6 +128,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Got it, thank you for sharing." });
     }
 
+    // Server-authoritative moderation. The strike count and shutdown decision live
+    // here, never in the guide prompt, so the model cannot be talked out of them.
+    let distress = false;
+    if (payload.sessionId) {
+      const session = await loadSessionForChat(payload.sessionId);
+
+      // Defensive: an already-terminated session never reaches the guide model.
+      if (session?.status === "terminated") {
+        return NextResponse.json({
+          message: SHUTDOWN_MESSAGE,
+          terminated: true,
+          moderation: { status: "terminated", strikes: session.moderation_strikes },
+        });
+      }
+
+      const mod = await moderateMessage(payload.userMessage);
+      distress = mod.distress;
+
+      // Strike only on abusive content, never on distress.
+      if (mod.flagged && !mod.distress) {
+        const strikes = await incrementStrike(payload.sessionId);
+
+        if (strikes >= 2) {
+          await terminateSession(payload.sessionId, mod.category);
+          return NextResponse.json({
+            message: SHUTDOWN_MESSAGE,
+            terminated: true,
+            moderation: { strike: strikes, status: "terminated", strikes },
+          });
+        }
+
+        return NextResponse.json({
+          message: WARNING_MESSAGE,
+          moderation: { strike: strikes, status: "warned", strikes },
+        });
+      }
+    }
+
     // +1: conversationHistory excludes the outgoing userMessage; count matches client convention.
     const userMessageCount =
       payload.userMessageCount ??
@@ -128,7 +183,8 @@ export async function POST(request: NextRequest) {
             payload.questionText,
             payload.isCore,
             userMessageCount,
-            payload.priorContext
+            payload.priorContext,
+            distress
           ),
           cache_control: { type: "ephemeral" as const },
         },

@@ -41,7 +41,7 @@ function formatDate(value: string | null) {
 
 function getStatusVariant(status: SessionRow["status"]) {
   if (status === "completed") return "default";
-  if (status === "abandoned") return "destructive";
+  if (status === "abandoned" || status === "terminated") return "destructive";
   return "secondary";
 }
 
@@ -197,7 +197,9 @@ export default async function InternalSessionsPage({
                   const preview = messages.slice(-2);
                   const blueprint = blueprintBySessionId[session.id];
                   const canGenerateBlueprint = Boolean(
-                    session.email?.trim() && messages.length > 0
+                    session.email?.trim() &&
+                      messages.length > 0 &&
+                      session.status !== "terminated"
                   );
                   const hasEmail = Boolean(session.email?.trim());
 

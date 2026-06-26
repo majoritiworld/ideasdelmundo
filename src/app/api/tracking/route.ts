@@ -64,9 +64,30 @@ export async function POST(request: NextRequest) {
     if (payload.action === "updateSession") {
       if (!payload.sessionId) return jsonError(400, "Missing sessionId");
 
+      // The moderation counter and termination are server-authoritative; the client
+      // can never write them, nor revive a terminated session into another status.
+      const fields = { ...payload.fields };
+      delete (fields as Record<string, unknown>).moderation_strikes;
+      delete (fields as Record<string, unknown>).termination_reason;
+
+      const { data: current, error: readError } = await supabaseAdmin
+        .from("sessions")
+        .select("status")
+        .eq("id", payload.sessionId)
+        .maybeSingle();
+
+      if (readError) return jsonError(500, readError.message);
+      if (current?.status === "terminated") {
+        // Allow no-op or status-preserving writes, but never resurrect the session.
+        delete (fields as Record<string, unknown>).status;
+        if (Object.keys(fields).length === 0) {
+          return NextResponse.json({ ok: true, skipped: true });
+        }
+      }
+
       const { error } = await supabaseAdmin
         .from("sessions")
-        .update(payload.fields)
+        .update(fields)
         .eq("id", payload.sessionId);
 
       if (error) return jsonError(500, error.message);

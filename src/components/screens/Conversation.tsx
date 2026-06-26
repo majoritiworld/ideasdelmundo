@@ -16,10 +16,15 @@ import Iconify from "@/components/ui/iconify";
 import { Textarea } from "@/components/ui/textarea";
 import Sphere, { type SphereProps } from "@/components/Sphere";
 import { getStorage, setStorage } from "@/hooks/use-local-storage";
-import { sendChatMessage } from "@/lib/chat";
+import { sendChatMessage, type ChatModeration } from "@/lib/chat";
+import { SHUTDOWN_MESSAGE } from "@/lib/moderation-copy";
 import { buildPriorContext } from "@/lib/prior-context";
 import { EVENTS } from "@/lib/events";
-import { type ConversationMessage, useJourney } from "@/lib/journey-context";
+import {
+  type ConversationMessage,
+  type ModerationStatus,
+  useJourney,
+} from "@/lib/journey-context";
 import { getQuestionById, sections } from "@/lib/sections";
 import {
   getSectionSphereCircleColors,
@@ -143,8 +148,10 @@ export default function Conversation() {
         : "idle";
 
   const isInputLockedForReveal = guideReveal !== null;
+  const isTerminated = state.moderation.status === "terminated";
+  const isWarned = state.moderation.status === "warned";
   const composerLocked =
-    isThinking || isInputLockedForReveal || doneWithQuestionFlowActive || isTranscribing;
+    isThinking || isInputLockedForReveal || doneWithQuestionFlowActive || isTranscribing || isTerminated;
   const userMessageCount = messages.filter((m) => m.role === "user").length;
   const tourSteps = useMemo(
     () =>
@@ -472,6 +479,21 @@ export default function Conversation() {
     );
   }
 
+  function applyModeration(moderation: ChatModeration): ModerationStatus {
+    const status: ModerationStatus = moderation.status ?? "warned";
+    const strikes =
+      moderation.strikes ?? moderation.strike ?? state.moderation.strikes + 1;
+    dispatch({
+      type: "SYNC_MODERATION",
+      moderation: {
+        strikes,
+        status,
+        terminationReason: state.moderation.terminationReason,
+      },
+    });
+    return status;
+  }
+
   async function submitMessage(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     const text = input.trim();
@@ -480,7 +502,8 @@ export default function Conversation() {
       isThinking ||
       isInputLockedForReveal ||
       isTranscribing ||
-      doneWithQuestionFlowActive
+      doneWithQuestionFlowActive ||
+      isTerminated
     )
       return;
 
@@ -518,10 +541,15 @@ export default function Conversation() {
         priorContext,
       });
 
-      const guideMessage = createMessage("guide", response);
+      const guideMessage = createMessage("guide", response.message);
       const nextConversation = [...currentMessages, userMessage, guideMessage];
       const nextConversations = { ...state.conversations, [activeQuestion.id]: nextConversation };
-      if (outgoingUserMessageCount >= HARD_MESSAGE_CAP) {
+
+      // A moderation response is canned copy, not a guide turn — never trigger the
+      // "wrap up this question" flow off it; the strike/terminated state governs input.
+      if (response.moderation) {
+        applyModeration(response.moderation);
+      } else if (outgoingUserMessageCount >= HARD_MESSAGE_CAP) {
         pendingDoneAfterRevealKeyRef.current = `${activeQuestion.id}-${guideMessage.timestamp}`;
         setDoneWithQuestionFlowActive(true);
       }
@@ -529,7 +557,7 @@ export default function Conversation() {
       setIsGuideSpeaking(true);
       void logEvent(state.sessionId, EVENTS.AI_RESPONSE_RECEIVED, {
         questionId: activeQuestion.id,
-        responseLength: response.length,
+        responseLength: response.message.length,
       });
       logTranscriptMessages(
         state.sessionId,
@@ -555,7 +583,8 @@ export default function Conversation() {
       isInputLockedForReveal ||
       doneWithQuestionFlowActive ||
       isRecording ||
-      isTranscribing
+      isTranscribing ||
+      isTerminated
     ) {
       return;
     }
@@ -594,7 +623,7 @@ export default function Conversation() {
         priorContext,
       });
 
-      const guideMessage = createMessage("guide", response);
+      const guideMessage = createMessage("guide", response.message);
       const nextConversation = [...currentMessages, userMessage, guideMessage];
       const nextConversations = { ...state.conversations, [activeQuestion.id]: nextConversation };
       pendingDoneAfterRevealKeyRef.current = `${activeQuestion.id}-${guideMessage.timestamp}`;
@@ -602,7 +631,7 @@ export default function Conversation() {
       setIsGuideSpeaking(true);
       void logEvent(state.sessionId, EVENTS.AI_RESPONSE_RECEIVED, {
         questionId: activeQuestion.id,
-        responseLength: response.length,
+        responseLength: response.message.length,
       });
       logTranscriptMessages(
         state.sessionId,
@@ -631,6 +660,9 @@ export default function Conversation() {
     const secId = activeSectionIdRef.current;
     const isCoreQuestion = activeIsCoreRef.current;
     if (qId == null || secId == null) return;
+
+    // A terminated session never advances to the next question, closing, or reveal.
+    if (s.moderation.status === "terminated") return;
 
     const currentConversation = s.conversations[qId] ?? EMPTY_MESSAGES;
     const doneText = t("doneWithQuestion");
@@ -855,26 +887,39 @@ export default function Conversation() {
                 "pointer-events-none opacity-50"
             )}
           >
-            {showDoneWithQuestionButton ? (
-              <div className="relative mb-4 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  data-conversation-tour-target="done"
-                  onClick={() => void submitDoneWithQuestion()}
-                  disabled={isDoneTourStep}
-                  className={cn(
-                    "font-sans rounded-lg border border-[#D5DCE6] bg-white px-4 py-2 text-[13px] font-medium normal-case text-[#0F1B2D] transition-colors hover:border-[#0F1B2D]/40",
-                    isTourTargetActive("done") &&
-                      "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
-                  )}
-                >
-                  {t("doneWithQuestion")}
-                </button>
-                {renderTourCallout("done", "bottom-full left-0 mb-4")}
+            {isWarned ? (
+              <div className="mb-4 rounded-xl border border-[#E7D3A8] bg-[#FBF6E9] px-4 py-3 text-[13px] leading-snug text-[#7A5B12]">
+                One more message like that will end this session.
               </div>
             ) : null}
 
-            <form onSubmit={submitMessage} className="relative flex flex-col gap-1">
+            {isTerminated ? (
+              <div className="rounded-2xl border border-[#E2C7C7] bg-[#FBF1F1] px-5 py-4 text-left">
+                <p className="mb-1 text-[12px] font-medium text-[#B4513C]">{t("guide")}</p>
+                <p className="text-[15px] leading-[1.6] text-[#0F1B2D]">{SHUTDOWN_MESSAGE}</p>
+              </div>
+            ) : (
+              <>
+                {showDoneWithQuestionButton ? (
+                  <div className="relative mb-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      data-conversation-tour-target="done"
+                      onClick={() => void submitDoneWithQuestion()}
+                      disabled={isDoneTourStep}
+                      className={cn(
+                        "font-sans rounded-lg border border-[#D5DCE6] bg-white px-4 py-2 text-[13px] font-medium normal-case text-[#0F1B2D] transition-colors hover:border-[#0F1B2D]/40",
+                        isTourTargetActive("done") &&
+                          "pointer-events-none relative z-40 ring-2 ring-[#1B3DD4] ring-offset-4 ring-offset-white"
+                      )}
+                    >
+                      {t("doneWithQuestion")}
+                    </button>
+                    {renderTourCallout("done", "bottom-full left-0 mb-4")}
+                  </div>
+                ) : null}
+
+                <form onSubmit={submitMessage} className="relative flex flex-col gap-1">
               <div
                 data-conversation-tour-target="input"
                 className={cn(
@@ -936,7 +981,9 @@ export default function Conversation() {
                   {t("transcribingHint")}
                 </p>
               ) : null}
-            </form>
+                </form>
+              </>
+            )}
           </div>
         </div>
       </section>

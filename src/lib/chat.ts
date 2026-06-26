@@ -19,7 +19,21 @@ export interface SendChatMessagePayload {
   priorContext?: string;
 }
 
-export async function sendChatMessage(payload: SendChatMessagePayload): Promise<string> {
+export type ModerationStatus = "active" | "warned" | "terminated";
+
+export interface ChatModeration {
+  strike?: number;
+  strikes?: number;
+  status?: ModerationStatus;
+}
+
+export interface ChatResponse {
+  message: string;
+  terminated?: boolean;
+  moderation?: ChatModeration;
+}
+
+export async function sendChatMessage(payload: SendChatMessagePayload): Promise<ChatResponse> {
   const response = await fetch(API_ROUTES.CHAT, {
     method: "POST",
     headers: {
@@ -28,11 +42,20 @@ export async function sendChatMessage(payload: SendChatMessagePayload): Promise<
     body: JSON.stringify(payload),
   });
 
-  const data = (await response.json()) as { message?: string; error?: string };
+  const data = (await response.json()) as {
+    message?: string;
+    error?: string;
+    terminated?: boolean;
+    moderation?: ChatModeration;
+  };
 
   if (!response.ok || !data.message) {
     throw new Error(data.error ?? "Unable to get a guide response");
   }
 
-  return data.message;
+  return {
+    message: data.message,
+    terminated: data.terminated,
+    moderation: data.moderation,
+  };
 }

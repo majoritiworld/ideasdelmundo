@@ -1,73 +1,18 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import IkigaiFigure from "@/components/IkigaiFigure";
 import {
   JourneyHero,
   JourneyScreen,
   JourneyScreenMain,
   journeyPrimaryButtonClassName,
-  journeyTightGap,
 } from "@/components/journey/screen-layout";
-import { EVENTS } from "@/lib/events";
-import { useJourney } from "@/lib/journey-context";
-import { createSession, logEvent, updateSession } from "@/lib/tracking";
-import { cn } from "@/lib/utils";
+import { buildWhatsappInviteUrl } from "@/lib/app-config";
 
 export default function Welcome() {
-  const { state, dispatch } = useJourney();
-  const t = useTranslations("journey.welcome");
-  const [name, setName] = useState("");
-  const [isStarting, setIsStarting] = useState(false);
-  const nameReady = name.trim().length > 0;
-
-  useEffect(() => {
-    void updateSession(state.sessionId, { current_screen: "welcome" });
-  }, [state.sessionId]);
-
-  async function ensureSession() {
-    if (state.sessionId) return state.sessionId;
-
-    const id = await createSession(
-      {
-        user_agent: navigator.userAgent,
-        referrer: document.referrer || null,
-      },
-      null
-    );
-
-    if (id) {
-      dispatch({ type: "SET_SESSION_ID", id });
-      void logEvent(id, EVENTS.SESSION_STARTED);
-    }
-
-    return id;
-  }
-
-  async function startJourney() {
-    if (!name.trim() || isStarting) return;
-    setIsStarting(true);
-
-    const sessionId = await ensureSession();
-    if (!sessionId) {
-      setIsStarting(false);
-      return;
-    }
-
-    void logEvent(sessionId, EVENTS.WELCOME_CTA_CLICKED);
-    void updateSession(sessionId, { name: name.trim() });
-    dispatch({ type: "SET_NAME", name: name.trim() });
-    dispatch({ type: "GO_TO", screen: "meet_guide" });
-    setIsStarting(false);
-  }
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    void startJourney();
-  }
+  const t = useTranslations("home.invite");
 
   return (
     <JourneyScreen>
@@ -77,46 +22,25 @@ export default function Welcome() {
             <IkigaiFigure size={160} />
           </div>
           <div className="flex flex-col items-center gap-4">
-            <h1 className="font-['ArizonaFlare'] text-[38px] leading-tight font-medium text-[#0F1B2D] sm:text-[52px]">
+            <h1 className="font-['ArizonaFlare'] text-[32px] leading-tight font-medium text-[#0F1B2D] sm:text-[46px]">
               {t("title")}
             </h1>
             <p className="max-w-2xl text-[15px] leading-[1.65] text-[#5A6B82] sm:text-[20px]">
-              {t("subtitleLine1")}
-              <br />
-              {t("subtitleLine2")}
+              {t("body")}
             </p>
           </div>
         </JourneyHero>
 
         <div className="mx-auto w-full max-w-[21rem] text-center">
-          <label htmlFor="welcome-name" className="text-[14px] font-light text-[#5A6B82]">
-            {t("nameLabel")}
-          </label>
-
-          <form
-            onSubmit={handleSubmit}
-            className={cn("mt-4 flex w-full flex-col items-stretch", journeyTightGap)}
-          >
-            <Input
-              id="welcome-name"
-              name="name"
-              type="text"
-              autoComplete="name"
-              autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t("namePlaceholder")}
-              className="h-12 rounded-full border-[#D5DCE6] bg-white px-5 text-start text-[15px] text-[#0F1B2D] shadow-none"
-              aria-required
-            />
-            <Button
-              type="submit"
-              disabled={!nameReady || isStarting}
-              className={journeyPrimaryButtonClassName}
+          <Button asChild className={journeyPrimaryButtonClassName}>
+            <a
+              href={buildWhatsappInviteUrl(t("whatsappMessage"))}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {t("cta")}
-            </Button>
-          </form>
+            </a>
+          </Button>
         </div>
       </JourneyScreenMain>
       <style jsx>{`

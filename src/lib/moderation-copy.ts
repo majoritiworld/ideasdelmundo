@@ -1,0 +1,3 @@
+export const WARNING_MESSAGE = `I want to keep this a space for honest reflection, so I'll be straight with you: that crosses a line I can't engage with here. This isn't about judging you — it's about what this space is for. If anything you said came from somewhere real and painful, I'm genuinely here for that. But if it comes up again, I'll end the session.`;
+
+export const SHUTDOWN_MESSAGE = `I'm going to stop the session here. I gave one heads-up, and I meant it — this isn't a space I can keep open for this. If you ever want to come back and do this sincerely, you're welcome to start fresh another time.`;

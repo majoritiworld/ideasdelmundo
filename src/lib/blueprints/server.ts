@@ -80,6 +80,9 @@ async function loadSession(sessionId: string): Promise<SessionRow & { email: str
 
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Session not found");
+  if (data.status === "terminated") {
+    throw new Error("Session was terminated for abuse and cannot generate a blueprint");
+  }
   if (!data.email) throw new Error("Session needs an email before a blueprint can be generated");
 
   return data as SessionRow & { email: string };

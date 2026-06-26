@@ -1,5 +1,6 @@
 const WEB_ROUTES = {
   HOME: "/",
+  START: "/start",
   BLUEPRINT: {
     BY_SLUG: (slug: string) => `/blueprint/${slug}`,
     AUTH_CALLBACK: "/auth/callback",

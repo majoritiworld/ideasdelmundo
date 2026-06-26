@@ -69,6 +69,10 @@ export async function POST(req: NextRequest) {
     if (sessionError) return jsonError(500, sessionError.message);
     if (messagesError) return jsonError(500, messagesError.message);
     if (!session) return jsonError(404, "Session not found");
+    if (session.status === "terminated") {
+      // A terminated session is a hard exclusion: no email, no owner notify, no blueprint.
+      return NextResponse.json({ ok: true, skipped: true, terminated: true });
+    }
     if (session.completion_notified_at) {
       return NextResponse.json({ ok: true, skipped: true });
     }

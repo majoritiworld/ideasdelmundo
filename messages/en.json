@@ -1033,6 +1033,14 @@
       "footer": "@majoriti.world"
     }
   },
+  "home": {
+    "invite": {
+      "title": "The Purpose Blueprint Experience is invite-only right now",
+      "body": "We're keeping this a space for people genuinely ready to grow. If that's you, message us and we'll send you your private link to begin.",
+      "cta": "Message us on WhatsApp",
+      "whatsappMessage": "Hi! I'm interested in getting my Purpose Blueprint."
+    }
+  },
   "errorBoundary": {
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Try refreshing the page.",

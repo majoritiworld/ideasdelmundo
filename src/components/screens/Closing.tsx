@@ -25,6 +25,7 @@ import {
   getSectionSphereCircleOpacities,
 } from "@/lib/section-sphere";
 import { getSectionQuestions, sections } from "@/lib/sections";
+import { SHUTDOWN_MESSAGE } from "@/lib/moderation-copy";
 import { markCompleted, updateSession } from "@/lib/tracking";
 
 const COPY_RESET_DELAY_MS = 2_000;
@@ -221,6 +222,7 @@ export default function Closing() {
   const locale = useLocale();
   const logSessionCompleted = useLogEventOnce(EVENTS.SESSION_COMPLETED);
   const rewardPreview = isClosingRewardPreview();
+  const isTerminated = state.moderation.status === "terminated";
   const [isReflecting, setIsReflecting] = useState(false);
   const [archetype, setArchetype] = useState<ArchetypeResult | null>(() =>
     rewardPreview ? PREVIEW_ARCHETYPE : null
@@ -257,12 +259,12 @@ export default function Closing() {
       : "idle";
 
   useEffect(() => {
-    if (rewardPreview) return;
+    if (rewardPreview || isTerminated) return;
 
     void logSessionCompleted();
     void markCompleted(state.sessionId);
     void updateSession(state.sessionId, { current_screen: "closing" });
-  }, [logSessionCompleted, rewardPreview, state.sessionId]);
+  }, [isTerminated, logSessionCompleted, rewardPreview, state.sessionId]);
 
   useEffect(() => {
     if (rewardPreview) {
@@ -271,7 +273,7 @@ export default function Closing() {
       return;
     }
 
-    if (archetypeRequestedRef.current) return;
+    if (isTerminated || archetypeRequestedRef.current) return;
 
     archetypeRequestedRef.current = true;
     setIsReflecting(true);
@@ -295,10 +297,10 @@ export default function Closing() {
       .finally(() => {
         setIsReflecting(false);
       });
-  }, [dispatch, displayName, rewardPreview, state.conversations, state.sessionId]);
+  }, [dispatch, displayName, isTerminated, rewardPreview, state.conversations, state.sessionId]);
 
   useEffect(() => {
-    if (rewardPreview) return;
+    if (rewardPreview || isTerminated) return;
     if (recommendationsRequestedRef.current) return;
 
     recommendationsRequestedRef.current = true;
@@ -314,7 +316,7 @@ export default function Closing() {
         console.warn("[closing] recommendations failed", err);
         setRecommendations(buildFallbackRecommendations());
       });
-  }, [displayName, locale, rewardPreview, state.conversations]);
+  }, [displayName, isTerminated, locale, rewardPreview, state.conversations]);
 
   useEffect(() => {
     if (!copied) return;
@@ -341,6 +343,8 @@ export default function Closing() {
   };
 
   const sendBlueprintEmail = async () => {
+    if (isTerminated) return;
+
     const cleanEmail = email.trim();
 
     if (!EMAIL_PATTERN.test(cleanEmail)) {
@@ -536,6 +540,22 @@ export default function Closing() {
       </a>
     </>
   );
+
+  if (isTerminated) {
+    return (
+      <JourneyScreen>
+        <div className="flex w-full max-w-md flex-col items-center gap-4 text-center">
+          <Sphere
+            state="idle"
+            size={160}
+            circleColors={multicolorSphereCircleColors}
+            circleOpacities={multicolorSphereCircleOpacities}
+          />
+          <p className="text-[16px] leading-[1.65] text-[#0F1B2D]">{SHUTDOWN_MESSAGE}</p>
+        </div>
+      </JourneyScreen>
+    );
+  }
 
   return (
     <JourneyScreen>

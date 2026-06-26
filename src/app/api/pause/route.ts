@@ -36,10 +36,23 @@ export async function POST(req: NextRequest) {
     if (!process.env.RESEND_API_KEY) return jsonError(500, "Resume email is not configured");
 
     const supabaseAdmin = getSupabaseAdmin();
+    const { data: existing, error: readError } = await supabaseAdmin
+      .from("sessions")
+      .select("status")
+      .eq("id", sessionId)
+      .maybeSingle();
+
+    if (readError) return jsonError(500, readError.message);
+    if (existing?.status === "terminated") {
+      // A terminated session is not resumable and gets no resume email.
+      return NextResponse.json({ ok: true, skipped: true });
+    }
+
     const { error } = await supabaseAdmin
       .from("sessions")
       .update({ email: recipientEmail, status: "in_progress" })
-      .eq("id", sessionId);
+      .eq("id", sessionId)
+      .neq("status", "terminated");
 
     if (error) return jsonError(500, error.message);
 

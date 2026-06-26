@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { JourneyProvider, useJourney, type Screen } from "@/lib/journey-context";
 import Welcome from "@/components/screens/Welcome";
+import Start from "@/components/screens/Start";
 import MeetGuide from "@/components/screens/MeetGuide";
 import BreathingOffer from "@/components/screens/BreathingOffer";
 import PostMeditation from "@/components/screens/PostMeditation";
@@ -22,6 +23,7 @@ const RESUME_SESSION_STORAGE_KEY = "resumeSession";
 
 const screenComponents = {
   welcome: Welcome,
+  start: Start,
   meet_guide: MeetGuide,
   breathing_offer: BreathingOffer,
   meditation: Meditation,
@@ -69,6 +71,15 @@ function JourneyShell() {
 
     dispatch({ type: "REHYDRATE", session: saved });
     removeStorage(RESUME_SESSION_STORAGE_KEY);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (getStorage(RESUME_SESSION_STORAGE_KEY)) return;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get("start") === null) return;
+
+    dispatch({ type: "GO_TO", screen: "start" });
   }, [dispatch]);
 
   useEffect(() => {
